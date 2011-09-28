@@ -28,7 +28,28 @@ For the client-side part you need to use JS library "sockjs-client":http://sockj
 
 h2. The Server-Side Part
 
-Now in order to have someone to talk to, we need to run a server and that's exactly what is sockjs-ruby good for.
+Now in order to have someone to talk to, we need to run a server and that's exactly what is sockjs-ruby good for. Here's an example how the API *will* look like:
+
+<pre>
+require "sockjs"
+
+EM.run do
+  SockJS::Server.start(port: 9999) do |server|
+    server.onopen do
+      puts "~ Server has been opened!"
+    end
+
+    server.onclose do
+      puts "~ Server has been closed, bye!"
+    end
+
+    # Implement echo server.
+    server.onmessage do |message|
+      server.send(message)
+    end
+  end
+end
+</pre>
 
 h2. SockJS Family
 
