@@ -5,6 +5,7 @@ require "sockjs/version"
 
 describe SockJS do
   it "should define VERSION" do
-    described_class.constants.should include(:VERSION)
+    constants = described_class.constants.map(&:to_sym)
+    constants.should include(:VERSION)
   end
 end
