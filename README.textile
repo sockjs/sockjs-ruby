@@ -7,23 +7,23 @@ h2. The Client-Side Part
 For the client-side part you need to use JS library "sockjs-client":http://sockjs.github.com/sockjs-client which provides WebSocket-like API. Here's an example:
 
 <pre>
-  <script src="http://sockjs.github.com/sockjs-client/sockjs-latest.min.js"></script>
+<script src="http://sockjs.github.com/sockjs-client/sockjs-latest.min.js"></script>
 
-  <script>
-    var sock = new SockJS("http://mydomain.com/my_prefix");
+<script>
+  var sock = new SockJS("http://mydomain.com/my_prefix");
 
-    sock.onopen = function() {
-      console.log('open');
-    };
+  sock.onopen = function() {
+    console.log('open');
+  };
 
-    sock.onmessage = function(e) {
-      console.log('message', e.data);
-    };
+  sock.onmessage = function(e) {
+    console.log('message', e.data);
+  };
 
-    sock.onclose = function() {
-      console.log('close');
-    };
-  </script>
+  sock.onclose = function() {
+    console.log('close');
+  };
+</script>
 </pre>
 
 h2. The Server-Side Part
