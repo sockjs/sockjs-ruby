@@ -1,0 +1,43 @@
+h1. About
+
+SockJS is WebSocket emulation library. It means that you use the WebSocket API, only instead of @WebSocket@ class you instantiate @SockJS@ class. I highly recommend to read "SockJS: WebSocket emulation":http://www.rabbitmq.com/blog/2011/09/13/sockjs-websocket-emulation on the RabbitMQ blog.
+
+h2. The Client-Side Part
+
+For the client-side part you need to use JS library "sockjs-client":http://sockjs.github.com/sockjs-client which provides WebSocket-like API. Here's an example:
+
+<pre>
+&lt;script src=&quot;http://sockjs.github.com/sockjs-client/sockjs-latest.min.js&quot;&gt;&lt;/script&gt;
+&lt;script&gt;
+   var sock = new SockJS(&#x27;http://mydomain.com/my_prefix&#x27;);
+
+   sock.onopen = function() {
+     console.log(&#x27;open&#x27;);
+   };
+
+   sock.onmessage = function(e) {
+     console.log(&#x27;message&#x27;, e.data);
+   };
+
+   sock.onclose = function() {
+     console.log(&#x27;close&#x27;);
+   };
+&lt;/script&gt;
+</pre>
+
+h2. The Server-Side Part
+
+Now in order to have someone to talk to, we need to run a server and that's exactly what is sockjs-ruby good for.
+
+h2. SockJS Family
+
+* "SockJS-client":https://github.com/sockjs/sockjs-client JavaScript client library.
+* "SockJS-node":https://github.com/sockjs/sockjs-node Node.js server.
+* "SockJS-ruby":https://github.com/sockjs/sockjs-ruby Ruby server.
+* "SockJS-protocol":https://github.com/sockjs/sockjs-protocol protocol documentation.
+
+h1. Links
+
+* "SockJS: WebSocket emulation":http://www.rabbitmq.com/blog/2011/09/13/sockjs-websocket-emulation
+* "SockJS: web messaging ain't easy":http://www.rabbitmq.com/blog/2011/08/22/sockjs-web-messaging-aint-easy
+* "PubSubHuddle Realtime Web talk":http://www.rabbitmq.com/blog/2011/09/26/pubsubhuddle-realtime-web-talk
