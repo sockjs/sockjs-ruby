@@ -36,7 +36,7 @@ module SockJS
       end
 
       def self.send_frame(payload)
-        super("<script>\np(#{payload).to_json});\n</script>\r\n")
+        super("<script>\np(#{payload.to_json});\n</script>\r\n")
       end
     end
   end
