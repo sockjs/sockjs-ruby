@@ -17,7 +17,7 @@ module SockJS
     end
 
     def self.inherited(subclass)
-      @subclasses << subclass
+      Adapter.subclasses << subclass
       subclass.filters = Array.new
     end
   end
