@@ -23,5 +23,5 @@ Gem::Specification.new do |s|
   s.extra_rdoc_files = ["README.textile"]
 
   # RubyForge
-  s.rubyforge_project = "amq-protocol"
+  s.rubyforge_project = "sockjs"
 end
