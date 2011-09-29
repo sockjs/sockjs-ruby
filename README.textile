@@ -58,7 +58,7 @@ require "rack/sockjs"
 
 SockJS.start do |connection|
   use Rack::SockJS, connection, "/echo"
-  run MyUltraCoolApp
+  run MyUltraCoolApp.new
 end
 </pre>
 
