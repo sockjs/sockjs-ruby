@@ -3,7 +3,15 @@
 require "rack"
 require "sockjs"
 require "sockjs/adapter"
+
+# Adapters.
+require "sockjs/adapters/chunking_test"
+require "sockjs/adapters/eventsource"
+require "sockjs/adapters/htmlfile"
+require "sockjs/adapters/iframe"
+require "sockjs/adapters/jsonp"
 require "sockjs/adapters/welcome_screen"
+require "sockjs/adapters/xhr"
 
 # This is a Rack middleware for SockJS.
 #
