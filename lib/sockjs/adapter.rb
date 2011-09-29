@@ -3,11 +3,12 @@
 module SockJS
   class Adapter
     class << self
-      attr_accessor :prefix, :method, :subclasses
+      attr_accessor :prefix, :method, :filters, :subclasses
     end
 
-    self.method ||= "GET"
+    self.method     ||= "GET"
     self.subclasses ||= Array.new
+    self.filters    ||= Array.new
 
     def self.handler(prefix, method)
       self.subclasses.find do |handler|
@@ -17,6 +18,7 @@ module SockJS
 
     def self.inherited(subclass)
       @subclasses << subclass
+      subclass.filters = Array.new
     end
   end
 end
