@@ -1,5 +1,6 @@
 # encoding: utf-8
 
+require "json"
 require_relative "../adapter"
 
 module SockJS
@@ -35,7 +36,7 @@ module SockJS
       end
 
       def self.send_frame(payload)
-        super( "<script>\np(#{JSON.stringify(payload)});\n</script>\r\n" )
+        super("<script>\np(#{payload).to_json});\n</script>\r\n")
       end
     end
   end
