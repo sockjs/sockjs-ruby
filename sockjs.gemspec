@@ -16,6 +16,9 @@ Gem::Specification.new do |s|
   DESC
   s.email = "jakub@rabbitmq.com"
 
+  # Dependencies
+  s.add_dependency "eventmachine"
+
   # Files
   s.files = `git ls-files`.split("\n")
   s.require_paths = ["lib"]
