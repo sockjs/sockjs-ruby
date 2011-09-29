@@ -12,7 +12,7 @@ module SockJS
 
     def self.handler(prefix, method)
       self.subclasses.find do |handler|
-        handler.prefix == prefix && handler.method == method
+        handler.prefix === prefix && handler.method == method
       end
     end
 

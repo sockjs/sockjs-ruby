@@ -7,7 +7,7 @@ module SockJS
   module Adapters
     class IFrame < Adapter
       # Settings.
-      self.prefix  = nil
+      self.prefix  = /iframe[0-9-.a-z_]*.html/
       self.method  = "GET"
       self.filters = [:iframe, :cache_for, :expose]
 
