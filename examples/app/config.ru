@@ -22,5 +22,6 @@ class MyHelloWorld
   end
 end
 
+puts "~ Available handlers: #{::SockJS::Adapter.subclasses.inspect}"
 use Rack::SockJS
 run MyHelloWorld.new

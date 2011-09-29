@@ -2,6 +2,8 @@
 
 require "rack"
 require "sockjs"
+require "sockjs/adapter"
+require "sockjs/adapters/welcome_screen"
 
 # This is a Rack middleware for SockJS.
 #
@@ -15,13 +17,20 @@ module Rack
     end
 
     def call(env)
-      if env["PATH_INFO"].match(/^#@prefix\//)
+      matched = env["PATH_INFO"].match(/^#@prefix\//)
+
+      puts "~ #{env["REQUEST_METHOD"]} #{env["PATH_INFO"].inspect} (matched: #{!! matched})"
+
+      if matched
         ::SockJS.start do |connection|
           prefix  = env["PATH_INFO"].split("/")[2]
-          handler = connection.handler(prefix.to_sym)
-          handler.handle(env)
-
-          EM.stop
+          method  = env["REQUEST_METHOD"]
+          handler = ::SockJS::Adapter.handler(prefix, method)
+          puts "~ Handler: #{handler.inspect}"
+          return handler.handle(env).tap do |response|
+            puts "~ Response: #{response.inspect}"
+            EM.stop
+          end
         end
       else
         @app.call(env)
