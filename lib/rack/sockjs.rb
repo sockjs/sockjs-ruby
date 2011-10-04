@@ -34,10 +34,27 @@ module Rack
           prefix  = env["PATH_INFO"].split("/")[2]
           method  = env["REQUEST_METHOD"]
           handler = ::SockJS::Adapter.handler(prefix, method)
-          debug "~ Handler: #{handler.inspect}"
-          return handler.handle(env).tap do |response|
-            debug "~ Response: #{response.inspect}"
-            EM.stop
+          if handler
+            debug "~ Handler: #{handler.inspect}"
+            return handler.handle(env).tap do |response|
+              debug "~ Response: #{response.inspect}"
+              EM.stop
+            end
+          else
+            body = <<-HTML
+              <!DOCTYPE html>
+              <html>
+                <body>
+                  <h1>Handler Not Found</h1>
+                  <ul>
+                    <li>Prefix: #{prefix.inspect}</li>
+                    <li>Method: #{method.inspect}</li>
+                    <li>Handlers: #{::SockJS::Adapter.subclasses.inspect}</li>
+                  </ul>
+                </body>
+              </html>
+            HTML
+            [404, {"Content-Type" => "text/html", "Content-Length" => body.bytesize.to_s}, [body]]
           end
         end
       else
