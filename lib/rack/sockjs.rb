@@ -25,7 +25,7 @@ module Rack
     end
 
     def call(env)
-      matched = env["PATH_INFO"].match(/^#@prefix\//)
+      matched = env["PATH_INFO"].match(/^#{Regexp.quote(@prefix)}/)
 
       debug "~ #{env["REQUEST_METHOD"]} #{env["PATH_INFO"].inspect} (matched: #{!! matched})"
 
@@ -46,7 +46,7 @@ module Rack
     end
 
     private
-    def debug
+    def debug(message)
       STDERR.puts(message)
     end
   end
