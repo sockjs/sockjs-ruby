@@ -27,22 +27,27 @@ module Rack
     def call(env)
       matched = env["PATH_INFO"].match(/^#@prefix\//)
 
-      puts "~ #{env["REQUEST_METHOD"]} #{env["PATH_INFO"].inspect} (matched: #{!! matched})"
+      debug "~ #{env["REQUEST_METHOD"]} #{env["PATH_INFO"].inspect} (matched: #{!! matched})"
 
       if matched
         ::SockJS.start do |connection|
           prefix  = env["PATH_INFO"].split("/")[2]
           method  = env["REQUEST_METHOD"]
           handler = ::SockJS::Adapter.handler(prefix, method)
-          puts "~ Handler: #{handler.inspect}"
+          debug "~ Handler: #{handler.inspect}"
           return handler.handle(env).tap do |response|
-            puts "~ Response: #{response.inspect}"
+            debug "~ Response: #{response.inspect}"
             EM.stop
           end
         end
       else
         @app.call(env)
       end
+    end
+
+    private
+    def debug
+      STDERR.puts(message)
     end
   end
 end
