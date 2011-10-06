@@ -1,0 +1,5 @@
+consternant: @botanicus unicorn enables Rack::Chunked since v4.1.0 bit.ly/cag377
+
+majek04: @botanicus Thin doesn't do proper 'transfer-encoding: chunked' but it can do a very similar thing (relying on 'connection: close').
+
+judofyr: @botanicus Mongrel supports streaming body.each. Thin/Unicorn supports streaming through env['async.callback']
