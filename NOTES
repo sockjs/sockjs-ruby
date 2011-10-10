@@ -3,3 +3,55 @@ consternant: @botanicus unicorn enables Rack::Chunked since v4.1.0 bit.ly/cag377
 majek04: @botanicus Thin doesn't do proper 'transfer-encoding: chunked' but it can do a very similar thing (relying on 'connection: close').
 
 judofyr: @botanicus Mongrel supports streaming body.each. Thin/Unicorn supports streaming through env['async.callback']
+
+
+
+majek:
+
+In SRS we were using Sinatra with Thin. To get long polling working,
+we used "Thin::Connection::AsyncResponse" magic.
+The views looked like that:
+
+ get '/instances/:ver' do
+   some_waiting_on_eventmachine_here do |stuff|
+     finish JSON.pretty_generate stuff
+   end
+   Thin::Connection::AsyncResponse
+ end
+
+Where finish is:
+
+ def finish(data, status=200, user_headers={})
+   headers = {'Content-Type' => 'text/plain'}.update( user_headers )
+   data = [data] if data.is_a? String
+   env['async.callback'].call [status, headers, data]
+ end
+
+
+Quite hacky, and Thin-dependent, but hey, it works.
+
+Of course websockets are a bigger issue. You can take a
+look at the eventmachine-websockety think you've found
+and see if it integrates with any http server.
+
+
+majek:
+>>     Some prose:
+>>      http://macournoyer.com/blog/2009/06/04/pusher-and-async-with-thin/
+
+This article explains everything. Also take a look:
+  https://github.com/macournoyer/pusher
+
+I've attached a dumb example of how to do streaming (multiple responses).
+
+It doesn't do "Transfer-Encoding: chunked", (it does the http/1.0
+compatible thing - "Connection: close" and no "content-length")
+but it doesn't matter.
+
+(You can easily emulate proper chunking for 1.1 clients:
+ just set the header and send data with leading length. But there is
+ little benefit for that, as thin will not try to reuse connections
+ using "connection: keepalive", so feel free to ignore the problem for
+ now)
+
+majek: http://cramp.in
