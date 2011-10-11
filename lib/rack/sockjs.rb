@@ -30,13 +30,13 @@ module Rack
       debug "~ #{env["REQUEST_METHOD"]} #{env["PATH_INFO"].inspect} (matched: #{!! matched})"
 
       if matched
-        ::SockJS.start do |connection|
+        ::SockJS.start do |connection, options|
           prefix  = env["PATH_INFO"].split("/")[2]
           method  = env["REQUEST_METHOD"]
           handler = ::SockJS::Adapter.handler(prefix, method)
           if handler
             debug "~ Handler: #{handler.inspect}"
-            return handler.handle(env).tap do |response|
+            return handler.handle(env, options).tap do |response|
               debug "~ Response: #{response.inspect}"
             end
           else
