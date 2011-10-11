@@ -4,6 +4,7 @@ require_relative "../adapter"
 
 module SockJS
   module Adapters
+    # @deprecated [0.2] As per conversation with Majek.
     class ChunkingTestOptions < Adapter
       # Settings.
       self.prefix  = "chunking_test"
