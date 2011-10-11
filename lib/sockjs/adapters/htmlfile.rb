@@ -33,14 +33,14 @@ module SockJS
           #   http://code.google.com/p/browsersec/wiki/Part2#Survey_of_content_sniffing_behaviors
           html = data.gsub("{{ callback }}", callback)
           body = html + (" " * (1024 - html.bytesize)) + "\r\n\r\n"
-          [200, {"Content-Type" => "text/html", "Content-Length" => body.bytesize.to_s}, [body]]
+          [200, {"Content-Type" => "text/html; charset=UTF-8", "Content-Length" => body.bytesize.to_s}, [body]]
 
           # TODO:
           # session = transport.Session.bySessionIdOrNew(req.session, req.sockjs_server)
           # session.register( new HtmlFileReceiver(res, req.sockjs_server.options) )
         else
           body = "You have to specify 'callback' through the query string!"
-          [500, {"Content-Type" => "text/html", "Content-Length" => body.bytesize.to_s}, [body]]
+          [500, {"Content-Type" => "text/html; charset=UTF-8", "Content-Length" => body.bytesize.to_s}, [body]]
         end
       end
 

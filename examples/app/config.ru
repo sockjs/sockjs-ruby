@@ -21,7 +21,7 @@ class MyHelloWorld
   </body>
 </html>
     HTML
-    [200, {"Content-Type" => "text/html", "Content-Length" => body.bytesize.to_s}, [body]]
+    [200, {"Content-Type" => "text/html; charset=UTF-8", "Content-Length" => body.bytesize.to_s}, [body]]
   end
 end
 

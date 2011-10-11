@@ -53,7 +53,7 @@ module Rack
                 </body>
               </html>
             HTML
-            [404, {"Content-Type" => "text/html", "Content-Length" => body.bytesize.to_s}, [body]]
+            [404, {"Content-Type" => "text/html; charset=UTF-8", "Content-Length" => body.bytesize.to_s}, [body]]
           end
         end
       else
