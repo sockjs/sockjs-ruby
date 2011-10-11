@@ -1,6 +1,7 @@
 # encoding: utf-8
 
 require "eventmachine"
+require "sockjs/utils"
 
 module SockJS
   def self.connect(options = Hash.new)

@@ -12,7 +12,15 @@ module SockJS
 
       # Handler.
       def self.handle(env)
-        raise NotImplementedError.new
+        SockJS::Timeoutable.new(
+          # IE requires 2KB prelude.
+          0    => " " * 2048 + "h\n",
+          5    => "h\n",
+          25   => "h\n",
+          125  => "h\n",
+          625  => "h\n",
+          3125 => "h\n",
+        )
       end
     end
 
