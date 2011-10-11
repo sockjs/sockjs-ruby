@@ -12,7 +12,7 @@ module SockJS
 
       # Handler.
       def self.handle(env)
-        SockJS::Timeoutable.new(
+        timeoutable = SockJS::Timeoutable.new(
           # IE requires 2KB prelude.
           0    => " " * 2048 + "h\n",
           5    => "h\n",
@@ -21,6 +21,8 @@ module SockJS
           625  => "h\n",
           3125 => "h\n",
         )
+
+        [200, {"Content-Type" => "application/javascript; charset=UTF-8"}, timeoutable]
       end
     end
 
