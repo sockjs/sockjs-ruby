@@ -20,8 +20,8 @@ require "sockjs/adapters/xhr"
 #   run MyApp
 module Rack
   class SockJS
-    def initialize(app, prefix = "/echo")
-      @app, @prefix = app, prefix
+    def initialize(app, prefix = "/echo", options = Hash.new)
+      @app, @prefix, @options = app, prefix, options
     end
 
     def call(env)
@@ -30,13 +30,13 @@ module Rack
       debug "~ #{env["REQUEST_METHOD"]} #{env["PATH_INFO"].inspect} (matched: #{!! matched})"
 
       if matched
-        ::SockJS.start do |connection, options|
+        ::SockJS.start do |connection|
           prefix  = env["PATH_INFO"].split("/")[2]
           method  = env["REQUEST_METHOD"]
           handler = ::SockJS::Adapter.handler(prefix, method)
           if handler
             debug "~ Handler: #{handler.inspect}"
-            return handler.handle(env, options).tap do |response|
+            return handler.handle(env, @options).tap do |response|
               debug "~ Response: #{response.inspect}"
             end
           else

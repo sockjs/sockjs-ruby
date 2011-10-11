@@ -12,7 +12,7 @@ module SockJS
 
   def self.start(options = Hash.new, &block)
     EM.run do
-      block.call(self.connect(options), options)
+      block.call(self.connect(options))
     end
   end
 
