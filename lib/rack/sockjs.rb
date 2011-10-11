@@ -38,7 +38,6 @@ module Rack
             debug "~ Handler: #{handler.inspect}"
             return handler.handle(env).tap do |response|
               debug "~ Response: #{response.inspect}"
-              EM.stop
             end
           else
             body = <<-HTML
