@@ -15,6 +15,11 @@ module SockJS
 
       # Handler.
       def self.handle(env, options)
+        # Validate options.
+        unless options[:sockjs_url]
+          raise RuntimeError.new("You have to provide sockjs_url in options!")
+        end
+
         # Copied from the HTML file adapter.
         data = begin
           lines = File.readlines(__FILE__)
