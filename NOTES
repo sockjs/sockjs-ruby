@@ -59,3 +59,8 @@ majek: http://cramp.in
 http://rainbows.rubyforge.org/Rainbows/EventMachine.html
 
 https://github.com/imanel/websocket-rack
+http://stackoverflow.com/questions/2999430/any-success-with-sinatra-working-together-with-eventmachine-websockets/5491157#5491157
+
+https://github.com/rack/rack/blob/master/lib/rack/chunked.rb
+
+http://www.igvita.com/2011/03/08/goliath-non-blocking-ruby-19-web-server/
