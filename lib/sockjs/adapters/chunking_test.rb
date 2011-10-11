@@ -12,7 +12,7 @@ module SockJS
       self.filters = [:h_sid, :xhr_cors, :cache_for, :xhr_options, :expose]
 
       # Handler.
-      def self.handle(env)
+      def self.handle(env, options)
         timeoutable = SockJS::Timeoutable.new(
           # IE requires 2KB prelude.
           0    => " " * 2048 + "h\n",

@@ -11,7 +11,7 @@ module SockJS
       self.filters = [:h_sid, :h_no_cache, :jsonp]
 
       # Handler.
-      def self.handle(env)
+      def self.handle(env, options)
         raise NotImplementedError.new
       end
     end
@@ -23,7 +23,7 @@ module SockJS
       self.filters = [:h_sid, :expect_form, :jsonp_send]
 
       # Handler.
-      def self.handle(env)
+      def self.handle(env, options)
         raise NotImplementedError.new
       end
     end

@@ -11,7 +11,7 @@ module SockJS
       self.filters = [:h_sid, :xhr_cors, :xhr_poll]
 
       # Handler.
-      def self.handle(env)
+      def self.handle(env, options)
         raise NotImplementedError.new
       end
     end
@@ -23,7 +23,7 @@ module SockJS
       self.filters = [:h_sid, :xhr_cors, :cache_for, :xhr_options, :expose]
 
       # Handler.
-      def self.handle(env)
+      def self.handle(env, options)
         raise NotImplementedError.new
       end
     end
@@ -35,7 +35,7 @@ module SockJS
       self.filters = [:h_sid, :xhr_cors, :expect_xhr, :xhr_send]
 
       # Handler.
-      def self.handle(env)
+      def self.handle(env, options)
         raise NotImplementedError.new
       end
     end
@@ -47,7 +47,7 @@ module SockJS
       self.filters = [:h_sid, :xhr_cors, :cache_for, :xhr_options, :expose]
 
       # Handler.
-      def self.handle(env)
+      def self.handle(env, options)
         raise NotImplementedError.new
       end
     end
@@ -59,7 +59,7 @@ module SockJS
       self.filters = [:h_sid, :xhr_cors, :xhr_streaming]
 
       # Handler.
-      def self.handle(env)
+      def self.handle(env, options)
         raise NotImplementedError.new
       end
     end
@@ -71,7 +71,7 @@ module SockJS
       self.filters = [:h_sid, :xhr_cors, :cache_for, :xhr_options, :expose]
 
       # Handler.
-      def self.handle(env)
+      def self.handle(env, options)
         raise NotImplementedError.new
       end
     end
