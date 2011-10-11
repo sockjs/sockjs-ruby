@@ -9,7 +9,7 @@ module SockJS
 
     def each(&block)
       @hash.each do |ms, data|
-        EM.add_timeout(ms) do
+        EM.add_timer(ms / 1000.0) do
           block.call(data)
         end
       end
