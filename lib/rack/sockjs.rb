@@ -31,7 +31,7 @@ module Rack
 
       if matched
         ::SockJS.start do |connection|
-          prefix  = env["PATH_INFO"].split("/")[2]
+          prefix  = env["PATH_INFO"].sub(/^#{Regexp.quote(@prefix)}\/?/, "")
           method  = env["REQUEST_METHOD"]
           handler = ::SockJS::Adapter.handler(prefix, method)
           if handler

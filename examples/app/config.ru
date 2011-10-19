@@ -1,4 +1,4 @@
-#!/usr/bin/env rackup -s thin
+#!/usr/bin/env rackup -s thin -p 8080
 # encoding: utf-8
 
 $LOAD_PATH.unshift(File.expand_path("../../../lib", __FILE__))
