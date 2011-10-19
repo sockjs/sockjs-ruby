@@ -9,7 +9,7 @@ module SockJS
   module Adapters
     class IFrame < Adapter
       # Settings.
-      self.prefix  = /iframe[0-9-.a-z_]*.html/
+      self.prefix  = /iframe[0-9\-.a-z_]*.html/
       self.method  = "GET"
       self.filters = [:iframe, :cache_for, :expose]
 
@@ -30,7 +30,7 @@ module SockJS
         body = data.gsub("{{ sockjs_url }}", options[:sockjs_url])
         headers = self.headers(body)
 
-        if env["If-None-Match"] == headers["ETag"]
+        if env["HTTP_IF_NONE_MATCH"] == headers["ETag"]
           [304, Hash.new, Array.new]
         else
           [200, headers, [body]]
@@ -38,9 +38,14 @@ module SockJS
       end
 
       def self.headers(body)
+        year = 31536000
+        time = Time.now + year
+
         {
-          "Content-Type" => "text/html; charset=UTF-8",
-          "ETag"         => '"' + self.digest.hexdigest(body) + '"'
+          "Content-Type"  => "text/html; charset=UTF-8",
+          "ETag"          => '"' + self.digest.hexdigest(body) + '"',
+          "Cache-Control" => "public, max-age=#{year}",
+          "Expires"       => time.gmtime.to_s,
         }
       end
 
@@ -54,18 +59,17 @@ end
 __END__
 <!DOCTYPE html>
 <html>
-  <head>
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-    <script>
-      document.domain = document.domain;
-      _sockjs_onload = function () { SockJS.bootstrap_iframe() };
-    </script>
-    <script src="{{ sockjs_url }}"></script>
-  </head>
-
-  <body>
-    <h2>Don't panic!</h2>
-    <p>This is a SockJS hidden iframe. It's used for cross domain magic.</p>
-  </body>
+<head>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+  <script>
+    document.domain = document.domain;
+    _sockjs_onload = function(){SockJS.bootstrap_iframe();};
+  </script>
+  <script src="{{ sockjs_url }}"></script>
+</head>
+<body>
+  <h2>Don't panic!</h2>
+  <p>This is a SockJS hidden iframe. It's used for cross domain magic.</p>
+</body>
 </html>
