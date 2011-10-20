@@ -4,12 +4,28 @@ require_relative "../adapter"
 
 module SockJS
   module Adapters
-    # @deprecated [0.2] As per conversation with Majek.
     class ChunkingTestOptions < Adapter
       # Settings.
       self.prefix  = "chunking_test"
       self.method  = "OPTIONS"
       self.filters = [:h_sid, :xhr_cors, :cache_for, :xhr_options, :expose]
+
+      # Handler.
+      def self.handle(env, options)
+        year = 31536000
+        time = Time.now + year
+
+        request = Rack::Request.new(env)
+        biscuit = "JSESSIONID=#{request.cookies["JSESSIONID"] || "dummy"}; path=/"
+        origin  = env["HTTP_ORIGIN"] || "*"
+
+        [204, {"Access-Control-Allow-Origin" => origin, "Access-Control-Allow-Credentials" => "true", "Allow" => "OPTIONS, POST", "Cache-Control" => "public, max-age=#{year}", "Expires" => time.gmtime.to_s, "Access-Control-Max-Age" => "1000001", "Set-Cookie" => biscuit}, Array.new]
+      end
+    end
+
+    class ChunkingTestPost < ChunkingTestOptions
+      self.method  = "POST"
+      self.filters = [:h_sid, :xhr_cors, :expect_xhr, :chunking_test]
 
       # Handler.
       def self.handle(env, options)
@@ -23,13 +39,8 @@ module SockJS
           3125 => "h\n",
         )
 
-        [200, {"Content-Type" => "application/javascript; charset=UTF-8"}, timeoutable]
+        [200, {"Content-Type" => "application/javascript; charset=UTF-8", "Access-Control-Allow-Origin" => "*", "Access-Control-Allow-Credentials" => "true", "Allow" => "OPTIONS, POST"}, timeoutable]
       end
-    end
-
-    class ChunkingTestPost < ChunkingTestOptions
-      self.method  = "POST"
-      self.filters = [:h_sid, :xhr_cors, :expect_xhr, :chunking_test]
     end
   end
 end
