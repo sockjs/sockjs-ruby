@@ -8,7 +8,7 @@ module SockJS
     CLOSE_FRAME ||= "c"
 
     def self.array_frame(data)
-      "#{ARRAY_FRAME}#{data}"
+      "#{ARRAY_FRAME}#{data}\n"
     end
   end
 end

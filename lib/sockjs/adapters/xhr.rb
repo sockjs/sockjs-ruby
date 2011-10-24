@@ -44,7 +44,7 @@ module SockJS
       def self.handle(env, options, sessions)
         match = env["PATH_INFO"].match(self.prefix)
         session_id = match[1]
-        sessions[session_id] = "a#{env["rack.input"].read}\n"
+        sessions[session_id] = Protocol.array_frame(env["rack.input"].read)
         [204, {}, Array.new]
       end
     end
