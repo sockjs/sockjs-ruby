@@ -11,5 +11,13 @@ module SockJS
     def self.array_frame(data)
       "#{ARRAY_FRAME}#{data}\n"
     end
+
+    def self.close_frame(status, message)
+      if status && message
+        "#{CLOSE_FRAME}[#{status},#{message.inspect}]"
+      else
+        CLOSE_FRAME
+      end
+    end
   end
 end
