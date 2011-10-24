@@ -14,7 +14,11 @@ module SockJS
       def self.handle(env, options, sessions)
         match = env["PATH_INFO"].match(self.prefix)
         data  = sessions[match[1]]
-        [200, {"Content-Type" => "text/plain", "Content-Length" => "2"}, ["o\n"]]
+        if data
+          [200, {"Content-Type" => "text/plain", "Content-Length" => data.bytesize.to_s},  [data]]
+        else
+          [200, {"Content-Type" => "text/plain", "Content-Length" => "2"},  ["o\n"]]
+        end
       end
     end
 
@@ -26,9 +30,7 @@ module SockJS
 
       # Handler.
       def self.handle(env, options, sessions)
-        match = env["PATH_INFO"].match(self.prefix)
-        p session_id = match[1]
-        raise NotImplementedError.new
+        [204, {"Allow" => "OPTIONS, POST", "Access-Control-Max-Age" => 1}, Array.new]
       end
     end
 
@@ -41,7 +43,8 @@ module SockJS
       # Handler.
       def self.handle(env, options, sessions)
         match = env["PATH_INFO"].match(self.prefix)
-        p session_id = match[1]
+        session_id = match[1]
+        sessions[session_id] = "a#{env["rack.input"].read}\n"
         [204, {}, Array.new]
       end
     end
