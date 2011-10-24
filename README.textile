@@ -56,17 +56,6 @@ end
 run MyApp
 </pre>
 
-h2. Using SockJS in Web Frameworks
-
-<pre>
-require "rack/sockjs"
-
-SockJS.start do |connection|
-  use Rack::SockJS, connection, "/echo"
-  run MyUltraCoolApp.new
-end
-</pre>
-
 h2. SockJS Family
 
 * "SockJS-client":https://github.com/sockjs/sockjs-client JavaScript client library.

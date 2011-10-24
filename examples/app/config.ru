@@ -26,5 +26,17 @@ class MyHelloWorld
 end
 
 puts "~ Available handlers: #{::SockJS::Adapter.subclasses.inspect}"
-use Rack::SockJS, "/echo", sockjs_url: "http://sockjs.github.com/sockjs-client/sockjs-latest.min.js"
+
+options = {sockjs_url: "http://sockjs.github.com/sockjs-client/sockjs-latest.min.js"}
+
+use Rack::SockJS, "/echo", options do |connection|
+  connection.subscribe do |message|
+    connection.send(message)
+  end
+end
+
+use Rack::SockJS, "/close", options do |connection|
+  connection.close(3000, "Go away!")
+end
+
 run MyHelloWorld.new

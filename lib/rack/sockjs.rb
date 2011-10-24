@@ -36,8 +36,12 @@ require "sockjs/adapters/xhr"
 #   run MyApp
 module Rack
   class SockJS
-    def initialize(app, prefix = "/echo", options = Hash.new)
-      @app, @prefix, @options = app, prefix, options
+    def initialize(app, prefix = "/echo", options = Hash.new, &block)
+      @app, @prefix, @options, @block = app, prefix, options, block
+
+      unless block
+        raise "You have to provide SockJS app as the block argument!"
+      end
     end
 
     def call(env)
@@ -47,12 +51,13 @@ module Rack
 
       if matched
         ::SockJS.start do |connection|
-          prefix  = env["PATH_INFO"].sub(/^#{Regexp.quote(@prefix)}\/?/, "")
-          method  = env["REQUEST_METHOD"]
-          handler = ::SockJS::Adapter.handler(prefix, method)
-          if handler
-            debug "~ Handler: #{handler.inspect}"
-            return handler.handle(env, @options, sessions).tap do |response|
+          prefix        = env["PATH_INFO"].sub(/^#{Regexp.quote(@prefix)}\/?/, "")
+          method        = env["REQUEST_METHOD"]
+          handler_klass = ::SockJS::Adapter.handler(prefix, method)
+          if handler_klass
+            debug "~ Handler: #{handler_klass.inspect}"
+            handler = handler_klass.new(@options, sessions)
+            return handler.handle(env, &@block).tap do |response|
               debug "~ Response: #{response.inspect}"
             end
           else

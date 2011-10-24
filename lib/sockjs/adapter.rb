@@ -24,5 +24,11 @@ module SockJS
       subclass.prefix  = self.prefix
       subclass.filters = self.filters
     end
+
+    # Instance methods.
+    attr_reader :options, :sessions
+    def initialize(options, sessions)
+      @options, @sessions = options, sessions
+    end
   end
 end
