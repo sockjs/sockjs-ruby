@@ -2,6 +2,7 @@
 
 require "eventmachine"
 require "sockjs/utils"
+require "sockjs/protocol"
 
 module SockJS
   def self.connect(options = Hash.new)
