@@ -2,10 +2,11 @@
 
 module SockJS
   class Protocol
-    OPEN_FRAME ||= "o"
-    HEARTBEAT_FRAME ||= "h"
+    OPEN_FRAME  ||= "o\n"
+    CLOSE_FRAME ||= "c\n"
     ARRAY_FRAME ||= "a"
-    CLOSE_FRAME ||= "c"
+
+    HEARTBEAT_FRAME ||= "h\n"
 
     def self.array_frame(data)
       "#{ARRAY_FRAME}#{data}\n"

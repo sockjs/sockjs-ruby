@@ -17,7 +17,7 @@ module SockJS
         if data
           [200, {"Content-Type" => "text/plain", "Content-Length" => data.bytesize.to_s},  [data]]
         else
-          [200, {"Content-Type" => "text/plain", "Content-Length" => "2"},  ["o\n"]]
+          [200, {"Content-Type" => "text/plain", "Content-Length" => "2"},  [Protocol::CLOSE_FRAME]]
         end
       end
     end
