@@ -3,7 +3,7 @@
 module SockJS
   class Protocol
     OPEN_FRAME  ||= "o\n"
-    CLOSE_FRAME ||= "c\n"
+    CLOSE_FRAME ||= "c"
     ARRAY_FRAME ||= "a"
 
     HEARTBEAT_FRAME ||= "h\n"
@@ -14,9 +14,9 @@ module SockJS
 
     def self.close_frame(status, message)
       if status && message
-        "#{CLOSE_FRAME}[#{status},#{message.inspect}]"
+        "#{CLOSE_FRAME}[#{status},#{message.inspect}]\n"
       else
-        CLOSE_FRAME
+        CLOSE_FRAME + "\n"
       end
     end
   end
