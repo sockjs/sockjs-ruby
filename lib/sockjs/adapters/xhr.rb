@@ -11,9 +11,9 @@ module SockJS
       self.filters = [:h_sid, :xhr_cors, :xhr_poll]
 
       # Handler.
-      def self.handle(env, options)
+      def self.handle(env, options, sessions)
         match = env["PATH_INFO"].match(self.prefix)
-        data  = self.sessions[match[1]]
+        data  = sessions[match[1]]
         [200, {"Content-Type" => "text/plain", "Content-Length" => "2"}, ["o\n"]]
       end
     end
@@ -25,7 +25,7 @@ module SockJS
       self.filters = [:h_sid, :xhr_cors, :cache_for, :xhr_options, :expose]
 
       # Handler.
-      def self.handle(env, options)
+      def self.handle(env, options, sessions)
         match = env["PATH_INFO"].match(self.prefix)
         p session_id = match[1]
         raise NotImplementedError.new
@@ -39,7 +39,7 @@ module SockJS
       self.filters = [:h_sid, :xhr_cors, :expect_xhr, :xhr_send]
 
       # Handler.
-      def self.handle(env, options)
+      def self.handle(env, options, sessions)
         match = env["PATH_INFO"].match(self.prefix)
         p session_id = match[1]
         [204, {}, Array.new]
@@ -53,7 +53,7 @@ module SockJS
       self.filters = [:h_sid, :xhr_cors, :cache_for, :xhr_options, :expose]
 
       # Handler.
-      def self.handle(env, options)
+      def self.handle(env, options, sessions)
         match = env["PATH_INFO"].match(self.prefix)
         p session_id = match[1]
         raise NotImplementedError.new
@@ -67,7 +67,7 @@ module SockJS
       self.filters = [:h_sid, :xhr_cors, :xhr_streaming]
 
       # Handler.
-      def self.handle(env, options)
+      def self.handle(env, options, sessions)
         raise NotImplementedError.new
       end
     end
@@ -79,7 +79,7 @@ module SockJS
       self.filters = [:h_sid, :xhr_cors, :cache_for, :xhr_options, :expose]
 
       # Handler.
-      def self.handle(env, options)
+      def self.handle(env, options, sessions)
         raise NotImplementedError.new
       end
     end

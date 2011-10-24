@@ -14,7 +14,7 @@ module SockJS
       self.filters = [:iframe, :cache_for, :expose]
 
       # Handler.
-      def self.handle(env, options)
+      def self.handle(env, options, sessions)
         # Validate options.
         unless options[:sockjs_url]
           raise RuntimeError.new("You have to provide sockjs_url in options!")

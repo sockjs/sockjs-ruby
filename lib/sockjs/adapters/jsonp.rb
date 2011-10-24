@@ -13,7 +13,7 @@ module SockJS
       self.filters = [:h_sid, :h_no_cache, :jsonp]
 
       # Handler.
-      def self.handle(env, options)
+      def self.handle(env, options, sessions)
         qs = env["QUERY_STRING"].split("=").each_slice(2).reduce(Hash.new) do |buffer, pair|
           buffer.merge(pair.first => pair.last)
         end
@@ -46,7 +46,7 @@ module SockJS
       self.filters = [:h_sid, :expect_form, :jsonp_send]
 
       # Handler.
-      def self.handle(env, options)
+      def self.handle(env, options, sessions)
         if query
           data = JSON.parse(query)
 

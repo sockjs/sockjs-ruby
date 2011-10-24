@@ -36,7 +36,7 @@ module Rack
           handler = ::SockJS::Adapter.handler(prefix, method)
           if handler
             debug "~ Handler: #{handler.inspect}"
-            return handler.handle(env, @options).tap do |response|
+            return handler.handle(env, @options, sessions).tap do |response|
               debug "~ Response: #{response.inspect}"
             end
           else
@@ -64,6 +64,10 @@ module Rack
     private
     def debug(message)
       STDERR.puts(message)
+    end
+
+    def sessions
+      @sessions ||= Hash.new
     end
   end
 end

@@ -10,7 +10,7 @@ module SockJS
       self.method = "GET"
 
       # Handler.
-      def self.handle(env, options)
+      def self.handle(env, options, sessions)
         body = "Welcome to SockJS!\n"
         [200, {"Content-Type" => "text/plain; charset=UTF-8", "Content-Length" => body.bytesize.to_s}, [body]]
       end
