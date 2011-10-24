@@ -16,7 +16,23 @@ require "sockjs/adapters/xhr"
 # This is a Rack middleware for SockJS.
 #
 # @example
-#   use SockJS
+#   use SockJS, "/echo" do |connection|
+#     connection.subscribe do |message|
+#       connection.send(message)
+#     end
+#   end
+#
+#   use SockJS, "/disabled_websocket_echo",
+#     disabled_transports: [SockJS::WebSocket] do |connection|
+#     connection.subscribe do |message|
+#       connection.send(message)
+#     end
+#   end
+#
+#   use SockJS, "/close" do |connection|
+#     connection.close(3000, "Go away!")
+#   end
+#
 #   run MyApp
 module Rack
   class SockJS
