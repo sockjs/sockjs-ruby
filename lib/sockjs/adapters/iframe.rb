@@ -37,7 +37,7 @@ module SockJS
         end
       end
 
-      def self.headers(body)
+      def headers(body)
         year = 31536000
         time = Time.now + year
 
@@ -49,7 +49,7 @@ module SockJS
         }
       end
 
-      def self.digest
+      def digest
         @digest ||= Digest::MD5.new
       end
     end

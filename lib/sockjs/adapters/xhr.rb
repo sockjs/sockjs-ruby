@@ -15,9 +15,9 @@ module SockJS
         match = env["PATH_INFO"].match(self.class.prefix)
         data  = sessions[match[1]]
         if data
-          [200, {"Content-Type" => "text/plain", "Content-Length" => data.bytesize.to_s},  [data]]
+          [200, {"Content-Type" => "text/plain", "Content-Length" => data.bytesize.to_s}, [data]]
         else
-          [200, {"Content-Type" => "text/plain", "Content-Length" => "2"},  [Protocol.close_frame(nil, nil)]]
+          [200, {"Content-Type" => "text/plain", "Content-Length" => "2"},  [Protocol::OPEN_FRAME]]
         end
       end
     end
