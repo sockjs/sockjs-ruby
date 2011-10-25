@@ -11,12 +11,12 @@ module SockJS
       self.filters = [:h_sid, :xhr_cors, :xhr_poll]
 
       # Handler.
-      def handle(env, &block)
+      def handle(env)
         match = env["PATH_INFO"].match(self.class.prefix)
         puts "\033[0;34;40m? SESSION #{match[1]} = #{sessions[match[1]].inspect}\033[0m"
 
         if sessions.has_key?(match[1])
-          block.call(sessions[match[1]])
+          message_received(sessions[match[1]])
         else
           sessions[match[1]] = nil
           [200, {"Content-Type" => "text/plain", "Content-Length" => "2"},  [Protocol::OPEN_FRAME]]
@@ -31,7 +31,7 @@ module SockJS
       self.filters = [:h_sid, :xhr_cors, :cache_for, :xhr_options, :expose]
 
       # Handler.
-      def handle(env, &block)
+      def handle(env)
         [204, {"Allow" => "OPTIONS, POST", "Access-Control-Max-Age" => 1}, Array.new]
       end
     end
@@ -43,7 +43,7 @@ module SockJS
       self.filters = [:h_sid, :xhr_cors, :expect_xhr, :xhr_send]
 
       # Handler.
-      def handle(env, &block)
+      def handle(env)
         match = env["PATH_INFO"].match(self.class.prefix)
         session_id = match[1]
         sessions[session_id] = Protocol.array_frame(env["rack.input"].read)
@@ -59,7 +59,7 @@ module SockJS
       self.filters = [:h_sid, :xhr_cors, :cache_for, :xhr_options, :expose]
 
       # Handler.
-      def handle(env, &block)
+      def handle(env)
         match = env["PATH_INFO"].match(self.class.prefix)
         p session_id = match[1]
         raise NotImplementedError.new
@@ -73,7 +73,7 @@ module SockJS
       self.filters = [:h_sid, :xhr_cors, :xhr_streaming]
 
       # Handler.
-      def handle(env, &block)
+      def handle(env)
         raise NotImplementedError.new
       end
     end
@@ -85,7 +85,7 @@ module SockJS
       self.filters = [:h_sid, :xhr_cors, :cache_for, :xhr_options, :expose]
 
       # Handler.
-      def handle(env, &block)
+      def handle(env)
         raise NotImplementedError.new
       end
     end

@@ -11,7 +11,7 @@ module SockJS
       self.filters = [:h_sid, :h_no_cache, :eventsource]
 
       # Handler.
-      def handle(env, &block)
+      def handle(env)
         # session = transport.Session.bySessionIdOrNew(req.session, req.sockjs_server)
         # session.register( new EventSourceReceiver(res, req.sockjs_server.options) )
 

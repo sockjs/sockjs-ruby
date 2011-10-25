@@ -37,10 +37,14 @@ require "sockjs/adapters/xhr"
 module Rack
   class SockJS
     def initialize(app, prefix = "/echo", options = Hash.new, &block)
-      @app, @prefix, @options, @block = app, prefix, options, block
+      @app, @prefix, @options = app, prefix, options
 
       unless block
         raise "You have to provide SockJS app as the block argument!"
+      end
+
+      @connection ||= begin
+        SockJS::Connection.start(&block)
       end
     end
 
@@ -56,8 +60,8 @@ module Rack
           handler_klass = ::SockJS::Adapter.handler(prefix, method)
           if handler_klass
             debug "~ Handler: #{handler_klass.inspect}"
-            handler = handler_klass.new(@options, sessions)
-            return handler.handle(env, &@block).tap do |response|
+            handler = handler_klass.new(@connection, @options)
+            return handler.handle(env).tap do |response|
               debug "~ Response: #{response.inspect}"
             end
           else

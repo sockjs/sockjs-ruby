@@ -26,9 +26,15 @@ module SockJS
     end
 
     # Instance methods.
-    attr_reader :options, :sessions
-    def initialize(options, sessions)
-      @options, @sessions = options, sessions
+    attr_reader :connection, :options
+    def initialize(connection, options)
+      @connection, @options = connection, options
+    end
+
+    def message_received(message)
+      self.connection.callbacks[:subscribe].each do |callback|
+        callback.call(message)
+      end
     end
   end
 end
