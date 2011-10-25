@@ -90,9 +90,5 @@ module Rack
     def debug(message)
       STDERR.puts(message)
     end
-
-    def sessions
-      @sessions ||= Hash.new
-    end
   end
 end

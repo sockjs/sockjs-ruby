@@ -23,5 +23,9 @@ module SockJS
 
     def receive_data(data)
     end
+
+    def sessions
+      @sessions ||= Hash.new
+    end
   end
 end
