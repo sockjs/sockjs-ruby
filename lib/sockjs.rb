@@ -18,6 +18,9 @@ module SockJS
   end
 
   module Connection
+    # Does it have to be EM-based?
+    # So the request comes and then ... well this is actually synchronous stuff!
+    # On the other hand ... we need to share with em-websocket ... ?
     def post_init
     end
 
@@ -26,6 +29,15 @@ module SockJS
 
     def sessions
       @sessions ||= Hash.new
+    end
+
+    def callbacks
+      @callbacks ||= Hash.new
+    end
+
+    def subscribe(&block)
+      self.callbacks[:subscribe] ||= Array.new
+      self.callbacks[:subscribe] << block
     end
   end
 end
