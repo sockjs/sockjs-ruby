@@ -36,6 +36,7 @@ use Rack::SockJS, "/echo", options do |connection|
 end
 
 use Rack::SockJS, "/close", options do |connection|
+  # TODO: Implement the actual connection.
   connection.close(3000, "Go away!")
 end
 
