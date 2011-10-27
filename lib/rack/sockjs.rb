@@ -16,24 +16,27 @@ require "sockjs/adapters/xhr"
 # This is a Rack middleware for SockJS.
 #
 # @example
-#   use SockJS, "/echo" do |connection|
-#     connection.subscribe do |message|
-#       connection.send(message)
-#     end
-#   end
+#  require "rack/sockjs"
 #
-#   use SockJS, "/disabled_websocket_echo",
-#     disabled_transports: [SockJS::WebSocket] do |connection|
-#     connection.subscribe do |message|
-#       connection.send(message)
-#     end
-#   end
+#  use SockJS, "/echo" do |connection|
+#    connection.subscribe do |session, message|
+#      session.send(message)
+#    end
+#  end
 #
-#   use SockJS, "/close" do |connection|
-#     connection.close(3000, "Go away!")
-#   end
+#  use SockJS, "/disabled_websocket_echo",
+#    disabled_transports: [SockJS::WebSocket] do |connection|
+#    # ...
+#  end
 #
-#   run MyApp
+#  use SockJS, "/close" do |connection|
+#    connection.session_open do |session|
+#      session.close(3000, "Go away!")
+#    end
+#  end
+#
+#  run MyApp
+
 module Rack
   class SockJS
     def initialize(app, prefix = "/echo", options = Hash.new, &block)
@@ -51,8 +54,6 @@ module Rack
       @connection ||= begin
         ::SockJS::Connection.new(&block)
       end
-
-      @connection.open!
     end
 
     def call(env)
