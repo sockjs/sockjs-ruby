@@ -32,9 +32,7 @@ module SockJS
     end
 
     def message_received(message)
-      self.connection.callbacks[:subscribe].each do |callback|
-        callback.call(message)
-      end
+      self.connection.execute_callback(:subscribe)
     end
   end
 end

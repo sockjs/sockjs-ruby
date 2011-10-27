@@ -19,17 +19,23 @@ module SockJS
       self.status = :not_connected
     end
 
+    # To be used internally.
     def open!
-      self.status = :opened
-      self.callbacks[:connect].call(self)
+      response do
+        self.status = :opened
+
+        self.callbacks[:connect].call(self)
+      end
     end
 
     def close!
-      self.callbacks[:disconnect].each do |callback|
-        callback.call
-      end
+      response do
+        self.status = :closing
 
-      self.status = :closed
+        self.callbacks[:disconnect].each do |callback|
+          callback.call
+        end
+      end
     end
 
     def sessions
@@ -65,6 +71,14 @@ module SockJS
     def subscribe(&block)
       self.callbacks[:subscribe] ||= Array.new
       self.callbacks[:subscribe] << block
+    end
+
+    def execute_callback(name)
+      response do
+        self.callbacks[name].each do |callback|
+          callback.call(message)
+        end
+      end
     end
   end
 end
