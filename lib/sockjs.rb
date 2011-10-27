@@ -9,10 +9,11 @@ module SockJS
     attr_accessor :status
     def initialize(&block)
       self.callbacks[:connect] = block
+      self.status = :not_connected
     end
 
     def open!
-      self.state = :opened
+      self.status = :opened
       self.callbacks[:connect].call(self)
     end
 
@@ -21,7 +22,7 @@ module SockJS
         callback.call
       end
 
-      self.state = :closed
+      self.status = :closed
     end
 
     def sessions
@@ -30,6 +31,20 @@ module SockJS
 
     def callbacks
       @callbacks ||= Hash.new
+    end
+
+    def messages
+      @messages ||= Array.new
+    end
+
+    def send(message)
+      self.messages << message
+    end
+
+    def retrieve_messages
+      self.messages.tap do |messages|
+        messages.clear
+      end
     end
 
     def close(status = 3000, message = "Go away!")
