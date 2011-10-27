@@ -32,8 +32,9 @@ options = {sockjs_url: "http://sockjs.github.com/sockjs-client/sockjs-latest.min
 
 use Rack::SockJS, "/echo", options do |connection|
   connection.subscribe do |session, message|
-    # In this case client sends message in format how the server would format
-    # it, so let's remove the a[] wrapper, we don't want to wrap it in it twice.
+    # In this case client sends message in format how
+    # the server would format it, so let's remove the
+    # a[] wrapper, we don't want to wrap it in it twice.
     data = message.match(/^a(.+)$/)[1]
     msgs = JSON.parse(data)
     session.send(*msgs)
