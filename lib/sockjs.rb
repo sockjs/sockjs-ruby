@@ -20,18 +20,14 @@ module SockJS
     end
 
     # To be used internally.
-    def open!
-      response do
-        self.status = :opened
-        self.execute_callback(:connect, self)
-      end
+    def open!(session_id)
+      self.status = :opened
+      self.execute_callback(:connect, self)
     end
 
     def close!
-      response do
-        self.status = :closing
-        self.execute_callback(:disconnect)
-      end
+      self.status = :closing
+      self.execute_callback(:disconnect)
     end
 
     def sessions
