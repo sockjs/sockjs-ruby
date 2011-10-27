@@ -31,18 +31,19 @@ puts "~ Available handlers: #{::SockJS::Adapter.subclasses.inspect}"
 options = {sockjs_url: "http://sockjs.github.com/sockjs-client/sockjs-latest.min.js"}
 
 use Rack::SockJS, "/echo", options do |connection|
-  connection.subscribe do |message|
+  connection.subscribe do |session, message|
     # In this case client sends message in format how the server would format
     # it, so let's remove the a[] wrapper, we don't want to wrap it in it twice.
     data = message.match(/^a(.+)$/)[1]
     msgs = JSON.parse(data)
-    connection.send(*msgs)
+    session.send(*msgs)
   end
 end
 
-use Rack::SockJS, "/close", options do |connection|
-  # TODO: Implement the actual connection.
-  connection.close(3000, "Go away!")
+use Rack::SockJS, "/close", options do |connection, session|
+  connection.session_open do |session|
+    session.close(3000, "Go away!")
+  end
 end
 
 run MyHelloWorld.new
