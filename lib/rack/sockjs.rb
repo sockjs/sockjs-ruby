@@ -44,7 +44,7 @@ module Rack
       end
 
       @connection ||= begin
-        SockJS::Connection.start(&block)
+        ::SockJS::Connection.new(&block)
       end
     end
 

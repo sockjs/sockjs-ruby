@@ -5,19 +5,11 @@ require "sockjs/utils"
 require "sockjs/protocol"
 
 module SockJS
-  def self.connect(options = Hash.new)
-    host = options[:host] || "127.0.0.1"
-    port = options[:port] || 9999
-    EventMachine.connect(host, port, Connection, options)
-  end
-
-  def self.start(options = Hash.new, &block)
-    EM.run do
-      block.call(self.connect(options))
+  class Connection
+    def initialize(&block)
+      block.call(self)
     end
-  end
 
-  module Connection
     # Does it have to be EM-based?
     # So the request comes and then ... well this is actually synchronous stuff!
     # On the other hand ... we need to share with em-websocket ... ?
@@ -33,6 +25,10 @@ module SockJS
 
     def callbacks
       @callbacks ||= Hash.new
+    end
+
+    def close(status = 3000, message = "Go away!")
+      warn "~ SockJS::Connection#close"
     end
 
     def subscribe(&block)
