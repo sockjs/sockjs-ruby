@@ -37,20 +37,20 @@ Now in order to have someone to talk to, we need to run a server and that's exac
 require "rack/sockjs"
 
 use SockJS, "/echo" do |connection|
-  connection.subscribe do |message|
-    connection.send(message)
+  connection.subscribe do |session, message|
+    session.send(message)
   end
 end
 
 use SockJS, "/disabled_websocket_echo",
   disabled_transports: [SockJS::WebSocket] do |connection|
-  connection.subscribe do |message|
-    connection.send(message)
-  end
+  # ...
 end
 
 use SockJS, "/close" do |connection|
-  connection.close(3000, "Go away!")
+  connection.session_open do |session|
+    session.close(3000, "Go away!")
+  end
 end
 
 run MyApp
