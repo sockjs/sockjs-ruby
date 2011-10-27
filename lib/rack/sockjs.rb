@@ -51,6 +51,8 @@ module Rack
       @connection ||= begin
         ::SockJS::Connection.new(&block)
       end
+
+      @connection.open!
     end
 
     def call(env)

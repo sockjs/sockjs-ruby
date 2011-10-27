@@ -20,7 +20,7 @@ module SockJS
     end
 
     # To be used internally.
-    def open!(session_id)
+    def open!
       self.status = :opened
       self.execute_callback(:connect, self)
     end
