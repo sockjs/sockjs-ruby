@@ -15,12 +15,13 @@ module SockJS
         match = env["PATH_INFO"].match(self.class.prefix)
         puts "\033[0;34;40m? SESSION #{match[1]} = #{connection.sessions[match[1]].inspect}\033[0m"
 
-        if self.connection.sessions.has_key?(match[1])
-          body = message_received(connection.sessions[match[1]])
+        if session = self.connection.sessions[match[1]]
+          body = session.process_message
           [200, {"Content-Type" => "text/plain", "Content-Length" => body.bytesize.to_s}, [body]]
         else
-          self.connection.sessions[match[1]] = nil
-          [200, {"Content-Type" => "text/plain", "Content-Length" => "2"}, [Protocol::OPEN_FRAME]]
+          session = self.connection.create_session(match[1])
+          body = session.open!
+          [200, {"Content-Type" => "text/plain", "Content-Length" => body.bytesize.to_s}, [body]]
         end
       end
     end
@@ -47,7 +48,8 @@ module SockJS
       def handle(env)
         match = env["PATH_INFO"].match(self.class.prefix)
         session_id = match[1]
-        connection.sessions[session_id] = Protocol.array_frame(env["rack.input"].read)
+        session = self.connection.sessions[session_id]
+        session.data = env["rack.input"].read
         puts "\033[0;32;40m~~> SESSION #{session_id} = #{connection.sessions[session_id].inspect}\033[0m" ###
         [204, Hash.new, Array.new]
       end

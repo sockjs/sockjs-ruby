@@ -30,9 +30,5 @@ module SockJS
     def initialize(connection, options)
       @connection, @options = connection, options
     end
-
-    def message_received(message)
-      self.connection.execute_callback(:subscribe, message)
-    end
   end
 end
