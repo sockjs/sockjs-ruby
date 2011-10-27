@@ -6,17 +6,22 @@ require "sockjs/protocol"
 
 module SockJS
   class Connection
+    attr_accessor :status
     def initialize(&block)
-      block.call(self)
+      self.callbacks[:connect] = block
     end
 
-    # Does it have to be EM-based?
-    # So the request comes and then ... well this is actually synchronous stuff!
-    # On the other hand ... we need to share with em-websocket ... ?
-    def post_init
+    def open!
+      self.state = :opened
+      self.callbacks[:connect].call(self)
     end
 
-    def receive_data(data)
+    def close!
+      self.callbacks[:disconnect].each do |callback|
+        callback.call
+      end
+
+      self.state = :closed
     end
 
     def sessions
