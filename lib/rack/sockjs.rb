@@ -43,6 +43,11 @@ module Rack
         raise "You have to provide SockJS app as the block argument!"
       end
 
+      # Validate options.
+      if options[:sockjs_url].nil? && ! options[:disabled_transports].include?(::SockJS::Adapters::IFrame)
+        raise RuntimeError.new("You have to provide sockjs_url in options, it's required for the iframe transport!")
+      end
+
       @connection ||= begin
         ::SockJS::Connection.new(&block)
       end
