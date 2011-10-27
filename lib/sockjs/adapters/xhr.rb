@@ -16,10 +16,11 @@ module SockJS
         puts "\033[0;34;40m? SESSION #{match[1]} = #{connection.sessions[match[1]].inspect}\033[0m"
 
         if connection.sessions.has_key?(match[1])
-          message_received(connection.sessions[match[1]])
+          body = message_received(connection.sessions[match[1]])
+          [200, {"Content-Type" => "text/plain", "Content-Length" => body.bytesize.to_s}, [body]]
         else
           connection.sessions[match[1]] = nil
-          [200, {"Content-Type" => "text/plain", "Content-Length" => "2"},  [Protocol::OPEN_FRAME]]
+          [200, {"Content-Type" => "text/plain", "Content-Length" => "2"}, [Protocol::OPEN_FRAME]]
         end
       end
     end
