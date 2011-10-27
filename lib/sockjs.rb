@@ -15,7 +15,7 @@ module SockJS
   class Connection
     attr_accessor :status
     def initialize(&block)
-      self.callbacks[:connect] = block
+      self.callbacks[:connect] = [block]
       self.status = :not_connected
     end
 
@@ -23,18 +23,14 @@ module SockJS
     def open!
       response do
         self.status = :opened
-
-        self.callbacks[:connect].call(self)
+        self.execute_callback(:connect, self)
       end
     end
 
     def close!
       response do
         self.status = :closing
-
-        self.callbacks[:disconnect].each do |callback|
-          callback.call
-        end
+        self.execute_callback(:disconnect)
       end
     end
 
@@ -73,10 +69,10 @@ module SockJS
       self.callbacks[:subscribe] << block
     end
 
-    def execute_callback(name)
+    def execute_callback(name, *args)
       response do
         self.callbacks[name].each do |callback|
-          callback.call(message)
+          callback.call(*args)
         end
       end
     end
