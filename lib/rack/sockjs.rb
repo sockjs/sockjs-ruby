@@ -54,32 +54,30 @@ module Rack
       debug "~ #{env["REQUEST_METHOD"]} #{env["PATH_INFO"].inspect} (matched: #{!! matched})"
 
       if matched
-        ::SockJS.start do |connection|
-          prefix        = env["PATH_INFO"].sub(/^#{Regexp.quote(@prefix)}\/?/, "")
-          method        = env["REQUEST_METHOD"]
-          handler_klass = ::SockJS::Adapter.handler(prefix, method)
-          if handler_klass
-            debug "~ Handler: #{handler_klass.inspect}"
-            handler = handler_klass.new(@connection, @options)
-            return handler.handle(env).tap do |response|
-              debug "~ Response: #{response.inspect}"
-            end
-          else
-            body = <<-HTML
-              <!DOCTYPE html>
-              <html>
-                <body>
-                  <h1>Handler Not Found</h1>
-                  <ul>
-                    <li>Prefix: #{prefix.inspect}</li>
-                    <li>Method: #{method.inspect}</li>
-                    <li>Handlers: #{::SockJS::Adapter.subclasses.inspect}</li>
-                  </ul>
-                </body>
-              </html>
-            HTML
-            [404, {"Content-Type" => "text/html; charset=UTF-8", "Content-Length" => body.bytesize.to_s}, [body]]
+        prefix        = env["PATH_INFO"].sub(/^#{Regexp.quote(@prefix)}\/?/, "")
+        method        = env["REQUEST_METHOD"]
+        handler_klass = ::SockJS::Adapter.handler(prefix, method)
+        if handler_klass
+          debug "~ Handler: #{handler_klass.inspect}"
+          handler = handler_klass.new(@connection, @options)
+          return handler.handle(env).tap do |response|
+            debug "~ Response: #{response.inspect}"
           end
+        else
+          body = <<-HTML
+            <!DOCTYPE html>
+            <html>
+              <body>
+                <h1>Handler Not Found</h1>
+                <ul>
+                  <li>Prefix: #{prefix.inspect}</li>
+                  <li>Method: #{method.inspect}</li>
+                  <li>Handlers: #{::SockJS::Adapter.subclasses.inspect}</li>
+                </ul>
+              </body>
+            </html>
+          HTML
+          [404, {"Content-Type" => "text/html; charset=UTF-8", "Content-Length" => body.bytesize.to_s}, [body]]
         end
       else
         @app.call(env)
