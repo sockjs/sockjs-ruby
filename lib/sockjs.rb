@@ -15,7 +15,7 @@ module SockJS
   class Connection
     attr_accessor :status
     def initialize(&block)
-      self.callbacks[:connect] = [block]
+      self.callbacks[:connect] << block
       self.status = :not_connected
     end
 
@@ -39,7 +39,7 @@ module SockJS
     end
 
     def callbacks
-      @callbacks ||= Hash.new
+      @callbacks ||= Hash.new { |hash, key| hash[key] = Array.new }
     end
 
     def messages
@@ -65,7 +65,6 @@ module SockJS
     end
 
     def subscribe(&block)
-      self.callbacks[:subscribe] ||= Array.new
       self.callbacks[:subscribe] << block
     end
 
