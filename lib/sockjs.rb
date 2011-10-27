@@ -5,6 +5,13 @@ require "sockjs/utils"
 require "sockjs/protocol"
 
 module SockJS
+  class CloseError < StandardError
+    attr_reader :status, :message
+    def initialize(status, message)
+      @status, @message = status, message
+    end
+  end
+
   class Connection
     attr_accessor :status
     def initialize(&block)
@@ -41,14 +48,18 @@ module SockJS
       self.messages << message
     end
 
-    def retrieve_messages
-      self.messages.tap do |messages|
-        messages.clear
-      end
+    def response(&block)
+      block.call
+
+      response = Protocol.array_frame(messages)
+      self.messages.clear
+      return response
+    rescue SockJS::CloseError => error
+      Protocol.close_frame(error.status, error.message)
     end
 
     def close(status = 3000, message = "Go away!")
-      warn "~ SockJS::Connection#close"
+      raise SockJS::CloseError.new(status, message)
     end
 
     def subscribe(&block)
