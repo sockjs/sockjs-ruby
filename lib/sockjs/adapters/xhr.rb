@@ -34,7 +34,7 @@ module SockJS
 
       # Handler.
       def handle(env)
-        [204, {"Allow" => "OPTIONS, POST", "Access-Control-Max-Age" => 1}, Array.new]
+        [204, {"Allow" => "OPTIONS, POST", "Access-Control-Max-Age" => "1"}, Array.new]
       end
     end
 
