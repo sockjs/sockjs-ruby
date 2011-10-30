@@ -64,3 +64,8 @@ http://stackoverflow.com/questions/2999430/any-success-with-sinatra-working-toge
 https://github.com/rack/rack/blob/master/lib/rack/chunked.rb
 
 http://www.igvita.com/2011/03/08/goliath-non-blocking-ruby-19-web-server/
+
+https://github.com/macournoyer/pusher
+https://github.com/sockjs/sockjs-client/blob/master/tests/sockjs_app.js
+https://github.com/imanel/websocket-rack/tree/master/lib
+http://www.igvita.com/2009/12/22/ruby-websockets-tcp-for-the-browser
