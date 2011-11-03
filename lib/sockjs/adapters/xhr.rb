@@ -24,8 +24,12 @@ module SockJS
 
           [200, {"Content-Type" => "text/plain", "Content-Length" => body.bytesize.to_s}, [body]]
         else
-          session = self.connection.create_session(match[1])
-          body = session.open!
+          begin
+            session = self.connection.create_session(match[1])
+            body = session.open!
+          rescue SockJS::CloseError => error
+            body = Protocol.close_frame(error.status, error.message)
+          end
           [200, {"Content-Type" => "text/plain", "Content-Length" => body.bytesize.to_s}, [body]]
         end
       end

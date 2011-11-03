@@ -50,8 +50,6 @@ module SockJS
 
     def create_session(key)
       self.sessions[key] ||= begin
-        # raise 'create_session: ' + callbacks.inspect
-        #  So we don't get subscribe callback because open clbk is never called
         Session.new(open: callbacks[:session_open], buffer: callbacks[:subscribe])
       end
     end
@@ -86,8 +84,6 @@ module SockJS
       self.status = :opened
       self.execute_callback(:open, self)
       Protocol::OPEN_FRAME
-    rescue SockJS::CloseError => error
-      Protocol.close_frame(error.status, error.message)
     end
 
     def process_buffer
