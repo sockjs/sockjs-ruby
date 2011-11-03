@@ -49,10 +49,13 @@ module SockJS
 
   class Session
     include CallbackMixin
-    attr_accessor :data
 
     def initialize(callbacks)
       @callbacks = callbacks
+    end
+
+    def messages
+      @messages ||= Array.new
     end
 
     def open!
@@ -64,9 +67,7 @@ module SockJS
     end
 
     def process_message
-      self.execute_callback(:message, self.data).tap do
-        self.data = nil
-      end
+      self.execute_callback(:message, self.messages)
     end
 
     def close(status = 3000, message = "Go away!")

@@ -49,7 +49,7 @@ module SockJS
         match = env["PATH_INFO"].match(self.class.prefix)
         session_id = match[1]
         session = self.connection.sessions[session_id]
-        session.data = env["rack.input"].read
+        session.messages << env["rack.input"].read
         puts "\033[0;32;40m~~> SESSION #{session_id} = #{connection.sessions[session_id].inspect}\033[0m" ###
         [204, Hash.new, Array.new]
       end

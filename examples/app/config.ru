@@ -35,8 +35,9 @@ puts "~ Available handlers: #{::SockJS::Adapter.subclasses.inspect}"
 options = {sockjs_url: "http://sockjs.github.com/sockjs-client/sockjs-latest.min.js"}
 
 use Rack::SockJS, "/echo", options do |connection|
+  raise 'echo' # TODO: this block is never executed
   connection.subscribe do |session, message|
-    debug "~ [Echo] message: #{message.inspect}"
+    debug "~ \033[0;31;40m[Echo]\033[0m message: #{message.inspect}"
     # In this case client sends message in format how
     # the server would format it, so let's remove the
     # a[] wrapper, we don't want to wrap it in it twice.
@@ -47,8 +48,9 @@ use Rack::SockJS, "/echo", options do |connection|
 end
 
 use Rack::SockJS, "/close", options do |connection, session|
+  raise 'close' # TODO: this block is never executed
   connection.session_open do |session|
-    debug "~ [Close] closing the session ..."
+    debug "~ \033[0;31;40m[Close]\033[0m closing the session ..."
     session.close(3000, "Go away!")
   end
 end
