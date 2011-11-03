@@ -1,0 +1,13 @@
+Protocol tests:
+  - ChunkingTest
+  - Protocol
+  - WebsocketHttpErrors
+  - WebsocketHixie76
+  - WebsocketHybi10
+  - XhrPolling
+  - XhrStreaming
+  - EventSource
+  - HtmlFile
+  - JsonPolling
+
+# ./venv/bin/python sockjs-protocol-0.0.4-incomplete.py ChunkingTest
