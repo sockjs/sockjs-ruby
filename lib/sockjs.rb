@@ -11,6 +11,12 @@ module SockJS
     def callbacks
       @callbacks ||= Hash.new { |hash, key| hash[key] = Array.new }
     end
+
+    def execute_callback(name, *args)
+      self.callbacks[name].each do |callback|
+        callback.call(*args)
+      end
+    end
   end
 
   class CloseError < StandardError
@@ -24,8 +30,10 @@ module SockJS
     include CallbackMixin
 
     def initialize(&block)
-      self.callbacks[:connect] << block
+      self.callbacks[:open] << block
       self.status = :not_connected
+
+      self.execute_callback(:open, self)
     end
 
     def sessions
@@ -42,6 +50,8 @@ module SockJS
 
     def create_session(key)
       self.sessions[key] ||= begin
+        # raise 'create_session: ' + callbacks.inspect
+        #  So we don't get subscribe callback because open clbk is never called
         Session.new(open: callbacks[:session_open], buffer: callbacks[:subscribe])
       end
     end
@@ -52,7 +62,10 @@ module SockJS
 
     def initialize(callbacks)
       @callbacks = callbacks
-      @messages  = Array.new
+      @received_messages = Array.new
+      @messages_for_the_client = Array.new
+
+      self.execute_callback(:open, self)
     end
 
     # All incoming data is treated as incoming messages,
@@ -66,7 +79,7 @@ module SockJS
         data = "[#{data}]"
       end
 
-      @messages.push(*JSON.parse(data))
+      @received_messages.push(*JSON.parse(data))
     end
 
     def open!
@@ -78,30 +91,29 @@ module SockJS
     end
 
     def process_buffer
-      self.execute_callback(:buffer, @messages)
+      response do
+        @received_messages.each do |message|
+          self.execute_callback(:buffer, self, message)
+        end
+
+        @messages_for_the_client
+      end
     end
 
     def close(status = 3000, message = "Go away!")
       raise SockJS::CloseError.new(status, message)
     end
 
-    def send(message)
-      @messages << message
-    end
-
-    def execute_callback(name, *args)
-      response do
-        self.callbacks[name].each do |callback|
-          callback.call(*args)
-        end
-      end
+    def send(*messages)
+      @messages_for_the_client.push(*messages)
     end
 
     def response(&block)
       block.call
 
-      Protocol.array_frame(@messages).tap do |_|
-        @messages.clear
+      Protocol.array_frame(@messages_for_the_client).tap do |_|
+        @messages_for_the_client.clear
+        @received_messages.clear
       end
     rescue SockJS::CloseError => error
       Protocol.close_frame(error.status, error.message)

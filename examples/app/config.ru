@@ -35,20 +35,13 @@ puts "~ Available handlers: #{::SockJS::Adapter.subclasses.inspect}"
 options = {sockjs_url: "http://sockjs.github.com/sockjs-client/sockjs-latest.min.js"}
 
 use Rack::SockJS, "/echo", options do |connection|
-  raise 'echo' # TODO: this block is never executed
-  connection.subscribe do |session, message|
-    debug "~ \033[0;31;40m[Echo]\033[0m message: #{message.inspect}, session: #{session.inspect}"
-    # In this case client sends message in format how
-    # the server would format it, so let's remove the
-    # a[] wrapper, we don't want to wrap it in it twice.
-    data = message.match(/^a(.+)$/)[1]
-    msgs = JSON.parse(data)
-    session.send(*msgs)
+  connection.subscribe do |session, buffer|
+    debug "~ \033[0;31;40m[Echo]\033[0m buffer: #{buffer.inspect}, session: #{session.inspect}"
+    session.send(*buffer)
   end
 end
 
-use Rack::SockJS, "/close", options do |connection, session|
-  raise 'close' # TODO: this block is never executed
+use Rack::SockJS, "/close", options do |connection|
   connection.session_open do |session|
     debug "~ \033[0;31;40m[Close]\033[0m closing the session ..."
     session.close(3000, "Go away!")
