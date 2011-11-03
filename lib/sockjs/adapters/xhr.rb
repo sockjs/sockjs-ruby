@@ -58,9 +58,15 @@ module SockJS
         match = env["PATH_INFO"].match(self.class.prefix)
         session_id = match[1]
         session = self.connection.sessions[session_id]
-        session.receive_message(env["rack.input"].read)
-        puts "\033[0;32;40m~~> SESSION #{session_id} = #{connection.sessions[session_id].inspect}\033[0m" ###
-        [204, Hash.new, Array.new]
+        if session
+          session.receive_message(env["rack.input"].read)
+          puts "\033[0;32;40m~~> SESSION #{session_id} = #{connection.sessions[session_id].inspect}\033[0m" ###
+          [204, Hash.new, Array.new]
+        else
+          session.receive_message(env["rack.input"].read)
+          puts "\033[0;32;40m~~> SESSION #{session_id} = #{connection.sessions[session_id].inspect}\033[0m" ###
+          [500, Hash.new, ["Session is not open!"]]
+        end
       end
     end
 
