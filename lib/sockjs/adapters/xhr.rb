@@ -63,8 +63,6 @@ module SockJS
           puts "\033[0;32;40m~~> SESSION #{session_id} = #{connection.sessions[session_id].inspect}\033[0m" ###
           [204, Hash.new, Array.new]
         else
-          session.receive_message(env["rack.input"].read)
-          puts "\033[0;32;40m~~> SESSION #{session_id} = #{connection.sessions[session_id].inspect}\033[0m" ###
           [500, Hash.new, ["Session is not open!"]]
         end
       end
