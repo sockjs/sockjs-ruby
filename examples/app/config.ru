@@ -6,6 +6,10 @@ $LOAD_PATH.unshift(File.expand_path("../../../lib", __FILE__))
 require "rack/sockjs"
 require "json"
 
+def debug(message)
+  STDERR.puts(message)
+end
+
 class MyHelloWorld
   def call(env)
     body = <<-HTML
@@ -32,6 +36,7 @@ options = {sockjs_url: "http://sockjs.github.com/sockjs-client/sockjs-latest.min
 
 use Rack::SockJS, "/echo", options do |connection|
   connection.subscribe do |session, message|
+    debug "~ [Echo] message: #{message.inspect}"
     # In this case client sends message in format how
     # the server would format it, so let's remove the
     # a[] wrapper, we don't want to wrap it in it twice.
@@ -43,6 +48,7 @@ end
 
 use Rack::SockJS, "/close", options do |connection, session|
   connection.session_open do |session|
+    debug "~ [Close] closing the session ..."
     session.close(3000, "Go away!")
   end
 end
