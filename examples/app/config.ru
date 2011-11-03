@@ -37,7 +37,7 @@ options = {sockjs_url: "http://sockjs.github.com/sockjs-client/sockjs-latest.min
 use Rack::SockJS, "/echo", options do |connection|
   raise 'echo' # TODO: this block is never executed
   connection.subscribe do |session, message|
-    debug "~ \033[0;31;40m[Echo]\033[0m message: #{message.inspect}"
+    debug "~ \033[0;31;40m[Echo]\033[0m message: #{message.inspect}, session: #{session.inspect}"
     # In this case client sends message in format how
     # the server would format it, so let's remove the
     # a[] wrapper, we don't want to wrap it in it twice.

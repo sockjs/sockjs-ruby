@@ -42,7 +42,7 @@ module SockJS
 
     def create_session(key)
       self.sessions[key] ||= begin
-        Session.new(open: callbacks[:session_open], message: callbacks[:subscribe])
+        Session.new(open: callbacks[:session_open], buffer: callbacks[:subscribe])
       end
     end
   end
@@ -77,8 +77,8 @@ module SockJS
       Protocol.close_frame(error.status, error.message)
     end
 
-    def process_message
-      self.execute_callback(:message, @messages)
+    def process_buffer
+      self.execute_callback(:buffer, @messages)
     end
 
     def close(status = 3000, message = "Go away!")
@@ -86,7 +86,7 @@ module SockJS
     end
 
     def send(message)
-      self.messages << message
+      @messages << message
     end
 
     def execute_callback(name, *args)

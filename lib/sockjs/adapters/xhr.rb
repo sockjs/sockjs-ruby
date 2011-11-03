@@ -16,7 +16,12 @@ module SockJS
         puts "\033[0;34;40m? SESSION #{match[1]} = #{connection.sessions[match[1]].inspect}\033[0m"
 
         if session = self.connection.sessions[match[1]]
-          body = session.process_message
+          body = session.process_buffer
+
+          unless body.respond_to?(:bytesize)
+            raise TypeError, "Block has to return a string or a string-like object responding to #bytesize, but instead an object of #{body.class} class has been returned (object: #{body.inspect})."
+          end
+
           [200, {"Content-Type" => "text/plain", "Content-Length" => body.bytesize.to_s}, [body]]
         else
           session = self.connection.create_session(match[1])
