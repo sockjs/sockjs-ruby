@@ -1,5 +1,10 @@
-Protocol tests:
+# ./venv/bin/python sockjs-protocol-0.1.py ChunkingTest
+
+SockJS 0.1 Protocol Tests:
+  ✓ BaseUrlGreeting
+  ✓ IframePage
   - ChunkingTest
+  ✓ SessionURLs
   - Protocol
   - WebsocketHttpErrors
   - WebsocketHixie76
@@ -9,5 +14,4 @@ Protocol tests:
   - EventSource
   - HtmlFile
   - JsonPolling
-
-# ./venv/bin/python sockjs-protocol-0.0.4-incomplete.py ChunkingTest
+  - ProtocolQuirks
