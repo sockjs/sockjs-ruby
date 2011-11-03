@@ -35,14 +35,17 @@ puts "~ Available handlers: #{::SockJS::Adapter.subclasses.inspect}"
 options = {sockjs_url: "http://sockjs.github.com/sockjs-client/sockjs-latest.min.js"}
 
 use Rack::SockJS, "/echo", options do |connection|
-  connection.subscribe do |session, buffer|
-    debug "~ \033[0;31;40m[Echo]\033[0m buffer: #{buffer.inspect}, session: #{session.inspect}"
-    session.send(*buffer)
+  connection.subscribe do |session, message|
+    debug "~ \033[0;31;40m[Echo]\033[0m message: #{message.inspect}, session: #{session.inspect}"
+    session.send(message)
   end
 end
 
 use Rack::SockJS, "/close", options do |connection|
-  connection.session_open do |session|
+  # With WebSockets this occurs immediately, so the
+  # client receives "o" and then "c[3000, "Go away!"]".
+  # However with polling, this will occur with the next request.
+  connection.session_open do |session, message|
     debug "~ \033[0;31;40m[Close]\033[0m closing the session ..."
     session.close(3000, "Go away!")
   end

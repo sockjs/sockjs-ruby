@@ -18,3 +18,8 @@ curl -X POST http://localhost:8080/echo/_/session_1/xhr_send -d '"msg 3", "msg 4
 
 # Receive the messages.
 curl -X POST http://localhost:8080/echo/_/session_1/xhr
+
+# Close app.
+curl -X POST http://localhost:8080/close/_/session_1/xhr
+curl -X POST http://localhost:8080/close/_/session_1/xhr
+curl -X POST http://localhost:8080/close/_/session_1/xhr

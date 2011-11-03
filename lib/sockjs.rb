@@ -62,14 +62,16 @@ module SockJS
       @callbacks = callbacks
       @received_messages = Array.new
       @messages_for_the_client = Array.new
-
-      self.execute_callback(:open, self)
+      @status = :created
     end
 
     # All incoming data is treated as incoming messages,
     # either single json-encoded messages or an array
     # of json-encoded messages, depending on transport.
     def receive_message(data)
+      puts "!!!!! RECEIVE MESSAGE !!!!"
+      self.check_status
+
       # Weelll ... "string" is not a valid JSON.
       # However SockJS already work with this,
       # so let's make it compatible.
@@ -81,13 +83,20 @@ module SockJS
     end
 
     def open!
-      self.status = :opened
-      self.execute_callback(:open, self)
+      self.status = :opening
       Protocol::OPEN_FRAME
     end
 
     def process_buffer
+      puts "!!!!! PROCESS BUFFER !!!!"
       response do
+        self.check_status
+
+        # The error is supposed to be cached for 5s
+        # in case the connection dies. For the time
+        # being we cache it infinitely.
+        raise @error if @error
+
         @received_messages.each do |message|
           self.execute_callback(:buffer, self, message)
         end
@@ -97,7 +106,9 @@ module SockJS
     end
 
     def close(status = 3000, message = "Go away!")
-      raise SockJS::CloseError.new(status, message)
+      @status = :closing
+      @error = SockJS::CloseError.new(status, message)
+      raise @error
     end
 
     def send(*messages)
@@ -113,6 +124,13 @@ module SockJS
       end
     rescue SockJS::CloseError => error
       Protocol.close_frame(error.status, error.message)
+    end
+
+    def check_status
+      if @status == :opening
+        @status = :open
+        self.execute_callback(:open, self)
+      end
     end
   end
 end

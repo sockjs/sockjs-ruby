@@ -24,12 +24,8 @@ module SockJS
 
           [200, {"Content-Type" => "text/plain", "Content-Length" => body.bytesize.to_s}, [body]]
         else
-          begin
-            session = self.connection.create_session(match[1])
-            body = session.open!
-          rescue SockJS::CloseError => error
-            body = Protocol.close_frame(error.status, error.message)
-          end
+          session = self.connection.create_session(match[1])
+          body = session.open!
           [200, {"Content-Type" => "text/plain", "Content-Length" => body.bytesize.to_s}, [body]]
         end
       end
@@ -63,7 +59,7 @@ module SockJS
           puts "\033[0;32;40m~~> SESSION #{session_id} = #{connection.sessions[session_id].inspect}\033[0m" ###
           [204, Hash.new, Array.new]
         else
-          [500, Hash.new, ["Session is not open!"]]
+          [404, Hash.new, ["Session is not open!"]]
         end
       end
     end
