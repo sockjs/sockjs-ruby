@@ -52,10 +52,21 @@ module SockJS
 
     def initialize(callbacks)
       @callbacks = callbacks
+      @messages  = Array.new
     end
 
-    def messages
-      @messages ||= Array.new
+    # All incoming data is treated as incoming messages,
+    # either single json-encoded messages or an array
+    # of json-encoded messages, depending on transport.
+    def receive_message(data)
+      # Weelll ... "string" is not a valid JSON.
+      # However SockJS already work with this,
+      # so let's make it compatible.
+      unless data.match(/^\[.*\]$/)
+        data = "[#{data}]"
+      end
+
+      @messages.push(*JSON.parse(data))
     end
 
     def open!
@@ -67,7 +78,7 @@ module SockJS
     end
 
     def process_message
-      self.execute_callback(:message, self.messages)
+      self.execute_callback(:message, @messages)
     end
 
     def close(status = 3000, message = "Go away!")
@@ -86,16 +97,12 @@ module SockJS
       end
     end
 
-    def messages
-      @messages ||= Array.new
-    end
-
     def response(&block)
       block.call
 
-      response = Protocol.array_frame(messages)
-      self.messages.clear
-      return response
+      Protocol.array_frame(@messages).tap do |_|
+        @messages.clear
+      end
     rescue SockJS::CloseError => error
       Protocol.close_frame(error.status, error.message)
     end
