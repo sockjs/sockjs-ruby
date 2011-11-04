@@ -72,7 +72,9 @@ module SockJS
           # minded it is. Funnily enough users can't deactivate
           # Lint either in development, so we'll have to tell them
           # to hack it. Bloody hell, that just can't be happening!
-          [204, {"Content-Type" => "text/plain"}, Array.new]
+          origin = env["HTTP_ORIGIN"] || "*"
+
+          [204, {"Content-Type" => "text/plain", "Set-Cookie" => "JSESSIONID=dummy; path=/", "Access-Control-Allow-Origin" => origin, "Access-Control-Allow-Credentials" => "true", }, Array.new]
         else
           body = "Session is not open!"
           [404, {"Content-Type" => "text/plain", "Content-Length" => body.bytesize.to_s, "Set-Cookie" => "JSESSIONID=dummy; path=/"}, [body]]
