@@ -39,7 +39,10 @@ module SockJS
 
       # Handler.
       def handle(env)
-        [204, {"Allow" => "OPTIONS, POST", "Access-Control-Max-Age" => "1"}, Array.new]
+        year = 31536000
+        time = Time.now + year
+        origin = env["HTTP_ORIGIN"] || "*"
+        [204, {"Allow" => "OPTIONS, POST", "Access-Control-Max-Age" => "2000000", "Cache-Control" => "public, max-age=#{year}", "Expires" => time.gmtime.to_s, "Access-Control-Allow-Origin" => origin, "Access-Control-Allow-Credentials" => "true", "Set-Cookie" => "JSESSIONID=dummy; path=/"}, Array.new]
       end
     end
 
@@ -65,18 +68,11 @@ module SockJS
       end
     end
 
-    class XHRSendOptions < Adapter
+    class XHRSendOptions < XHROptions
       # Settings.
       self.prefix  = /[^.]+\/([^.]+)\/xhr_send$/
       self.method  = "OPTIONS"
       self.filters = [:h_sid, :xhr_cors, :cache_for, :xhr_options, :expose]
-
-      # Handler.
-      def handle(env)
-        match = env["PATH_INFO"].match(self.class.prefix)
-        p session_id = match[1]
-        raise NotImplementedError.new
-      end
     end
 
     class XHRStreamingPost < Adapter
