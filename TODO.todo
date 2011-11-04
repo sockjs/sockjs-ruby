@@ -17,7 +17,7 @@ SockJS 0.1 Protocol Tests:
   - XhrStreaming
   - EventSource
   - HtmlFile
-    - test_no_callback
+    ✓ test_no_callback
     - test_transport
   - JsonPolling
   - ProtocolQuirks

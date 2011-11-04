@@ -1,6 +1,8 @@
 # encoding: utf-8
 
 require "json"
+require "uri"
+
 require_relative "../adapter"
 
 module SockJS
@@ -20,6 +22,7 @@ module SockJS
         callback = qs["c"] || qs["callback"]
 
         if callback
+          callback = URI.unescape(callback)
           # What the fuck is wrong with Ruby???
           # The bloody pseudoconstant ::DATA is supposed
           # to be avaible anywhere where we have __END__!
@@ -33,7 +36,7 @@ module SockJS
           #   http://code.google.com/p/browsersec/wiki/Part2#Survey_of_content_sniffing_behaviors
           html = data.gsub("{{ callback }}", callback)
           body = html + (" " * (1024 - html.bytesize)) + "\r\n\r\n"
-          [200, {"Content-Type" => "text/html; charset=UTF-8", "Content-Length" => body.bytesize.to_s}, [body]]
+          [200, {"Content-Type" => "text/html; charset=UTF-8", "Content-Length" => body.bytesize.to_s, "Cache-Control" => "no-store, no-cache, must-revalidate, max-age=0", "Set-Cookie" => "JSESSIONID=dummy; path=/"}, [body]]
 
           # TODO:
           # session = transport.Session.bySessionIdOrNew(req.session, req.sockjs_server)
@@ -52,24 +55,15 @@ module SockJS
 end
 
 __END__
-<!DOCTYPE html>
-<html>
-  <head>
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-  </head>
-
-  <body>
-    <h2>Don't panic!</h2>
-    <script>
-      // Browsers fail with "Uncaught exception: ReferenceError: Security
-      // error: attempted to read protected variable: _jp". Set
-      // document.domain in order to work around that.
-      document.domain = document.domain;
-      var c = parent.{{ callback }};
-      c.start();
-      function p(d) {c.message(d);};
-      window.onload = function() {c.stop();};
-    </script>
-  </body>
-</html>
+<!doctype html>
+<html><head>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+</head><body><h2>Don't panic!</h2>
+  <script>
+    document.domain = document.domain;
+    var c = parent.{{ callback }};
+    c.start();
+    function p(d) {c.message(d);};
+    window.onload = function() {c.stop();};
+  </script>
