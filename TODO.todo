@@ -4,11 +4,11 @@ SockJS 0.1 Protocol Tests:
   ✓ BaseUrlGreeting
   ✓ IframePage
   - ChunkingTest
-    - test_basic
+    - test_basic: EM infrastructure required (non-blocking sleep).
     ✓ test_options
   ✓ SessionURLs
   - Protocol:
-    - test_simpleSession
+    - test_simpleSession: EM infrastructure required (wait 5s).
     ✓ test_closeSession
   - WebsocketHttpErrors
   - WebsocketHixie76
@@ -18,6 +18,6 @@ SockJS 0.1 Protocol Tests:
   - EventSource
   - HtmlFile
     ✓ test_no_callback
-    - test_transport
+    - test_transport: EM infrastructure required  (non-blocking sleep).
   - JsonPolling
   - ProtocolQuirks
