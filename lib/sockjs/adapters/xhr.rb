@@ -26,7 +26,8 @@ module SockJS
         else
           session = self.connection.create_session(match[1])
           body = session.open!
-          [200, {"Content-Type" => "text/plain", "Content-Length" => body.bytesize.to_s}, [body]]
+          origin = env["HTTP_ORIGIN"] || "*"
+          [200, {"Content-Type" => "application/javascript; charset=UTF-8", "Content-Length" => body.bytesize.to_s, "Set-Cookie" => "JSESSIONID=dummy; path=/", "Access-Control-Allow-Origin" => origin, "Access-Control-Allow-Credentials" => "true"}, [body]]
         end
       end
     end
@@ -60,7 +61,18 @@ module SockJS
         if session
           session.receive_message(env["rack.input"].read)
           puts "\033[0;32;40m~~> SESSION #{session_id} = #{connection.sessions[session_id].inspect}\033[0m" ###
-          [204, Hash.new, Array.new]
+
+          # When we use HTTP 204 with Content-Type, Rack::Lint
+          # will be bitching about it. That's understandable,
+          # as Lint is suppose to make sure that given response
+          # is valid according to the HTTP standard. However
+          # what's totally sick is that Lint is included by default
+          # in the development mode. It'd be really dishonest
+          # to change this behaviour, regardless how jelly brain
+          # minded it is. Funnily enough users can't deactivate
+          # Lint either in development, so we'll have to tell them
+          # to hack it. Bloody hell, that just can't be happening!
+          [204, {"Content-Type" => "text/plain"}, Array.new]
         else
           body = "Session is not open!"
           [404, {"Content-Type" => "text/plain", "Content-Length" => body.bytesize.to_s, "Set-Cookie" => "JSESSIONID=dummy; path=/"}, [body]]
