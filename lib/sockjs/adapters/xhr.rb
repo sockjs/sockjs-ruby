@@ -59,7 +59,8 @@ module SockJS
           puts "\033[0;32;40m~~> SESSION #{session_id} = #{connection.sessions[session_id].inspect}\033[0m" ###
           [204, Hash.new, Array.new]
         else
-          [404, Hash.new, ["Session is not open!"]]
+          body = "Session is not open!"
+          [404, {"Content-Type" => "text/plain", "Content-Length" => body.bytesize.to_s, "Set-Cookie" => "JSESSIONID=dummy; path=/"}, [body]]
         end
       end
     end
