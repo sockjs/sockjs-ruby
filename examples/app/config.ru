@@ -3,6 +3,14 @@
 
 $LOAD_PATH.unshift(File.expand_path("../../../lib", __FILE__))
 
+# Let's make Lint to STFU. See
+# XHRSendPost#handle for an explanation.
+class Rack::Lint
+  def call(env)
+    @app.call(env)
+  end
+end
+
 require "rack/sockjs"
 require "json"
 
