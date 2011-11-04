@@ -7,7 +7,7 @@ module SockJS
   module Adapters
     class HTMLFile < Adapter
       # Settings.
-      self.prefix  = "htmlfile"
+      self.prefix  = /[^.]+\/([^.]+)\/htmlfile$/
       self.method  = "GET"
       self.filters = [:h_sid, :h_no_cache, :htmlfile]
 
@@ -39,7 +39,7 @@ module SockJS
           # session = transport.Session.bySessionIdOrNew(req.session, req.sockjs_server)
           # session.register( new HtmlFileReceiver(res, req.sockjs_server.options) )
         else
-          body = "You have to specify 'callback' through the query string!"
+          body = '"callback" parameter required'
           [500, {"Content-Type" => "text/html; charset=UTF-8", "Content-Length" => body.bytesize.to_s}, [body]]
         end
       end
