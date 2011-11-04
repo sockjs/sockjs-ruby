@@ -36,6 +36,19 @@ module SockJS
           #   http://code.google.com/p/browsersec/wiki/Part2#Survey_of_content_sniffing_behaviors
           html = data.gsub("{{ callback }}", callback)
           body = html + (" " * (1024 - html.bytesize)) + "\r\n\r\n"
+
+          # OK that's not going to fly, is it?
+          # This is polling, we write the first part and then we write messages wrapped in script tag and p() call.
+
+          # The only option I can think of is to rewrite #each so it waits ...
+          # def each(&block)
+          #   loop do
+          #     block.call(data) if data = get_data
+          #     sleep 0.1
+          #   end
+          # end
+
+          # OK, forget it, that's bollocks, let's implement it once we'll have EM infrastructure in place.
           [200, {"Content-Type" => "text/html; charset=UTF-8", "Content-Length" => body.bytesize.to_s, "Cache-Control" => "no-store, no-cache, must-revalidate, max-age=0", "Set-Cookie" => "JSESSIONID=dummy; path=/"}, [body]]
 
           # TODO:
@@ -47,7 +60,7 @@ module SockJS
         end
       end
 
-      def self.send_frame(payload)
+      def send_frame(payload)
         super("<script>\np(#{payload.to_json});\n</script>\r\n")
       end
     end

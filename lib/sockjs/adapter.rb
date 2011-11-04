@@ -30,5 +30,9 @@ module SockJS
     def initialize(connection, options)
       @connection, @options = connection, options
     end
+
+    def send_frame(payload)
+      payload
+    end
   end
 end
