@@ -8,8 +8,8 @@ module SockJS
 
     HEARTBEAT_FRAME ||= "h\n"
 
-    def self.array_frame(data)
-      "#{ARRAY_FRAME}#{data}\n"
+    def self.array_frame(array)
+      "#{ARRAY_FRAME}#{array.to_json}\n"
     end
 
     def self.close_frame(status, message)
