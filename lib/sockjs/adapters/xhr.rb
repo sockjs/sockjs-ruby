@@ -104,16 +104,11 @@ module SockJS
       end
     end
 
-    class XHRStreamingOptions < Adapter
+    class XHRStreamingOptions < XHROptions
       # Settings.
       self.prefix  = /[^.]+\/([^.]+)\/xhr_streaming$/
       self.method  = "OPTIONS"
       self.filters = [:h_sid, :xhr_cors, :cache_for, :xhr_options, :expose]
-
-      # Handler.
-      def handle(env)
-        raise NotImplementedError.new
-      end
     end
   end
 end
