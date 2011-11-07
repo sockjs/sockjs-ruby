@@ -17,7 +17,8 @@ SockJS 0.1 Protocol Tests:
   - XhrStreaming:
     ✓ test_options
     - test_transport: Chunking required.
-  - EventSource
+  - EventSource:
+    - test_transport: Chunking required.
   - HtmlFile
     ✓ test_no_callback
     - test_transport: EM infrastructure required  (non-blocking sleep).
