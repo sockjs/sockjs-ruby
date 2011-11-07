@@ -21,20 +21,32 @@ module SockJS
         callback = qs["c"] || qs["callback"]
 
         if callback
-          # session = transport.Session.bySessionIdOrNew(req.session, req.sockjs_server)
-          # session.register( new JsonpReceiver(res, req.sockjs_server.options, callback) )
+          match = env["PATH_INFO"].match(self.class.prefix)
+          if session = self.connection.sessions[match[1]]
+            body = self.send_frame(callback, session.process_buffer)
 
-          [200, {"Content-Type" => "application/javascript; charset=UTF-8"}, Array.new]
+            unless body.respond_to?(:bytesize)
+              raise TypeError, "Block has to return a string or a string-like object responding to #bytesize, but instead an object of #{body.class} class has been returned (object: #{body.inspect})."
+            end
+
+            [200, {"Content-Type" => "text/plain", "Content-Length" => body.bytesize.to_s}, [body]]
+          else
+            session = self.connection.create_session(match[1])
+            body = self.send_frame(callback, session.open!.chomp)
+            origin = env["HTTP_ORIGIN"] || "*"
+            jsessionid = Rack::Request.new(env).cookies["JSESSIONID"]
+            [200, {"Content-Type" => "application/javascript; charset=UTF-8", "Content-Length" => body.bytesize.to_s, "Set-Cookie" => "JSESSIONID=#{jsessionid || "dummy"}; path=/", "Access-Control-Allow-Origin" => origin, "Access-Control-Allow-Credentials" => "true"}, [body]]
+          end
         else
           body = "You have to specify 'callback' through the query string!"
           [500, {"Content-Type" => "text/html; charset=UTF-8", "Content-Length" => body.bytesize.to_s}, [body]]
         end
       end
 
-      def self.send_frame(payload)
-        # Yes, JSONed twice, there isn't a a better way, we must pass
+      def send_frame(callback_function, payload)
+        # Yes, JSONed twice, there isn't a better way, we must pass
         # a string back, and the script, will be evaled() by the browser.
-        super(@callback + "(" + JSON.stringify(payload) + ");\r\n")
+        "#{callback_function}(#{payload.to_json});\r\n"
       end
     end
 
