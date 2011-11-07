@@ -27,7 +27,8 @@ module SockJS
           session = self.connection.create_session(match[1])
           body = session.open!
           origin = env["HTTP_ORIGIN"] || "*"
-          [200, {"Content-Type" => "application/javascript; charset=UTF-8", "Content-Length" => body.bytesize.to_s, "Set-Cookie" => "JSESSIONID=dummy; path=/", "Access-Control-Allow-Origin" => origin, "Access-Control-Allow-Credentials" => "true"}, [body]]
+          jsessionid = Rack::Request.new(env).cookies["JSESSIONID"]
+          [200, {"Content-Type" => "application/javascript; charset=UTF-8", "Content-Length" => body.bytesize.to_s, "Set-Cookie" => "JSESSIONID=#{jsessionid || "dummy"}; path=/", "Access-Control-Allow-Origin" => origin, "Access-Control-Allow-Credentials" => "true"}, [body]]
         end
       end
     end
