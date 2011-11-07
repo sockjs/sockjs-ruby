@@ -26,6 +26,26 @@ module SockJS
     end
   end
 
+  class HttpError < StandardError
+    attr_reader :message
+
+    def to_response
+      [500, {"Content-Length" => self.message.bytesize.to_s, "Content-Type" => "text/plain"}, [self.message]]
+    end
+  end
+
+  class InvalidJSON < HttpError
+    def initialize(*)
+      @message = "Broken JSON encoding."
+    end
+  end
+
+  class EmptyPayload < HttpError
+    def initialize(*)
+      @message = "Payload expected."
+    end
+  end
+
   class Connection
     include CallbackMixin
 
@@ -79,7 +99,14 @@ module SockJS
         data = "[#{data}]"
       end
 
-      @received_messages.push(*JSON.parse(data))
+      @received_messages.push(*parse_json(data))
+    end
+
+    def parse_json(data)
+      raise EmptyPayload.new if data == "[]"
+      JSON.parse(data)
+    rescue JSON::ParserError => error
+      raise SockJS::InvalidJSON.new(error.message)
     end
 
     def open!

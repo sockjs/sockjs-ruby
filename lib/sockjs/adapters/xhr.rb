@@ -79,6 +79,8 @@ module SockJS
           body = "Session is not open!"
           [404, {"Content-Type" => "text/plain", "Content-Length" => body.bytesize.to_s, "Set-Cookie" => "JSESSIONID=dummy; path=/"}, [body]]
         end
+      rescue SockJS::HttpError => error
+        error.to_response
       end
     end
 
