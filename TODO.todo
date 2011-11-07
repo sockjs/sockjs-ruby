@@ -14,7 +14,9 @@ SockJS 0.1 Protocol Tests:
   - WebsocketHixie76
   - WebsocketHybi10
   ✓ XhrPolling
-  - XhrStreaming
+  - XhrStreaming:
+    ✓ test_options
+    - test_transport: Chunking required.
   - EventSource
   - HtmlFile
     ✓ test_no_callback
