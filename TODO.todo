@@ -13,7 +13,7 @@ SockJS 0.1 Protocol Tests:
   - WebsocketHttpErrors
   - WebsocketHixie76
   - WebsocketHybi10
-  - XhrPolling
+  ✓ XhrPolling
   - XhrStreaming
   - EventSource
   - HtmlFile
