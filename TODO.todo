@@ -19,10 +19,14 @@ SockJS 0.1 Protocol Tests:
     - test_transport: Chunking required.
   - EventSource:
     - test_transport: Chunking required.
-  - HtmlFile
+  - HtmlFile:
     ✓ test_no_callback
-    - test_transport: EM infrastructure required  (non-blocking sleep).
-  - JsonPolling
+    - test_transport: EM infrastructure required (non-blocking sleep).
+  - JsonPolling:
+    - test_content_types
+    - test_invalid_json
+    - test_no_callback
+    - test_transport
   - ProtocolQuirks
 
 Implementation:
