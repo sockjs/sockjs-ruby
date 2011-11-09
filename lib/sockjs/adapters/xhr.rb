@@ -13,8 +13,6 @@ module SockJS
       # Handler.
       def handle(env)
         match = env["PATH_INFO"].match(self.class.prefix)
-        puts "\033[0;34;40m? SESSION #{match[1]} = #{connection.sessions[match[1]].inspect}\033[0m"
-
         if session = self.connection.sessions[match[1]]
           body = session.process_buffer
 
@@ -61,7 +59,6 @@ module SockJS
         session = self.connection.sessions[session_id]
         if session
           session.receive_message(env["rack.input"].read)
-          puts "\033[0;32;40m~~> SESSION #{session_id} = #{connection.sessions[session_id].inspect}\033[0m" ###
 
           # When we use HTTP 204 with Content-Type, Rack::Lint
           # will be bitching about it. That's understandable,
