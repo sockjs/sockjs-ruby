@@ -100,7 +100,10 @@ module SockJS
 
       # Handler.
       def handle(env)
-        raise NotImplementedError.new
+        # IE requires 2KB prefix:
+        # http://blogs.msdn.com/b/ieinternals/archive/2010/04/06/comet-streaming-in-internet-explorer-with-xmlhttprequest-and-xdomainrequest.aspx
+        body = "h" * 2049 + "\n"
+        [200, {"Content-Type" => "application/javascript; charset=UTF-8", "Content-Length" => body.bytesize.to_s}, [body]]
       end
     end
 
