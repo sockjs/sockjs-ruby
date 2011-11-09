@@ -29,6 +29,10 @@ module SockJS
   class HttpError < StandardError
     attr_reader :message
 
+    def initialize(message)
+      @message = message
+    end
+
     def to_response
       [500, {"Content-Length" => self.message.bytesize.to_s, "Content-Type" => "text/plain"}, [self.message]]
     end

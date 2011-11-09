@@ -69,6 +69,11 @@ module SockJS
 
             if env["CONTENT_TYPE"] == "application/x-www-form-urlencoded"
               data = URI.decode_www_form(raw_form_data)
+
+              if data.nil? || data.first.nil? || data.first.last.nil?
+                raise SockJS::HttpError.new("Payload expected.")
+              end
+
               data = data.first.last
             else
               data = raw_form_data
