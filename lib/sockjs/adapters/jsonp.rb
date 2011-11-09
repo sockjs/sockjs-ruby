@@ -1,5 +1,7 @@
 # encoding: utf-8
 
+require "uri"
+
 require_relative "../adapter"
 
 module SockJS
@@ -59,16 +61,29 @@ module SockJS
 
       # Handler.
       def handle(env)
-        if query
-          data = JSON.parse(query)
+        if raw_form_data = env["rack.input"].read
+          match = env["PATH_INFO"].match(self.class.prefix)
+          session_id = match[1]
+          session = self.connection.sessions[session_id]
+          if session
+            puts
+            p env["rack.input"].read
+            puts
+            session.receive_message(env["rack.input"].read)
 
-          # jsonp = transport.Session.bySessionId(req.session)
-          # if jsonp is null
-          #     throw {status: 404}
-          # for message in d
-          #     jsonp.didMessage(message)
+            data = case env["Content-Type"]
+            when "application/x-www-form-urlencoded"
+              data = URI.decode_www_form(raw_form_data)
+              data = JSON.parse(data.first.last)
+            when "text/plain"
+              JSON.parse(raw_form_data)
+            end
 
-          [200, ["Content-Length" => "2"], ["ok"]]
+            [200, {"Content-Length" => "2"}, ["ok"]]
+          else
+            body = "Session is not open!"
+            [404, {"Content-Type" => "text/plain", "Content-Length" => body.bytesize.to_s, "Set-Cookie" => "JSESSIONID=dummy; path=/"}, [body]]
+          end
         else
           body = "Payload expected!"
           [500, {"Content-Type" => "text/html; charset=UTF-8", "Content-Length" => body.bytesize.to_s}, [body]]
