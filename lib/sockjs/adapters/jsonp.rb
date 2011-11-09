@@ -66,18 +66,15 @@ module SockJS
           session_id = match[1]
           session = self.connection.sessions[session_id]
           if session
-            puts
-            p env["rack.input"].read
-            puts
-            session.receive_message(env["rack.input"].read)
 
-            data = case env["Content-Type"]
-            when "application/x-www-form-urlencoded"
+            if env["CONTENT_TYPE"] == "application/x-www-form-urlencoded"
               data = URI.decode_www_form(raw_form_data)
-              data = JSON.parse(data.first.last)
-            when "text/plain"
-              JSON.parse(raw_form_data)
+              data = data.first.last
+            else
+              data = raw_form_data
             end
+
+            session.receive_message(data)
 
             [200, {"Content-Length" => "2"}, ["ok"]]
           else
