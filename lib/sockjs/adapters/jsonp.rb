@@ -88,6 +88,8 @@ module SockJS
           body = "Payload expected!"
           [500, {"Content-Type" => "text/html; charset=UTF-8", "Content-Length" => body.bytesize.to_s}, [body]]
         end
+      rescue SockJS::HttpError => error
+        error.to_response
       end
     end
   end
