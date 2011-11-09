@@ -93,7 +93,6 @@ module SockJS
     # either single json-encoded messages or an array
     # of json-encoded messages, depending on transport.
     def receive_message(data)
-      puts "!!!!! RECEIVE MESSAGE !!!!"
       self.check_status
 
       # Weelll ... "string" is not a valid JSON.
@@ -119,7 +118,6 @@ module SockJS
     end
 
     def process_buffer
-      puts "!!!!! PROCESS BUFFER !!!!"
       response do
         self.check_status
 

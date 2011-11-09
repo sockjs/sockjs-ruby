@@ -27,7 +27,7 @@ SockJS 0.1 Protocol Tests:
     - test_invalid_json: 'Broken JSON encoding.' != 'Payload expected.'
     ✓ test_no_callback
     ✓ test_transport
-  - ProtocolQuirks
+  - ProtocolQuirks: Chunking required.
 
 Implementation:
   - It might be a good idea to make it really agnostic and make Rack just an adapter. Use Node.js-like HttpResponse object and create some reasonable adapters, not just the Rack one.

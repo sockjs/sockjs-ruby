@@ -100,9 +100,18 @@ module SockJS
 
       # Handler.
       def handle(env)
-        # IE requires 2KB prefix:
-        # http://blogs.msdn.com/b/ieinternals/archive/2010/04/06/comet-streaming-in-internet-explorer-with-xmlhttprequest-and-xdomainrequest.aspx
-        body = "h" * 2049 + "\n"
+        match = env["PATH_INFO"].match(self.class.prefix)
+        session_id = match[1]
+        unless session = self.connection.sessions[session_id]
+          session = self.connection.create_session(match[1])
+
+          # IE requires 2KB prefix:
+          # http://blogs.msdn.com/b/ieinternals/archive/2010/04/06/comet-streaming-in-internet-explorer-with-xmlhttprequest-and-xdomainrequest.aspx
+          body = "h" * 2049 + "\n"
+
+          body = session.open!
+        end
+
         [200, {"Content-Type" => "application/javascript; charset=UTF-8", "Content-Length" => body.bytesize.to_s}, [body]]
       end
     end
