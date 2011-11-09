@@ -23,6 +23,8 @@ module SockJS
         callback = qs["c"] || qs["callback"]
 
         if callback
+          callback = URI.unescape(callback)
+
           match = env["PATH_INFO"].match(self.class.prefix)
           if session = self.connection.sessions[match[1]]
             body = self.send_frame(callback, session.process_buffer)
@@ -37,7 +39,7 @@ module SockJS
             body = self.send_frame(callback, session.open!.chomp)
             origin = env["HTTP_ORIGIN"] || "*"
             jsessionid = Rack::Request.new(env).cookies["JSESSIONID"]
-            [200, {"Content-Type" => "application/javascript; charset=UTF-8", "Content-Length" => body.bytesize.to_s, "Set-Cookie" => "JSESSIONID=#{jsessionid || "dummy"}; path=/", "Access-Control-Allow-Origin" => origin, "Access-Control-Allow-Credentials" => "true"}, [body]]
+            [200, {"Content-Type" => "application/javascript; charset=UTF-8", "Content-Length" => body.bytesize.to_s, "Set-Cookie" => "JSESSIONID=#{jsessionid || "dummy"}; path=/", "Access-Control-Allow-Origin" => origin, "Access-Control-Allow-Credentials" => "true", "Cache-Control" => "no-store, no-cache, must-revalidate, max-age=0"}, [body]]
           end
         else
           body = '"callback" parameter required'
@@ -81,7 +83,8 @@ module SockJS
 
             session.receive_message(data)
 
-            [200, {"Content-Length" => "2"}, ["ok"]]
+            jsessionid = Rack::Request.new(env).cookies["JSESSIONID"]
+            [200, {"Content-Length" => "2", "Set-Cookie" => "JSESSIONID=#{jsessionid || "dummy"}; path=/"}, ["ok"]]
           else
             body = "Session is not open!"
             [404, {"Content-Type" => "text/plain", "Content-Length" => body.bytesize.to_s, "Set-Cookie" => "JSESSIONID=dummy; path=/"}, [body]]
