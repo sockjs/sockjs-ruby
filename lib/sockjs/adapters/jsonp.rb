@@ -48,7 +48,7 @@ module SockJS
       def send_frame(callback_function, payload)
         # Yes, JSONed twice, there isn't a better way, we must pass
         # a string back, and the script, will be evaled() by the browser.
-        "#{callback_function}(#{payload.to_json});\r\n"
+        "#{callback_function}(#{payload.chomp.to_json});\r\n"
       end
     end
 
