@@ -23,8 +23,8 @@ SockJS 0.1 Protocol Tests:
     ✓ test_no_callback
     - test_transport: EM infrastructure required (non-blocking sleep).
   - JsonPolling:
-    - test_content_types
-    - test_invalid_json
+    ✓ test_content_types
+    - test_invalid_json: 'Broken JSON encoding.' != 'Payload expected.'
     - test_no_callback
     - test_transport
   - ProtocolQuirks

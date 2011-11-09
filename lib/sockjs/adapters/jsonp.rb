@@ -40,7 +40,7 @@ module SockJS
             [200, {"Content-Type" => "application/javascript; charset=UTF-8", "Content-Length" => body.bytesize.to_s, "Set-Cookie" => "JSESSIONID=#{jsessionid || "dummy"}; path=/", "Access-Control-Allow-Origin" => origin, "Access-Control-Allow-Credentials" => "true"}, [body]]
           end
         else
-          body = "You have to specify 'callback' through the query string!"
+          body = '"callback" parameter required'
           [500, {"Content-Type" => "text/html; charset=UTF-8", "Content-Length" => body.bytesize.to_s}, [body]]
         end
       end
