@@ -19,7 +19,8 @@ module SockJS
         biscuit = "JSESSIONID=#{request.cookies["JSESSIONID"] || "dummy"}; path=/"
         origin  = env["HTTP_ORIGIN"] || "*"
 
-        [204, {"Access-Control-Allow-Origin" => origin, "Access-Control-Allow-Credentials" => "true", "Allow" => "OPTIONS, POST", "Cache-Control" => "public, max-age=#{year}", "Expires" => time.gmtime.to_s, "Access-Control-Max-Age" => "1000001", "Set-Cookie" => biscuit}, Array.new]
+        self.response.write_head(204, {"Access-Control-Allow-Origin" => origin, "Access-Control-Allow-Credentials" => "true", "Allow" => "OPTIONS, POST", "Cache-Control" => "public, max-age=#{year}", "Expires" => time.gmtime.to_s, "Access-Control-Max-Age" => "1000001", "Set-Cookie" => biscuit})
+        self.response.finish
       end
     end
 
@@ -39,7 +40,8 @@ module SockJS
           3125 => "h\n",
         )
 
-        [200, {"Content-Type" => "application/javascript; charset=UTF-8", "Access-Control-Allow-Origin" => "*", "Access-Control-Allow-Credentials" => "true", "Allow" => "OPTIONS, POST"}, timeoutable]
+        self.response.write_head(200, {"Content-Type" => "application/javascript; charset=UTF-8", "Access-Control-Allow-Origin" => "*", "Access-Control-Allow-Credentials" => "true", "Allow" => "OPTIONS, POST"})
+        self.response.finish(timeoutable)
       end
     end
   end
