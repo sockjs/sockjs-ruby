@@ -17,10 +17,11 @@ module SockJS
 
         # Opera needs to hear two more initial new lines.
         body = "\r\n\r\n"
-        [200, {"Content-Type" => "text/event-stream; charset=UTF-8", "Cache-Control" => "no-store, no-cache, must-revalidate, max-age=0", "Set-Cookie" => "JSESSIONID=dummy; path=/"}, [body]]
+        self.response.write_head(200, {"Content-Type" => "text/event-stream; charset=UTF-8", "Cache-Control" => "no-store, no-cache, must-revalidate, max-age=0", "Set-Cookie" => "JSESSIONID=dummy; path=/"})
+        self.response.finish(body)
       end
 
-      def self.send_frame(payload)
+      def send_frame(payload)
         # Beware of leading whitespace
         data = ["data: ", escape_selected(payload, "\r\n\x00"), "\r\n\r\n"]
         super(data.join)
