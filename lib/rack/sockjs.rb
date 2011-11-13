@@ -5,13 +5,13 @@ require "sockjs"
 require "sockjs/adapter"
 
 # Adapters.
-require "sockjs/adapters/chunking_test"
-require "sockjs/adapters/eventsource"
-require "sockjs/adapters/htmlfile"
-require "sockjs/adapters/iframe"
-require "sockjs/adapters/jsonp"
-require "sockjs/adapters/welcome_screen"
-require "sockjs/adapters/xhr"
+require "sockjs/adapters/transports/chunking_test"
+require "sockjs/adapters/transports/eventsource"
+require "sockjs/adapters/transports/htmlfile"
+require "sockjs/adapters/transports/iframe"
+require "sockjs/adapters/transports/jsonp"
+require "sockjs/adapters/transports/welcome_screen"
+require "sockjs/adapters/transports/xhr"
 
 # This is a Rack middleware for SockJS.
 #
