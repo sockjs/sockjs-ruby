@@ -33,17 +33,21 @@ module SockJS
               raise TypeError, "Block has to return a string or a string-like object responding to #bytesize, but instead an object of #{body.class} class has been returned (object: #{body.inspect})."
             end
 
-            [200, {"Content-Type" => "text/plain", "Content-Length" => body.bytesize.to_s}, [body]]
+            self.response.write_head(200, {"Content-Type" => "text/plain", "Content-Length" => body.bytesize.to_s})
+            self.response.finish(body)
           else
             session = self.connection.create_session(match[1])
             body = self.send_frame(callback, session.open!.chomp)
             origin = env["HTTP_ORIGIN"] || "*"
             jsessionid = Rack::Request.new(env).cookies["JSESSIONID"]
-            [200, {"Content-Type" => "application/javascript; charset=UTF-8", "Content-Length" => body.bytesize.to_s, "Set-Cookie" => "JSESSIONID=#{jsessionid || "dummy"}; path=/", "Access-Control-Allow-Origin" => origin, "Access-Control-Allow-Credentials" => "true", "Cache-Control" => "no-store, no-cache, must-revalidate, max-age=0"}, [body]]
+
+            self.response.write_head(200, {"Content-Type" => "application/javascript; charset=UTF-8", "Content-Length" => body.bytesize.to_s, "Set-Cookie" => "JSESSIONID=#{jsessionid || "dummy"}; path=/", "Access-Control-Allow-Origin" => origin, "Access-Control-Allow-Credentials" => "true", "Cache-Control" => "no-store, no-cache, must-revalidate, max-age=0"})
+            self.response.finish(body)
           end
         else
           body = '"callback" parameter required'
-          [500, {"Content-Type" => "text/html; charset=UTF-8", "Content-Length" => body.bytesize.to_s}, [body]]
+          self.response.write_head(500, {"Content-Type" => "text/html; charset=UTF-8", "Content-Length" => body.bytesize.to_s})
+          self.response.finish(body)
         end
       end
 
@@ -84,14 +88,17 @@ module SockJS
             session.receive_message(data)
 
             jsessionid = Rack::Request.new(env).cookies["JSESSIONID"]
-            [200, {"Content-Length" => "2", "Set-Cookie" => "JSESSIONID=#{jsessionid || "dummy"}; path=/"}, ["ok"]]
+            self.response.write_head(200, {"Content-Length" => "2", "Set-Cookie" => "JSESSIONID=#{jsessionid || "dummy"}; path=/"})
+            self.response.finish("ok")
           else
             body = "Session is not open!"
-            [404, {"Content-Type" => "text/plain", "Content-Length" => body.bytesize.to_s, "Set-Cookie" => "JSESSIONID=dummy; path=/"}, [body]]
+            self.response.write_head(404, {"Content-Type" => "text/plain", "Content-Length" => body.bytesize.to_s, "Set-Cookie" => "JSESSIONID=dummy; path=/"})
+            self.response.finish(body)
           end
         else
           body = "Payload expected!"
-          [500, {"Content-Type" => "text/html; charset=UTF-8", "Content-Length" => body.bytesize.to_s}, [body]]
+          self.response.write_head(500, {"Content-Type" => "text/html; charset=UTF-8", "Content-Length" => body.bytesize.to_s})
+          self.response.finish(body)
         end
       rescue SockJS::HttpError => error
         error.to_response
