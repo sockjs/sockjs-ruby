@@ -49,14 +49,16 @@ module SockJS
           # end
 
           # OK, forget it, that's bollocks, let's implement it once we'll have EM infrastructure in place.
-          [200, {"Content-Type" => "text/html; charset=UTF-8", "Content-Length" => body.bytesize.to_s, "Cache-Control" => "no-store, no-cache, must-revalidate, max-age=0", "Set-Cookie" => "JSESSIONID=dummy; path=/"}, [body]]
+          self.response.write_head(200, {"Content-Type" => "text/html; charset=UTF-8", "Content-Length" => body.bytesize.to_s, "Cache-Control" => "no-store, no-cache, must-revalidate, max-age=0", "Set-Cookie" => "JSESSIONID=dummy; path=/"})
+          self.response.finish(body)
 
           # TODO:
           # session = transport.Session.bySessionIdOrNew(req.session, req.sockjs_server)
           # session.register( new HtmlFileReceiver(res, req.sockjs_server.options) )
         else
           body = '"callback" parameter required'
-          [500, {"Content-Type" => "text/html; charset=UTF-8", "Content-Length" => body.bytesize.to_s}, [body]]
+          self.response.write_head(500, {"Content-Type" => "text/html; charset=UTF-8", "Content-Length" => body.bytesize.to_s})
+          self.response.finish(body)
         end
       end
 
