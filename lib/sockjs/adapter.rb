@@ -31,6 +31,10 @@ module SockJS
       @connection, @options = connection, options
     end
 
+    def response
+      @response ||= RackResponse.new
+    end
+
     def send_frame(payload)
       payload
     end
