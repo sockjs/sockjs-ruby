@@ -16,7 +16,7 @@ module SockJS
     def finish(data = nil)
       self.write(data) if data
 
-      [@status, @headers, @body]
+      [@status, @headers, [@body]]
     end
   end
 end
