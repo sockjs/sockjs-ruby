@@ -21,11 +21,20 @@ module SockJS
       @headers[key] = value
     end
 
-    def write_head
+    def write_head(status = nil, headers = nil)
+      @status  = status  || @status
+      @headers = headers || @headers
+
       raise NotImplementedError.new("This is supposed to be rewritten in subclasses!")
     end
 
     def write(data)
+      raise NotImplementedError.new("This is supposed to be rewritten in subclasses!")
+    end
+
+    def finish(data = nil)
+      self.write(data) if data
+
       raise NotImplementedError.new("This is supposed to be rewritten in subclasses!")
     end
   end
