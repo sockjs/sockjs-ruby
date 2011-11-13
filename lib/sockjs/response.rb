@@ -13,6 +13,10 @@ module SockJS
       @headers, @body = Hash.new, String.new
     end
 
+    def set_status(status)
+      @status = status
+    end
+
     def set_header(key, value)
       @headers[key] = value
     end
