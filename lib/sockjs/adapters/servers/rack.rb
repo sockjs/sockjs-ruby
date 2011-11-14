@@ -22,4 +22,20 @@ module SockJS
       end
     end
   end
+
+  class RackDelayedResponseBody
+    # Implementation: fibers? EM?
+
+    # response.write("data")
+    def each(&block)
+      # wait until finish
+      # block.call(data) if block
+    end
+
+    # this refactoring means we'll return [200, {}, []] in first write, not finish!
+
+    def finish
+      # done
+    end
+  end
 end
