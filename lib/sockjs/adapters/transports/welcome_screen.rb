@@ -11,9 +11,9 @@ module SockJS
 
       # Handler.
       def handle(env)
-        body = "Welcome to SockJS!\n"
-        self.response.write_head(200, "Content-Type" => "text/plain; charset=UTF-8", "Content-Length" => body.bytesize.to_s)
-        self.response.finish(body)
+        self.write_response(200,
+          {"Content-Type" => "text/plain; charset=UTF-8"},
+          "Welcome to SockJS!\n")
       end
     end
   end

@@ -13,8 +13,10 @@ module SockJS
     end
 
     attr_reader :headers
-    def initialize
-      @headers, @body = Hash.new, String.new
+    def initialize(status, headers = Hash.new, body = nil)
+      @status, @headers, @body = status, headers, body || String.new
+
+      set_content_length if body
     end
 
     def set_status(status)
@@ -23,6 +25,10 @@ module SockJS
 
     def set_header(key, value)
       @headers[key] = value
+    end
+
+    def set_content_length(body)
+      self.headers["Content-Length"] = body.bytesize.to_s
     end
 
     def write_head(status = nil, headers = nil, &block)

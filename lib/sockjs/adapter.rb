@@ -35,6 +35,11 @@ module SockJS
       @response ||= RackResponse.new
     end
 
+    def write_response(status, headers, body)
+      Response.new(status, headers, body).finish
+      # if body, set content-length
+    end
+
     def send_frame(payload)
       payload
     end
