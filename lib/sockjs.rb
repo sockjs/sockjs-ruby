@@ -3,6 +3,7 @@
 require "eventmachine"
 require "sockjs/utils"
 require "sockjs/protocol"
+require "sockjs/version"
 
 module SockJS
   module CallbackMixin
