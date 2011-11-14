@@ -2,6 +2,10 @@
 
 module SockJS
   class Adapter
+    CONTENT_TYPES ||= {
+      plain: "text/plain; charset=UTF-8"
+    }
+
     class << self
       attr_accessor :prefix, :method, :filters, :subclasses
     end

@@ -12,7 +12,7 @@ module SockJS
       # Handler.
       def handle(env)
         self.write_response(200,
-          {"Content-Type" => "text/plain; charset=UTF-8"},
+          {"Content-Type" => CONTENT_TYPES[:plain]},
           "Welcome to SockJS!\n")
       end
     end
