@@ -26,7 +26,7 @@ module SockJS
     end
 
     def write_head(status = nil, headers = nil, &block)
-      @status  = status  || @status  || raise("Please set status!")
+      @status  = status  || @status  || raise("Please set the status!")
       @headers = headers || @headers
 
       (block || NOT_IMPLEMENTED_PROC).call
