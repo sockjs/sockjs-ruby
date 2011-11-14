@@ -33,7 +33,7 @@ module SockJS
               raise TypeError, "Block has to return a string or a string-like object responding to #bytesize, but instead an object of #{body.class} class has been returned (object: #{body.inspect})."
             end
 
-            self.response.write_head(200, {"Content-Type" => "text/plain", "Content-Length" => body.bytesize.to_s})
+            self.response.write_head(200, {"Content-Type" => CONTENT_TYPES[:plain], "Content-Length" => body.bytesize.to_s})
             self.response.finish(body)
           else
             session = self.connection.create_session(match[1])
@@ -41,7 +41,7 @@ module SockJS
             origin = env["HTTP_ORIGIN"] || "*"
             jsessionid = Rack::Request.new(env).cookies["JSESSIONID"]
 
-            self.response.write_head(200, {"Content-Type" => "application/javascript; charset=UTF-8", "Content-Length" => body.bytesize.to_s, "Set-Cookie" => "JSESSIONID=#{jsessionid || "dummy"}; path=/", "Access-Control-Allow-Origin" => origin, "Access-Control-Allow-Credentials" => "true", "Cache-Control" => "no-store, no-cache, must-revalidate, max-age=0"})
+            self.response.write_head(200, {"Content-Type" => CONTENT_TYPES[:javascript], "Content-Length" => body.bytesize.to_s, "Set-Cookie" => "JSESSIONID=#{jsessionid || "dummy"}; path=/", "Access-Control-Allow-Origin" => origin, "Access-Control-Allow-Credentials" => "true", "Cache-Control" => "no-store, no-cache, must-revalidate, max-age=0"})
             self.response.finish(body)
           end
         else
@@ -92,7 +92,7 @@ module SockJS
             self.response.finish("ok")
           else
             body = "Session is not open!"
-            self.response.write_head(404, {"Content-Type" => "text/plain", "Content-Length" => body.bytesize.to_s, "Set-Cookie" => "JSESSIONID=dummy; path=/"})
+            self.response.write_head(404, {"Content-Type" => CONTENT_TYPES[:plain], "Content-Length" => body.bytesize.to_s, "Set-Cookie" => "JSESSIONID=dummy; path=/"})
             self.response.finish(body)
           end
         else

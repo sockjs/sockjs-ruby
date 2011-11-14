@@ -20,13 +20,13 @@ module SockJS
             raise TypeError, "Block has to return a string or a string-like object responding to #bytesize, but instead an object of #{body.class} class has been returned (object: #{body.inspect})."
           end
 
-          [200, {"Content-Type" => "text/plain", "Content-Length" => body.bytesize.to_s}, [body]]
+          [200, {"Content-Type" => CONTENT_TYPES[:plain], "Content-Length" => body.bytesize.to_s}, [body]]
         else
           session = self.connection.create_session(match[1])
           body = session.open!
           origin = env["HTTP_ORIGIN"] || "*"
           jsessionid = Rack::Request.new(env).cookies["JSESSIONID"]
-          [200, {"Content-Type" => "application/javascript; charset=UTF-8", "Content-Length" => body.bytesize.to_s, "Set-Cookie" => "JSESSIONID=#{jsessionid || "dummy"}; path=/", "Access-Control-Allow-Origin" => origin, "Access-Control-Allow-Credentials" => "true"}, [body]]
+          [200, {"Content-Type" => CONTENT_TYPES[:javascript], "Content-Length" => body.bytesize.to_s, "Set-Cookie" => "JSESSIONID=#{jsessionid || "dummy"}; path=/", "Access-Control-Allow-Origin" => origin, "Access-Control-Allow-Credentials" => "true"}, [body]]
         end
       end
     end
@@ -72,10 +72,10 @@ module SockJS
           # to hack it. Bloody hell, that just can't be happening!
           origin = env["HTTP_ORIGIN"] || "*"
 
-          [204, {"Content-Type" => "text/plain", "Set-Cookie" => "JSESSIONID=dummy; path=/", "Access-Control-Allow-Origin" => origin, "Access-Control-Allow-Credentials" => "true", }, Array.new]
+          [204, {"Content-Type" => CONTENT_TYPES[:plain], "Set-Cookie" => "JSESSIONID=dummy; path=/", "Access-Control-Allow-Origin" => origin, "Access-Control-Allow-Credentials" => "true", }, Array.new]
         else
           body = "Session is not open!"
-          [404, {"Content-Type" => "text/plain", "Content-Length" => body.bytesize.to_s, "Set-Cookie" => "JSESSIONID=dummy; path=/"}, [body]]
+          [404, {"Content-Type" => CONTENT_TYPES[:plain], "Content-Length" => body.bytesize.to_s, "Set-Cookie" => "JSESSIONID=dummy; path=/"}, [body]]
         end
       rescue SockJS::HttpError => error
         error.to_response
@@ -109,7 +109,7 @@ module SockJS
           body = session.open!
         end
 
-        [200, {"Content-Type" => "application/javascript; charset=UTF-8", "Content-Length" => body.bytesize.to_s}, [body]]
+        [200, {"Content-Type" => CONTENT_TYPES[:javascript], "Content-Length" => body.bytesize.to_s}, [body]]
       end
     end
 
