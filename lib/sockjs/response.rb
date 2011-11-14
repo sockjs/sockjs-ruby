@@ -8,6 +8,10 @@ module SockJS
 
   # The API is heavily inspired by Node.js' standard library.
   class Response
+    NOT_IMPLEMENTED_PROC ||= Proc.new do |*|
+      raise NotImplementedError.new("This is supposed to be rewritten in subclasses!")
+    end
+
     attr_reader :headers
     def initialize
       @headers, @body = Hash.new, String.new
@@ -21,21 +25,29 @@ module SockJS
       @headers[key] = value
     end
 
-    def write_head(status = nil, headers = nil)
-      @status  = status  || @status
+    def write_head(status = nil, headers = nil, &block)
+      @status  = status  || @status  || raise("Please set status!")
       @headers = headers || @headers
 
-      raise NotImplementedError.new("This is supposed to be rewritten in subclasses!")
+      (block || NOT_IMPLEMENTED_PROC).call
+
+      @head_written = true
     end
 
-    def write(data)
-      raise NotImplementedError.new("This is supposed to be rewritten in subclasses!")
+    def head_written?
+      !! @head_written
     end
 
-    def finish(data = nil)
+    def write(&block)
+      self.write_head unless self.head_written?
+
+      (block || NOT_IMPLEMENTED_PROC).call
+    end
+
+    def finish(data = nil, &block)
       self.write(data) if data
 
-      raise NotImplementedError.new("This is supposed to be rewritten in subclasses!")
+      (block || NOT_IMPLEMENTED_PROC).call
     end
   end
 end
