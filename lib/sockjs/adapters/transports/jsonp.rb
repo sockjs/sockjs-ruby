@@ -46,7 +46,7 @@ module SockJS
           end
         else
           body = '"callback" parameter required'
-          self.response.write_head(500, {"Content-Type" => "text/html; charset=UTF-8", "Content-Length" => body.bytesize.to_s})
+          self.response.write_head(500, {"Content-Type" => CONTENT_TYPES[:html], "Content-Length" => body.bytesize.to_s})
           self.response.finish(body)
         end
       end
@@ -97,7 +97,7 @@ module SockJS
           end
         else
           body = "Payload expected!"
-          self.response.write_head(500, {"Content-Type" => "text/html; charset=UTF-8", "Content-Length" => body.bytesize.to_s})
+          self.response.write_head(500, {"Content-Type" => CONTENT_TYPES[:html], "Content-Length" => body.bytesize.to_s})
           self.response.finish(body)
         end
       rescue SockJS::HttpError => error

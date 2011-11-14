@@ -4,6 +4,7 @@ module SockJS
   class Adapter
     CONTENT_TYPES ||= {
       plain: "text/plain; charset=UTF-8",
+      html: "text/html; charset=UTF-8",
       javascript: "application/javascript; charset=UTF-8",
       event_stream: "text/event-stream; charset=UTF-8"
     }
