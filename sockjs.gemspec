@@ -16,6 +16,9 @@ Gem::Specification.new do |s|
   DESC
   s.email = "jakub@rabbitmq.com"
 
+  # Ruby version
+  s.required_ruby_version = ::Gem::Requirement.new("~> 1.9")
+
   # Dependencies
   s.add_dependency "eventmachine"
 
