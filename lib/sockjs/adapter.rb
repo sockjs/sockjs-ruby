@@ -3,7 +3,8 @@
 module SockJS
   class Adapter
     CONTENT_TYPES ||= {
-      plain: "text/plain; charset=UTF-8"
+      plain: "text/plain; charset=UTF-8",
+      javascript: "application/javascript; charset=UTF-8"
     }
 
     class << self
