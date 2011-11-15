@@ -6,6 +6,55 @@ require "sockjs/response"
 module SockJS
   module Rack
     class Request < Request
+      # request.http_method
+      # => "GET"
+      def http_method
+        @env["REQUEST_METHOD"]
+      end
+
+      # request.path_info
+      # => /echo/abc
+      def path_info
+        @env["PATH_INFO"]
+      end
+
+      # request.headers["origin"]
+      # => http://foo.bar
+      def headers
+        @headers ||= begin
+          @env.reduce(Hash.new) do |headers, (key, value)|
+            if key.match(/HTTP_/)
+              headers[$&.downcase] = value
+            end
+
+            headers
+          end
+        end
+      end
+
+      # request.query_string["callback"]
+      # => "myFn"
+      def query_string
+        @query_string ||= begin
+          @env["QUERY_STRING"].split("=").each_slice(2).reduce(Hash.new) do |buffer, pair|
+            buffer.merge(pair.first => pair.last)
+          end
+        end
+      end
+
+      # request.cookies["JSESSIONID"]
+      # => "123sd"
+      def cookies
+        @cookies ||= begin
+          Rack::Request.new(@env).cookies
+        end
+      end
+
+      # request.data.read
+      # => "message"
+      def data
+        @env["rack.input"]
+      end
     end
 
     class Response < Response

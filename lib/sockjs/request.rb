@@ -8,6 +8,8 @@ module SockJS
 
   # The API is heavily inspired by Node.js' standard library.
   class Request
+    # request.http_method
+    # => "GET"
     def http_method
       raise NotImplementedError.new("You are supposed to rewrite #http_method in a subclass!")
     end
@@ -18,7 +20,7 @@ module SockJS
       raise NotImplementedError.new("You are supposed to rewrite #path_info in a subclass!")
     end
 
-    # request.headers["Origin"]
+    # request.headers["origin"]
     # => http://foo.bar
     def headers
       raise NotImplementedError.new("You are supposed to rewrite #headers in a subclass!")
