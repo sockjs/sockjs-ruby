@@ -19,8 +19,7 @@ module SockJS
         biscuit = "JSESSIONID=#{request.cookies["JSESSIONID"] || "dummy"}; path=/"
         origin  = env["HTTP_ORIGIN"] || "*"
 
-        self.response.write_head(204, {"Access-Control-Allow-Origin" => origin, "Access-Control-Allow-Credentials" => "true", "Allow" => "OPTIONS, POST", "Cache-Control" => "public, max-age=#{year}", "Expires" => time.gmtime.to_s, "Access-Control-Max-Age" => "1000001", "Set-Cookie" => biscuit})
-        self.response.finish
+        self.write_response(204, {"Access-Control-Allow-Origin" => origin, "Access-Control-Allow-Credentials" => "true", "Allow" => "OPTIONS, POST", "Cache-Control" => "public, max-age=#{year}", "Expires" => time.gmtime.to_s, "Access-Control-Max-Age" => "1000001", "Set-Cookie" => biscuit}, "")
       end
     end
 

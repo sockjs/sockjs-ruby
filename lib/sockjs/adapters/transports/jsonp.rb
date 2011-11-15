@@ -90,7 +90,7 @@ module SockJS
             self.write_response(404, {"Content-Type" => CONTENT_TYPES[:plain], "Set-Cookie" => "JSESSIONID=dummy; path=/"}, "Session is not open!")
           end
         else
-          self.response.write_head(500, {"Content-Type" => CONTENT_TYPES[:html]}, "Payload expected!")
+          self.write_response(500, {"Content-Type" => CONTENT_TYPES[:html]}, "Payload expected!")
         end
       rescue SockJS::HttpError => error
         error.to_response

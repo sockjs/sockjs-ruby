@@ -17,8 +17,7 @@ module SockJS
 
         # Opera needs to hear two more initial new lines.
         body = "\r\n\r\n"
-        self.response.write_head(200, {"Content-Type" => CONTENT_TYPES[:event_stream], "Cache-Control" => "no-store, no-cache, must-revalidate, max-age=0", "Set-Cookie" => "JSESSIONID=dummy; path=/"})
-        self.response.finish(body)
+        self.write_response(200, {"Content-Type" => CONTENT_TYPES[:event_stream], "Cache-Control" => "no-store, no-cache, must-revalidate, max-age=0", "Set-Cookie" => "JSESSIONID=dummy; path=/"}, body)
       end
 
       def send_frame(payload)
