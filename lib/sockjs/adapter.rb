@@ -38,13 +38,17 @@ module SockJS
       @connection, @options = connection, options
     end
 
-    def response
-      @response ||= RackResponse.new
+    # TODO: Make it use the adapter user uses.
+    def response_class
+      SockJS::Rack::Response
     end
 
-    def write_response(status, headers, body)
-      Response.new(status, headers, body).finish
-      # if body, set content-length
+    def response
+      @response ||= self.response_class.new
+    end
+
+    def write_response(status, headers, body, &block)
+      self.response_class.new(status, headers, body, &block).finish
     end
 
     def send_frame(payload)

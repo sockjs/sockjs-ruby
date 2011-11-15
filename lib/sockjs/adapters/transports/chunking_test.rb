@@ -15,9 +15,7 @@ module SockJS
         year = 31536000
         time = Time.now + year
 
-        biscuit = "JSESSIONID=#{request.session_id}; path=/"
-
-        self.write_response(204, {"Access-Control-Allow-Origin" => origin, "Access-Control-Allow-Credentials" => "true", "Allow" => "OPTIONS, POST", "Cache-Control" => "public, max-age=#{year}", "Expires" => time.gmtime.to_s, "Access-Control-Max-Age" => "1000001", "Set-Cookie" => biscuit}, "")
+        self.write_response(204, {"Access-Control-Allow-Origin" => origin, "Access-Control-Allow-Credentials" => "true", "Allow" => "OPTIONS, POST", "Cache-Control" => "public, max-age=#{year}", "Expires" => time.gmtime.to_s, "Access-Control-Max-Age" => "1000001"}, "") { |response| response.set_session_id(request.session_id) }
       end
     end
 
