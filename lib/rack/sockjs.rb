@@ -57,18 +57,19 @@ module Rack
     end
 
     def call(env)
-      matched = env["PATH_INFO"].match(/^#{Regexp.quote(@prefix)}/)
+      request = SockJS::Rack::Request.new(env)
+      matched = request.path_info.match(/^#{Regexp.quote(@prefix)}/)
 
-      debug "~ #{env["REQUEST_METHOD"]} #{env["PATH_INFO"].inspect} (matched: #{!! matched})"
+      debug "~ #{request.http_method} #{request.path_info.inspect} (matched: #{!! matched})"
 
       if matched
-        prefix        = env["PATH_INFO"].sub(/^#{Regexp.quote(@prefix)}\/?/, "")
-        method        = env["REQUEST_METHOD"]
+        prefix        = request.path_info.sub(/^#{Regexp.quote(@prefix)}\/?/, "")
+        method        = env.http_method
         handler_klass = ::SockJS::Adapter.handler(prefix, method)
         if handler_klass
           debug "~ Handler: #{handler_klass.inspect}"
           handler = handler_klass.new(@connection, @options)
-          return handler.handle(env).tap do |response|
+          return handler.handle(request).tap do |response|
             debug "~ Response: #{response.inspect}"
           end
         else

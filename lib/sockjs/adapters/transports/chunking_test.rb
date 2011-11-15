@@ -11,7 +11,7 @@ module SockJS
       self.filters = [:h_sid, :xhr_cors, :cache_for, :xhr_options, :expose]
 
       # Handler.
-      def handle(env)
+      def handle(request)
         year = 31536000
         time = Time.now + year
 
@@ -28,7 +28,7 @@ module SockJS
       self.filters = [:h_sid, :xhr_cors, :expect_xhr, :chunking_test]
 
       # Handler.
-      def handle(env)
+      def handle(request)
         timeoutable = SockJS::Timeoutable.new(
           # IE requires 2KB prelude.
           0    => " " * 2048 + "h\n",

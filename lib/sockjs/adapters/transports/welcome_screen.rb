@@ -10,7 +10,7 @@ module SockJS
       self.method = "GET"
 
       # Handler.
-      def handle(env)
+      def handle(request)
         self.write_response(200,
           {"Content-Type" => CONTENT_TYPES[:plain]},
           "Welcome to SockJS!\n")

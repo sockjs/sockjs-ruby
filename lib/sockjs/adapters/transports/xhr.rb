@@ -11,7 +11,7 @@ module SockJS
       self.filters = [:h_sid, :xhr_cors, :xhr_poll]
 
       # Handler.
-      def handle(env)
+      def handle(request)
         match = env["PATH_INFO"].match(self.class.prefix)
         if session = self.connection.sessions[match[1]]
           body = session.process_buffer
@@ -39,7 +39,7 @@ module SockJS
       self.filters = [:h_sid, :xhr_cors, :cache_for, :xhr_options, :expose]
 
       # Handler.
-      def handle(env)
+      def handle(request)
         year = 31536000
         time = Time.now + year
         origin = env["HTTP_ORIGIN"] || "*"
@@ -54,7 +54,7 @@ module SockJS
       self.filters = [:h_sid, :xhr_cors, :expect_xhr, :xhr_send]
 
       # Handler.
-      def handle(env)
+      def handle(request)
         match = env["PATH_INFO"].match(self.class.prefix)
         session_id = match[1]
         session = self.connection.sessions[session_id]
@@ -96,7 +96,7 @@ module SockJS
       self.filters = [:h_sid, :xhr_cors, :xhr_streaming]
 
       # Handler.
-      def handle(env)
+      def handle(request)
         match = env["PATH_INFO"].match(self.class.prefix)
         session_id = match[1]
         unless session = self.connection.sessions[session_id]

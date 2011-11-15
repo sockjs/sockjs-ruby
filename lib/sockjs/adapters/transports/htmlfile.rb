@@ -14,7 +14,7 @@ module SockJS
       self.filters = [:h_sid, :h_no_cache, :htmlfile]
 
       # Handler.
-      def handle(env)
+      def handle(request)
         qs = env["QUERY_STRING"].split("=").each_slice(2).reduce(Hash.new) do |buffer, pair|
           buffer.merge(pair.first => pair.last)
         end

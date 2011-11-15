@@ -15,7 +15,7 @@ module SockJS
       self.filters = [:h_sid, :h_no_cache, :jsonp]
 
       # Handler.
-      def handle(env)
+      def handle(request)
         qs = env["QUERY_STRING"].split("=").each_slice(2).reduce(Hash.new) do |buffer, pair|
           buffer.merge(pair.first => pair.last)
         end
@@ -63,7 +63,7 @@ module SockJS
       self.filters = [:h_sid, :expect_form, :jsonp_send]
 
       # Handler.
-      def handle(env)
+      def handle(request)
         if raw_form_data = env["rack.input"].read
           match = env["PATH_INFO"].match(self.class.prefix)
           session_id = match[1]

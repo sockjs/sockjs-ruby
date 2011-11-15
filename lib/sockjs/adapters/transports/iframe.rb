@@ -14,7 +14,7 @@ module SockJS
       self.filters = [:iframe, :cache_for, :expose]
 
       # Handler.
-      def handle(env)
+      def handle(request)
         # Copied from the HTML file adapter.
         data = begin
           lines = File.readlines(__FILE__)
