@@ -1,7 +1,6 @@
 # encoding: utf-8
 
 require "json"
-require "uri"
 
 require_relative "../adapter"
 
@@ -15,14 +14,7 @@ module SockJS
 
       # Handler.
       def handle(request)
-        qs = env["QUERY_STRING"].split("=").each_slice(2).reduce(Hash.new) do |buffer, pair|
-          buffer.merge(pair.first => pair.last)
-        end
-
-        callback = qs["c"] || qs["callback"]
-
-        if callback
-          callback = URI.unescape(callback)
+        if request.callback
           # What the fuck is wrong with Ruby???
           # The bloody pseudoconstant ::DATA is supposed
           # to be avaible anywhere where we have __END__!
@@ -34,7 +26,7 @@ module SockJS
 
           # Safari needs at least 1024 bytes to parse the website. Relevant:
           #   http://code.google.com/p/browsersec/wiki/Part2#Survey_of_content_sniffing_behaviors
-          html = data.gsub("{{ callback }}", callback)
+          html = data.gsub("{{ callback }}", request.callback)
           body = html + (" " * (1024 - html.bytesize)) + "\r\n\r\n"
 
           # OK that's not going to fly, is it?

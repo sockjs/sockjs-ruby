@@ -12,7 +12,7 @@ module SockJS
 
       # Handler.
       def handle(request)
-        match = env["PATH_INFO"].match(self.class.prefix)
+        match = request.path_info.match(self.class.prefix)
         if session = self.connection.sessions[match[1]]
           body = session.process_buffer
 
@@ -24,8 +24,7 @@ module SockJS
         else
           session = self.connection.create_session(match[1])
           body = session.open!
-          origin = env["HTTP_ORIGIN"] || "*"
-          jsessionid = Rack::Request.new(env).cookies["JSESSIONID"]
+          jsessionid = request.session_id
 
           self.write_response(200, {"Content-Type" => CONTENT_TYPES[:javascript], "Set-Cookie" => "JSESSIONID=#{jsessionid || "dummy"}; path=/", "Access-Control-Allow-Origin" => origin, "Access-Control-Allow-Credentials" => "true"}, body)
         end
@@ -42,7 +41,6 @@ module SockJS
       def handle(request)
         year = 31536000
         time = Time.now + year
-        origin = env["HTTP_ORIGIN"] || "*"
         [204, {"Allow" => "OPTIONS, POST", "Access-Control-Max-Age" => "2000000", "Cache-Control" => "public, max-age=#{year}", "Expires" => time.gmtime.to_s, "Access-Control-Allow-Origin" => origin, "Access-Control-Allow-Credentials" => "true", "Set-Cookie" => "JSESSIONID=dummy; path=/"}, Array.new]
       end
     end
@@ -55,11 +53,11 @@ module SockJS
 
       # Handler.
       def handle(request)
-        match = env["PATH_INFO"].match(self.class.prefix)
+        match = request.path_info.match(self.class.prefix)
         session_id = match[1]
         session = self.connection.sessions[session_id]
         if session
-          session.receive_message(env["rack.input"].read)
+          session.receive_message(request.data.read)
 
           # When we use HTTP 204 with Content-Type, Rack::Lint
           # will be bitching about it. That's understandable,
@@ -71,8 +69,6 @@ module SockJS
           # minded it is. Funnily enough users can't deactivate
           # Lint either in development, so we'll have to tell them
           # to hack it. Bloody hell, that just can't be happening!
-          origin = env["HTTP_ORIGIN"] || "*"
-
           self.write_response(204, {"Content-Type" => CONTENT_TYPES[:plain], "Set-Cookie" => "JSESSIONID=dummy; path=/", "Access-Control-Allow-Origin" => origin, "Access-Control-Allow-Credentials" => "true"}, "")
         else
           self.write_response(404, {"Content-Type" => CONTENT_TYPES[:plain], "Set-Cookie" => "JSESSIONID=dummy; path=/"}, "Session is not open!")
@@ -97,7 +93,7 @@ module SockJS
 
       # Handler.
       def handle(request)
-        match = env["PATH_INFO"].match(self.class.prefix)
+        match = request.path_info.match(self.class.prefix)
         session_id = match[1]
         unless session = self.connection.sessions[session_id]
           session = self.connection.create_session(match[1])

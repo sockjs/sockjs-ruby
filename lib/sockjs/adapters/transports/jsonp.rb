@@ -1,7 +1,5 @@
 # encoding: utf-8
 
-require "uri"
-
 require_relative "../adapter"
 
 module SockJS
@@ -16,18 +14,10 @@ module SockJS
 
       # Handler.
       def handle(request)
-        qs = env["QUERY_STRING"].split("=").each_slice(2).reduce(Hash.new) do |buffer, pair|
-          buffer.merge(pair.first => pair.last)
-        end
-
-        callback = qs["c"] || qs["callback"]
-
-        if callback
-          callback = URI.unescape(callback)
-
-          match = env["PATH_INFO"].match(self.class.prefix)
+        if request.callback
+          match = request.path_info.match(self.class.prefix)
           if session = self.connection.sessions[match[1]]
-            body = self.send_frame(callback, session.process_buffer)
+            body = self.send_frame(request.callback, session.process_buffer)
 
             unless body.respond_to?(:bytesize)
               raise TypeError, "Block has to return a string or a string-like object responding to #bytesize, but instead an object of #{body.class} class has been returned (object: #{body.inspect})."
@@ -36,9 +26,8 @@ module SockJS
             self.write_response(200, {"Content-Type" => CONTENT_TYPES[:plain]}, body)
           else
             session = self.connection.create_session(match[1])
-            body = self.send_frame(callback, session.open!.chomp)
-            origin = env["HTTP_ORIGIN"] || "*"
-            jsessionid = Rack::Request.new(env).cookies["JSESSIONID"]
+            body = self.send_frame(request.callback, session.open!.chomp)
+            jsessionid = request.session_id
 
             self.write_response(200, {"Content-Type" => CONTENT_TYPES[:javascript], "Set-Cookie" => "JSESSIONID=#{jsessionid || "dummy"}; path=/", "Access-Control-Allow-Origin" => origin, "Access-Control-Allow-Credentials" => "true", "Cache-Control" => "no-store, no-cache, must-revalidate, max-age=0"}, body)
           end
@@ -64,13 +53,13 @@ module SockJS
 
       # Handler.
       def handle(request)
-        if raw_form_data = env["rack.input"].read
-          match = env["PATH_INFO"].match(self.class.prefix)
+        if raw_form_data = request.data.read
+          match = request.path_info.match(self.class.prefix)
           session_id = match[1]
           session = self.connection.sessions[session_id]
           if session
 
-            if env["CONTENT_TYPE"] == "application/x-www-form-urlencoded"
+            if request.content_type == "application/x-www-form-urlencoded"
               data = URI.decode_www_form(raw_form_data)
 
               if data.nil? || data.first.nil? || data.first.last.nil?
@@ -84,7 +73,7 @@ module SockJS
 
             session.receive_message(data)
 
-            jsessionid = Rack::Request.new(env).cookies["JSESSIONID"]
+            jsessionid = request.session_id
             self.write_response(200, {"Set-Cookie" => "JSESSIONID=#{jsessionid || "dummy"}; path=/"}, "ok")
           else
             self.write_response(404, {"Content-Type" => CONTENT_TYPES[:plain], "Set-Cookie" => "JSESSIONID=dummy; path=/"}, "Session is not open!")

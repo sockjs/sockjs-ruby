@@ -24,7 +24,7 @@ module SockJS
         @headers ||= begin
           @env.reduce(Hash.new) do |headers, (key, value)|
             if key.match(/HTTP_/)
-              headers[$&.downcase] = value
+              headers[$&.downcase.tr("_", "-")] = value
             end
 
             headers
@@ -42,7 +42,7 @@ module SockJS
         end
       end
 
-      # request.cookies["JSESSIONID"]
+      # request.session_id
       # => "123sd"
       def cookies
         @cookies ||= begin

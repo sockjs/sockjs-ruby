@@ -25,7 +25,7 @@ module SockJS
         body = data.gsub("{{ sockjs_url }}", options[:sockjs_url])
         headers = self.headers(body)
 
-        if env["HTTP_IF_NONE_MATCH"] == headers["ETag"]
+        if request.headers["if-none-match"] == headers["ETag"]
           self.write_response(304, Hash.new, body)
         else
           self.write_response(200, self.headers, body)
