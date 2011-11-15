@@ -32,3 +32,4 @@ SockJS 0.1 Protocol Tests:
 Implementation:
   ✓ It might be a good idea to make it really agnostic and make Rack just an adapter. Use Node.js-like HttpResponse object.
   - Create some other adapters say for Goliath etc.
+  - No Rack::Request etc.
