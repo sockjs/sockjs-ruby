@@ -42,7 +42,7 @@ module SockJS
         end
       end
 
-      # request.session_id
+      # request.cookies["JSESSIONID"]
       # => "123sd"
       def cookies
         @cookies ||= begin

@@ -27,9 +27,8 @@ module SockJS
           else
             session = self.connection.create_session(match[1])
             body = self.send_frame(request.callback, session.open!.chomp)
-            jsessionid = request.session_id
 
-            self.write_response(200, {"Content-Type" => CONTENT_TYPES[:javascript], "Set-Cookie" => "JSESSIONID=#{jsessionid || "dummy"}; path=/", "Access-Control-Allow-Origin" => origin, "Access-Control-Allow-Credentials" => "true", "Cache-Control" => "no-store, no-cache, must-revalidate, max-age=0"}, body)
+            self.write_response(200, {"Content-Type" => CONTENT_TYPES[:javascript], "Set-Cookie" => "JSESSIONID=#{request.session_id}; path=/", "Access-Control-Allow-Origin" => origin, "Access-Control-Allow-Credentials" => "true", "Cache-Control" => "no-store, no-cache, must-revalidate, max-age=0"}, body)
           end
         else
           body = '"callback" parameter required'
@@ -73,10 +72,9 @@ module SockJS
 
             session.receive_message(data)
 
-            jsessionid = request.session_id
-            self.write_response(200, {"Set-Cookie" => "JSESSIONID=#{jsessionid || "dummy"}; path=/"}, "ok")
+            self.write_response(200, {"Set-Cookie" => "JSESSIONID=#{request.session_id}; path=/"}, "ok")
           else
-            self.write_response(404, {"Content-Type" => CONTENT_TYPES[:plain], "Set-Cookie" => "JSESSIONID=dummy; path=/"}, "Session is not open!")
+            self.write_response(404, {"Content-Type" => CONTENT_TYPES[:plain], "Set-Cookie" => "JSESSIONID=#{request.session_id}; path=/"}, "Session is not open!")
           end
         else
           self.write_response(500, {"Content-Type" => CONTENT_TYPES[:html]}, "Payload expected!")

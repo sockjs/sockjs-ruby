@@ -24,9 +24,8 @@ module SockJS
         else
           session = self.connection.create_session(match[1])
           body = session.open!
-          jsessionid = request.session_id
 
-          self.write_response(200, {"Content-Type" => CONTENT_TYPES[:javascript], "Set-Cookie" => "JSESSIONID=#{jsessionid || "dummy"}; path=/", "Access-Control-Allow-Origin" => origin, "Access-Control-Allow-Credentials" => "true"}, body)
+          self.write_response(200, {"Content-Type" => CONTENT_TYPES[:javascript], "Set-Cookie" => "JSESSIONID=#{request.session_id}; path=/", "Access-Control-Allow-Origin" => origin, "Access-Control-Allow-Credentials" => "true"}, body)
         end
       end
     end
@@ -41,7 +40,7 @@ module SockJS
       def handle(request)
         year = 31536000
         time = Time.now + year
-        [204, {"Allow" => "OPTIONS, POST", "Access-Control-Max-Age" => "2000000", "Cache-Control" => "public, max-age=#{year}", "Expires" => time.gmtime.to_s, "Access-Control-Allow-Origin" => origin, "Access-Control-Allow-Credentials" => "true", "Set-Cookie" => "JSESSIONID=dummy; path=/"}, Array.new]
+        [204, {"Allow" => "OPTIONS, POST", "Access-Control-Max-Age" => "2000000", "Cache-Control" => "public, max-age=#{year}", "Expires" => time.gmtime.to_s, "Access-Control-Allow-Origin" => origin, "Access-Control-Allow-Credentials" => "true", "Set-Cookie" => "JSESSIONID=#{request.session_id}; path=/"}, Array.new]
       end
     end
 
@@ -69,9 +68,9 @@ module SockJS
           # minded it is. Funnily enough users can't deactivate
           # Lint either in development, so we'll have to tell them
           # to hack it. Bloody hell, that just can't be happening!
-          self.write_response(204, {"Content-Type" => CONTENT_TYPES[:plain], "Set-Cookie" => "JSESSIONID=dummy; path=/", "Access-Control-Allow-Origin" => origin, "Access-Control-Allow-Credentials" => "true"}, "")
+          self.write_response(204, {"Content-Type" => CONTENT_TYPES[:plain], "Set-Cookie" => "JSESSIONID=#{request.session_id}; path=/", "Access-Control-Allow-Origin" => origin, "Access-Control-Allow-Credentials" => "true"}, "")
         else
-          self.write_response(404, {"Content-Type" => CONTENT_TYPES[:plain], "Set-Cookie" => "JSESSIONID=dummy; path=/"}, "Session is not open!")
+          self.write_response(404, {"Content-Type" => CONTENT_TYPES[:plain], "Set-Cookie" => "JSESSIONID=#{request.session_id}; path=/"}, "Session is not open!")
         end
       rescue SockJS::HttpError => error
         error.to_response

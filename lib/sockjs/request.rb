@@ -54,7 +54,7 @@ module SockJS
     end
 
     def session_id
-      self.cookies["JSESSIONID"]
+      self.cookies["JSESSIONID"] || "dummy"
     end
 
     # request.data.read

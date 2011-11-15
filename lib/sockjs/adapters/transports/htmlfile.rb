@@ -43,7 +43,7 @@ module SockJS
           # OK, forget it, that's bollocks, let's implement it once we'll have EM infrastructure in place.
 
           self.write_response(200,
-            {"Content-Type" => CONTENT_TYPES[:html], "Cache-Control" => "no-store, no-cache, must-revalidate, max-age=0", "Set-Cookie" => "JSESSIONID=dummy; path=/"}, body)
+            {"Content-Type" => CONTENT_TYPES[:html], "Cache-Control" => "no-store, no-cache, must-revalidate, max-age=0", "Set-Cookie" => "JSESSIONID=#{request.session_id}; path=/"}, body)
 
           # TODO:
           # session = transport.Session.bySessionIdOrNew(req.session, req.sockjs_server)
