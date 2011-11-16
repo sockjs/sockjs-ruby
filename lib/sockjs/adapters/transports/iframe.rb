@@ -36,10 +36,10 @@ module SockJS
         time = Time.now + year
 
         {
-          "Content-Type"  => CONTENT_TYPES[:html]
+          "Content-Type"  => CONTENT_TYPES[:html],
           "ETag"          => '"' + self.digest.hexdigest(body) + '"',
           "Cache-Control" => "public, max-age=#{year}",
-          "Expires"       => time.gmtime.to_s,
+          "Expires"       => time.gmtime.to_s
         }
       end
 
