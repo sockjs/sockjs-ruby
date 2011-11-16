@@ -1,8 +1,7 @@
 # encoding: utf-8
 
 require "json"
-
-require_relative "../adapter"
+require "sockjs/adapter"
 
 module SockJS
   module Adapters

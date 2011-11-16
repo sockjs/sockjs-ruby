@@ -1,8 +1,7 @@
 # encoding: utf-8
 
 require "digest/md5"
-
-require_relative "../adapter"
+require "sockjs/adapter"
 
 # ['GET', p('/iframe[0-9-.a-z_]*.html'), ['iframe', 'cache_for', 'expose']],
 module SockJS
