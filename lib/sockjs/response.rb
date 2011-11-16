@@ -16,7 +16,7 @@ module SockJS
     def initialize(status, headers = Hash.new, body = nil, &block)
       @status, @headers, @body = status, headers, body || String.new
 
-      set_content_length if body
+      set_content_length(body) if body
 
       block.call(self) if block
     end

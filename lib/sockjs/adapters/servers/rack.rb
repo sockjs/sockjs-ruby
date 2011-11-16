@@ -6,6 +6,10 @@ require "sockjs/response"
 module SockJS
   module Rack
     class Request < Request
+      def initialize(env)
+        @env = env
+      end
+
       # request.http_method
       # => "GET"
       def http_method

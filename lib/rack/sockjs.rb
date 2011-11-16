@@ -3,6 +3,7 @@
 require "rack"
 require "sockjs"
 require "sockjs/adapter"
+require "sockjs/adapters/servers/rack"
 
 # Adapters.
 require "sockjs/adapters/transports/chunking_test"
@@ -57,14 +58,14 @@ module Rack
     end
 
     def call(env)
-      request = SockJS::Rack::Request.new(env)
+      request = ::SockJS::Rack::Request.new(env)
       matched = request.path_info.match(/^#{Regexp.quote(@prefix)}/)
 
       debug "~ #{request.http_method} #{request.path_info.inspect} (matched: #{!! matched})"
 
       if matched
         prefix        = request.path_info.sub(/^#{Regexp.quote(@prefix)}\/?/, "")
-        method        = env.http_method
+        method        = request.http_method
         handler_klass = ::SockJS::Adapter.handler(prefix, method)
         if handler_klass
           debug "~ Handler: #{handler_klass.inspect}"
