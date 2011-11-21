@@ -40,7 +40,7 @@ end
 
 puts "~ Available handlers: #{::SockJS::Adapter.subclasses.inspect}"
 
-options = {sockjs_url: "http://sockjs.github.com/sockjs-client/sockjs-latest.min.js"}
+options = {sockjs_url: "http://cdn.sockjs.org/sockjs-0.1.min.js"}
 
 use Rack::SockJS, "/echo", options do |connection|
   connection.subscribe do |session, message|

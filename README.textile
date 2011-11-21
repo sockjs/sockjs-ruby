@@ -9,7 +9,7 @@ h2. The Client-Side Part
 For the client-side part you need to use JS library "sockjs-client":http://sockjs.github.com/sockjs-client which provides WebSocket-like API. Here's an example:
 
 <pre>
-<script src="http://sockjs.github.com/sockjs-client/sockjs-latest.min.js"></script>
+<script src="http://cdn.sockjs.org/sockjs-0.1.min.js"></script>
 
 <script>
   var sock = new SockJS("http://mydomain.com/my_prefix");
