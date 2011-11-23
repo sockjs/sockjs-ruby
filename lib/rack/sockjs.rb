@@ -40,6 +40,8 @@ require "sockjs/adapters/transports/xhr"
 
 module Rack
   class SockJS
+    ASYNC_RESPONSE ||= [-1, Hash.new, Array.new]
+
     def initialize(app, prefix = "/echo", options = Hash.new, &block)
       @app, @prefix, @options = app, prefix, options
 
@@ -70,9 +72,11 @@ module Rack
         if handler_klass
           debug "~ Handler: #{handler_klass.inspect}"
           handler = handler_klass.new(@connection, @options)
-          return handler.handle(request).tap do |response|
+          response = handler.handle(request).tap do |response|
             debug "~ Response: #{response.inspect}"
           end
+
+          return response.async? ? ASYNC_RESPONSE : response
         else
           body = <<-HTML
             <!DOCTYPE html>
