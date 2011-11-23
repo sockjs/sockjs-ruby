@@ -15,13 +15,6 @@ module SockJS
 
 
     class Response < Response
-      def async?
-        @body.is_a?(DelayedResponseBody)
-      end
-    end
-
-
-    class AsyncResponse < Response
       extend Forwardable
 
       def initialize(request, status = nil, headers = Hash.new, &block)
@@ -29,6 +22,10 @@ module SockJS
         @status, @headers = status, headers
 
         block.call(self) if block
+      end
+
+      def async?
+        true
       end
 
       def write_head(status = nil, headers = nil)
@@ -40,33 +37,6 @@ module SockJS
 
       def_delegator :body, :write
       def_delegator :body, :finish
-    end
-
-
-    # Wouldn't it be better to make everything
-    # simply async? The API we have is async anyway.
-    # We would get rid of these stupid hacks AND
-    # there's a significant chance that Rack::Lint
-    # wouldn't screw with us anymore!
-    class SyncResponse < Response
-      def write_head(status = nil, headers = nil)
-        super(status, headers) do
-          # Do nothing. Frankly, what the hell are we suppose to do when Rack doesn't support it?
-        end
-      end
-
-      def write(data)
-        super() do
-          @body << data
-        end
-      end
-
-      def finish(data = nil)
-        super(data) do
-          @body = [@body] if @body.respond_to?(:bytesize)
-          [@status, @headers, @body]
-        end
-      end
     end
 
 
