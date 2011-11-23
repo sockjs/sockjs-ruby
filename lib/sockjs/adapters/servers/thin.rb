@@ -11,6 +11,8 @@ module SockJS
 
 
     # This is just to make Rack happy.
+    # For explanation how does it work check
+    # http://macournoyer.com/blog/2009/06/04/pusher-and-async-with-thin
     DUMMY_RESPONSE ||= [-1, Hash.new, Array.new]
 
 
