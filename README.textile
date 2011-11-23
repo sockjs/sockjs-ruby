@@ -1,8 +1,12 @@
 h1. About
 
-_*Disclaimer:* This library is still work in progress. Currently only Rack adapter is supported, more adapters shall follow in the future._
+_*Disclaimer:* This library is still work in progress._
 
 SockJS is WebSocket emulation library. It means that you use the WebSocket API, only instead of @WebSocket@ class you instantiate @SockJS@ class. I highly recommend to read "SockJS: WebSocket emulation":http://www.rabbitmq.com/blog/2011/09/13/sockjs-websocket-emulation on the RabbitMQ blog for more info.
+
+h2. Prerequisites
+
+At the moment *Thin is required* as "it supports polling":http://macournoyer.com/blog/2009/06/04/pusher-and-async-with-thin.
 
 h2. The Client-Side Part
 
