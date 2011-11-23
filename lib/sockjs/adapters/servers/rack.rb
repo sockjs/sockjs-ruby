@@ -27,8 +27,8 @@ module SockJS
       def headers
         @headers ||= begin
           @env.reduce(Hash.new) do |headers, (key, value)|
-            if key.match(/HTTP_/)
-              headers[$&.downcase.tr("_", "-")] = value
+            if key.match(/^HTTP_(.+)$/)
+              headers[$1.downcase.tr("_", "-")] = value
             end
 
             headers
