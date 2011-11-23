@@ -40,8 +40,6 @@ require "sockjs/adapters/transports/xhr"
 
 module Rack
   class SockJS
-    ASYNC_RESPONSE ||= [-1, Hash.new, Array.new]
-
     def initialize(app, prefix = "/echo", options = Hash.new, &block)
       @app, @prefix, @options = app, prefix, options
 
@@ -76,7 +74,7 @@ module Rack
             debug "~ Response: #{response.inspect}"
           end
 
-          return response.async? ? ASYNC_RESPONSE : response
+          return response.async? ? SockJS::Thin::DUMMY_RESPONSE : response
         else
           body = <<-HTML
             <!DOCTYPE html>
