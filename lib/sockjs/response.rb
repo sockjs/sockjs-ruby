@@ -63,5 +63,9 @@ module SockJS
 
       (block || NOT_IMPLEMENTED_PROC).call
     end
+
+    def async?
+      NOT_IMPLEMENTED_PROC.call
+    end
   end
 end
