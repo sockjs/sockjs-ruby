@@ -44,6 +44,28 @@ module SockJS
     end
 
 
+    class SyncResponse < Response
+      def write_head(status = nil, headers = nil)
+        super(status, headers) do
+          # Do nothing. Frankly, what the hell are we suppose to do when Rack doesn't support it?
+        end
+      end
+
+      def write(data)
+        super() do
+          @body << data
+        end
+      end
+
+      def finish(data = nil)
+        super(data) do
+          @body = [@body] if @body.respond_to?(:bytesize)
+          [@status, @headers, @body]
+        end
+      end
+    end
+
+
     class DelayedResponseBody
       include EventMachine::Deferrable
 
