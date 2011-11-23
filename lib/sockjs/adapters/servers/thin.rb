@@ -35,5 +35,25 @@ module SockJS
       def_delegator :body, :write
       def_delegator :body, :finish
     end
+
+    class DelayedResponseBody
+      include EventMachine::Deferrable
+
+      def call(body)
+        body.each do |chunk|
+          self.write(chunk)
+        end
+      end
+
+      def write(chunk)
+        @body_callback.call(chunk)
+      end
+
+      def each(&block)
+        @body_callback = block
+      end
+
+      alias_method :finish, :succeed
+    end
   end
 end
