@@ -24,18 +24,17 @@ module SockJS
     class AsyncResponse < Response
       extend Forwardable
 
-      # env["async.callback"]
-      def initialize(async_callback, status = nil, headers = Hash.new, &block)
-        @async_callback   = async_callback
+      def initialize(request, status = nil, headers = Hash.new, &block)
+        @request, @body   = request, DelayedResponseBody.new
         @status, @headers = status, headers
-        @body = DelayedResponseBody.new
 
         block.call(self) if block
       end
 
       def write_head(status = nil, headers = nil)
         super(status, headers) do
-          @async_callback.call(@status, @headers, @body)
+          callback = @request.env["async.callback"]
+          callback.call(@status, @headers, @body)
         end
       end
 
