@@ -14,6 +14,13 @@ module SockJS
     DUMMY_RESPONSE ||= [-1, Hash.new, Array.new]
 
 
+    class Response < Response
+      def async?
+        @body.is_a?(DelayedResponseBody)
+      end
+    end
+
+
     class AsyncResponse < Response
       extend Forwardable
 
@@ -35,6 +42,7 @@ module SockJS
       def_delegator :body, :write
       def_delegator :body, :finish
     end
+
 
     class DelayedResponseBody
       include EventMachine::Deferrable
