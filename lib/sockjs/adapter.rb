@@ -43,8 +43,8 @@ module SockJS
       SockJS::Rack::Response
     end
 
-    def response
-      @response ||= self.response_class.new
+    def response(*args)
+      @response ||= self.response_class.new(*args)
     end
 
     def write_response(status, headers, body, &block)

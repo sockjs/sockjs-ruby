@@ -5,7 +5,7 @@ SockJS 0.1 Protocol Tests:
   ✓ IframePage
   - ChunkingTest
     - test_basic: EM infrastructure required (non-blocking sleep).
-    ✓ test_options
+    - test_options: broken
   ✓ SessionURLs
   - Protocol:
     - test_simpleSession: EM infrastructure required (wait 5s).

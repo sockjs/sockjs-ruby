@@ -76,7 +76,8 @@ module SockJS
 
       def finish(data = nil)
         super(data) do
-          [@status, @headers, [@body]]
+          @body = [@body] if @body.respond_to?(:bytesize)
+          [@status, @headers, @body]
         end
       end
     end

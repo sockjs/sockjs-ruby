@@ -13,10 +13,10 @@ module SockJS
     end
 
     attr_reader :headers
-    def initialize(status, headers = Hash.new, body = nil, &block)
+    def initialize(status = nil, headers = Hash.new, body = nil, &block)
       @status, @headers, @body = status, headers, body || String.new
 
-      set_content_length(body) if body
+      set_content_length(body) if body && status != 304 || status != 204
 
       block.call(self) if block
     end
@@ -30,7 +30,9 @@ module SockJS
     end
 
     def set_content_length(body)
-      self.headers["Content-Length"] = body.bytesize.to_s
+      if body && body.respond_to?(:bytesize)
+        self.headers["Content-Length"] = body.bytesize.to_s
+      end
     end
 
     def set_session_id(session_id)
