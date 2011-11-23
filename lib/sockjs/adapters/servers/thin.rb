@@ -44,6 +44,11 @@ module SockJS
     end
 
 
+    # Wouldn't it be better to make everything
+    # simply async? The API we have is async anyway.
+    # We would get rid of these stupid hacks AND
+    # there's a significant chance that Rack::Lint
+    # wouldn't screw with us anymore!
     class SyncResponse < Response
       def write_head(status = nil, headers = nil)
         super(status, headers) do
