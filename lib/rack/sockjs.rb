@@ -74,7 +74,7 @@ module Rack
             debug "~ Response: #{response.inspect}"
           end
 
-          return response.async? ? SockJS::Thin::DUMMY_RESPONSE : response
+          return response.async? ? ::SockJS::Thin::DUMMY_RESPONSE : response
         else
           body = <<-HTML
             <!DOCTYPE html>
