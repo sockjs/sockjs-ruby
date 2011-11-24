@@ -25,9 +25,9 @@ module SockJS
         headers = self.headers(body)
 
         if request.headers["if-none-match"] == headers["ETag"]
-          self.write_response(304, Hash.new, String.new)
+          self.write_response(request, 304, Hash.new, String.new)
         else
-          self.write_response(200, headers, body)
+          self.write_response(request, 200, headers, body)
         end
       end
 

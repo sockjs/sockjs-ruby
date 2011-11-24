@@ -37,8 +37,8 @@ module SockJS
         end
       end
 
-      def_delegator :body, :write
-      def_delegator :body, :finish
+      def_delegator :@body, :write
+      def_delegator :@body, :finish
     end
 
 

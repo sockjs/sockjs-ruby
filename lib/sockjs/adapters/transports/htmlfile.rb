@@ -41,14 +41,14 @@ module SockJS
 
           # OK, forget it, that's bollocks, let's implement it once we'll have EM infrastructure in place.
 
-          self.write_response(200,
+          self.write_response(request, 200,
             {"Content-Type" => CONTENT_TYPES[:html], "Cache-Control" => "no-store, no-cache, must-revalidate, max-age=0"}, body) { |response| response.set_session_id(request.session_id) }
 
           # TODO:
           # session = transport.Session.bySessionIdOrNew(req.session, req.sockjs_server)
           # session.register( new HtmlFileReceiver(res, req.sockjs_server.options) )
         else
-          self.write_response(500,
+          self.write_response(request, 500,
             {"Content-Type" => CONTENT_TYPES[:html]}, '"callback" parameter required')
         end
       end

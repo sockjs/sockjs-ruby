@@ -23,16 +23,16 @@ module SockJS
               raise TypeError, "Block has to return a string or a string-like object responding to #bytesize, but instead an object of #{body.class} class has been returned (object: #{body.inspect})."
             end
 
-            self.write_response(200, {"Content-Type" => CONTENT_TYPES[:plain]}, body)
+            self.write_response(request, 200, {"Content-Type" => CONTENT_TYPES[:plain]}, body)
           else
             session = self.connection.create_session(match[1])
             body = self.send_frame(request.callback, session.open!.chomp)
 
-            self.write_response(200, {"Content-Type" => CONTENT_TYPES[:javascript], "Access-Control-Allow-Origin" => origin, "Access-Control-Allow-Credentials" => "true", "Cache-Control" => "no-store, no-cache, must-revalidate, max-age=0"}, body) { |response| response.set_session_id(request.session_id) }
+            self.write_response(request, 200, {"Content-Type" => CONTENT_TYPES[:javascript], "Access-Control-Allow-Origin" => origin, "Access-Control-Allow-Credentials" => "true", "Cache-Control" => "no-store, no-cache, must-revalidate, max-age=0"}, body) { |response| response.set_session_id(request.session_id) }
           end
         else
           body = '"callback" parameter required'
-          self.write_response(500, {"Content-Type" => CONTENT_TYPES[:html]}, body)
+          self.write_response(request, 500, {"Content-Type" => CONTENT_TYPES[:html]}, body)
         end
       end
 
@@ -72,14 +72,14 @@ module SockJS
 
             session.receive_message(data)
 
-            self.write_response(200, Hash.new, "ok") do |response|
+            self.write_response(request, 200, Hash.new, "ok") do |response|
               response.set_session_id(request.session_id)
             end
           else
-            self.write_response(404, {"Content-Type" => CONTENT_TYPES[:plain]}, "Session is not open!") { |response| response.set_session_id(request.session_id) }
+            self.write_response(request, 404, {"Content-Type" => CONTENT_TYPES[:plain]}, "Session is not open!") { |response| response.set_session_id(request.session_id) }
           end
         else
-          self.write_response(500, {"Content-Type" => CONTENT_TYPES[:html]}, "Payload expected!")
+          self.write_response(request, 500, {"Content-Type" => CONTENT_TYPES[:html]}, "Payload expected!")
         end
       rescue SockJS::HttpError => error
         error.to_response
