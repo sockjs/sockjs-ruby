@@ -36,6 +36,7 @@ module SockJS
         )
 
         response = self.response(request, 200, {"Content-Type" => CONTENT_TYPES[:javascript], "Access-Control-Allow-Origin" => "*", "Access-Control-Allow-Credentials" => "true", "Allow" => "OPTIONS, POST"})
+        response.write_head
         response.body.call(timeoutable)
         return response
       end
