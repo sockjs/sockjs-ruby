@@ -52,6 +52,7 @@ module SockJS
       response.write_head
       response.write(body)
       response.finish
+      return response
     end
 
     def send_frame(payload)
