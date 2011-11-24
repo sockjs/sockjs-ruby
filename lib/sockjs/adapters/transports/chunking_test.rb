@@ -35,7 +35,7 @@ module SockJS
           3125 => "h\n",
         )
 
-        self.response(200, {"Content-Type" => CONTENT_TYPES[:javascript], "Access-Control-Allow-Origin" => "*", "Access-Control-Allow-Credentials" => "true", "Allow" => "OPTIONS, POST"}, timeoutable).finish
+        self.write_response(request, 200, {"Content-Type" => CONTENT_TYPES[:javascript], "Access-Control-Allow-Origin" => "*", "Access-Control-Allow-Credentials" => "true", "Allow" => "OPTIONS, POST"}, timeoutable)
       end
     end
   end
