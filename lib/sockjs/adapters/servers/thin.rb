@@ -35,7 +35,7 @@ module SockJS
       def write_head(status = nil, headers = nil)
         super(status, headers) do
           callback = @request.env["async.callback"]
-          callback.call(@status, @headers, @body)
+          callback.call([@status, @headers, @body])
         end
       end
 
