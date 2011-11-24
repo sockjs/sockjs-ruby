@@ -40,7 +40,7 @@ module SockJS
 
     # TODO: Make it use the adapter user uses.
     def response_class
-      SockJS::Rack::Response
+      SockJS::Thin::Response
     end
 
     def response(*args)

@@ -3,7 +3,7 @@
 require "rack"
 require "sockjs"
 require "sockjs/adapter"
-require "sockjs/adapters/servers/rack"
+require "sockjs/adapters/servers/thin"
 
 # Adapters.
 require "sockjs/adapters/transports/chunking_test"
