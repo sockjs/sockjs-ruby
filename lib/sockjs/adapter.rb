@@ -48,7 +48,10 @@ module SockJS
     end
 
     def write_response(request, status, headers, body, &block)
-      self.response_class.new(request, status, headers, &block).write(body).finish
+      response = self.response_class.new(request, status, headers, &block)
+      response.write_head
+      response.write(body)
+      response.finish
     end
 
     def send_frame(payload)
