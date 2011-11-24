@@ -7,16 +7,12 @@ module SockJS
       @hash = hash
     end
 
-    # def each(&block)
-    #   wait_for = @hash.reduce(0) do |wait_for, (ms, data)|
-    #     EM.add_timer(ms / 1000.0) do
-    #       block.call(data)
-    #     end
-    #
-    #     wait_for + ms
-    #   end
-    #
-    #   sleep (wait_for + 500) / 1000.0 # TODO: How to do it in a non-blocking fashion?
-    # end
+    def each(&block)
+      @hash.each do |ms, data|
+        EM.add_timer(ms / 1000.0) do
+          block.call(data)
+        end
+      end
+    end
   end
 end
