@@ -21,6 +21,7 @@ module SockJS
     class Response < Response
       extend Forwardable
 
+      attr_reader :body
       def initialize(request, status = nil, headers = Hash.new, &block)
         @request, @body   = request, DelayedResponseBody.new
         @status, @headers = status, headers
@@ -39,8 +40,8 @@ module SockJS
         end
       end
 
-      def_delegator :@body, :write
-      def_delegator :@body, :finish
+      def_delegator :body, :write
+      def_delegator :body, :finish
     end
 
 
