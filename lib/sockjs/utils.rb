@@ -11,7 +11,9 @@ module SockJS
       @hash.each do |ms, data|
         EM.add_timer(ms / 1000.0) do
           block.call(data)
+          p [ms, data[0..3]]
           if @hash.keys.last == ms
+            p [:succeed]
             @body.succeed
           end
         end
