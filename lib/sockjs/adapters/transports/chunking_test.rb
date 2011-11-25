@@ -15,7 +15,11 @@ module SockJS
         year = 31536000
         time = Time.now + year
 
-        self.write_response(request, 204, {"Access-Control-Allow-Origin" => request.origin, "Access-Control-Allow-Credentials" => "true", "Allow" => "OPTIONS, POST", "Cache-Control" => "public, max-age=#{year}", "Expires" => time.gmtime.to_s, "Access-Control-Max-Age" => "1000001"}, "") { |response| response.set_session_id(request.session_id) }
+        headers = {"Access-Control-Allow-Origin" => request.origin, "Access-Control-Allow-Credentials" => "true", "Allow" => "OPTIONS, POST", "Cache-Control" => "public, max-age=#{year}", "Expires" => time.gmtime.to_s, "Access-Control-Max-Age" => "1000001"}
+
+        self.write_response(request, 204, headers, "") do |response|
+          response.set_session_id(request.session_id)
+        end
       end
     end
 
@@ -25,7 +29,9 @@ module SockJS
 
       # Handler.
       def handle(request)
-        response = self.response(request, 200, {"Content-Type" => CONTENT_TYPES[:javascript], "Access-Control-Allow-Origin" => "*", "Access-Control-Allow-Credentials" => "true", "Allow" => "OPTIONS, POST"})
+        headers = {"Content-Type" => CONTENT_TYPES[:javascript], "Access-Control-Allow-Origin" => "*", "Access-Control-Allow-Credentials" => "true", "Allow" => "OPTIONS, POST"}
+
+        response = self.response(request, 200, headers)
         response.write_head
 
         timeoutable = SockJS::Timeoutable.new(response.body,
