@@ -70,11 +70,8 @@ module Rack
         if handler_klass
           debug "~ Handler: #{handler_klass.inspect}"
           handler = handler_klass.new(@connection, @options)
-          response = handler.handle(request).tap do |response|
-            debug "~ Response: #{response.inspect}"
-          end
-
-          return response.async? ? ::SockJS::Thin::DUMMY_RESPONSE : response
+          handler.handle(request)
+          ::SockJS::Thin::DUMMY_RESPONSE
         else
           body = <<-HTML
             <!DOCTYPE html>
