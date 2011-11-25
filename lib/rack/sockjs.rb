@@ -44,7 +44,7 @@ module Rack
       @app, @prefix, @options = app, prefix, options
 
       unless block
-        raise "You have to provide SockJS app as the block argument!"
+        raise "You have to provide SockJS app as a block argument!"
       end
 
       # Validate options.
