@@ -25,7 +25,10 @@ module SockJS
 
       # Handler.
       def handle(request)
-        timeoutable = SockJS::Timeoutable.new(
+        response = self.response(request, 200, {"Content-Type" => CONTENT_TYPES[:javascript], "Access-Control-Allow-Origin" => "*", "Access-Control-Allow-Credentials" => "true", "Allow" => "OPTIONS, POST"})
+        response.write_head
+
+        timeoutable = SockJS::Timeoutable.new(response.body,
           # IE requires 2KB prelude.
           0    => " " * 2048 + "h\n",
           5    => "h\n",
@@ -35,10 +38,7 @@ module SockJS
           3125 => "h\n",
         )
 
-        response = self.response(request, 200, {"Content-Type" => CONTENT_TYPES[:javascript], "Access-Control-Allow-Origin" => "*", "Access-Control-Allow-Credentials" => "true", "Allow" => "OPTIONS, POST"})
-        response.write_head
         response.body.call(timeoutable)
-        return response
       end
     end
   end
