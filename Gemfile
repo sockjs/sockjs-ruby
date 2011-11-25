@@ -15,4 +15,5 @@ extend Module.new {
 
 source :rubygems
 
-gem "eventmachine"
+gem "thin"
+gem "rack"
