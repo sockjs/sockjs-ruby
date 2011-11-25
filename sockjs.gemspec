@@ -20,7 +20,8 @@ Gem::Specification.new do |s|
   s.required_ruby_version = ::Gem::Requirement.new("~> 1.9")
 
   # Dependencies
-  s.add_dependency "eventmachine"
+  s.add_dependency "rack"
+  s.add_dependency "thin"
 
   # Files
   s.files = `git ls-files`.split("\n")
