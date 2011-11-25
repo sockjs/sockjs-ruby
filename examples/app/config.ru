@@ -3,6 +3,16 @@
 
 $LOAD_PATH.unshift(File.expand_path("../../../lib", __FILE__))
 
+require "thin"
+
+::Thin::Connection.class_eval do
+  def handle_error(error = $!)
+    log "[#{error.class}] #{error.message}\n  - "
+    log error.backtrace.join("\n  - ")
+    close_connection rescue nil
+  end
+end
+
 # Let's make Lint to STFU. See
 # XHRSendPost#handle for an explanation.
 class Rack::Lint
