@@ -53,6 +53,8 @@ module SockJS
 
 
     class DelayedResponseBody
+      # rack chunked can't work, it's sync
+      # we have to inherit DelayedResponseBody from it or what
       include EventMachine::Deferrable
 
       def call(body)
