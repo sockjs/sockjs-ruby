@@ -4,6 +4,8 @@ require "forwardable"
 
 require_relative "./rack"
 
+require "rack/chunked"
+
 module SockJS
   module Thin
     class Request < Rack::Request
@@ -36,7 +38,12 @@ module SockJS
       def write_head(status = nil, headers = nil)
         super(status, headers) do
           callback = @request.env["async.callback"]
-          callback.call([@status, @headers, @body])
+
+          app = lambda { |_| [@status, @headers, @body] }
+          middleware = ::Rack::Chunked.new(app)
+          status, headers, body = middleware.call(@request.env)
+
+          callback.call([status, headers, body])
         end
       end
 
@@ -49,16 +56,19 @@ module SockJS
       include EventMachine::Deferrable
 
       def call(body)
+        STDERR.puts("~ body#call #{body.inspect}")
         body.each do |chunk|
           self.write(chunk)
         end
       end
 
       def write(chunk)
+        STDERR.puts("~ body#write #{chunk.inspect}")
         @body_callback.call(chunk)
       end
 
       def each(&block)
+        STDERR.puts("~ body#each #{block.inspect}")
         @body_callback = block
       end
 
