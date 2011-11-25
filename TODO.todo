@@ -4,7 +4,7 @@ SockJS 0.1 Protocol Tests:
   ✓ BaseUrlGreeting
   ✓ IframePage
   - ChunkingTest
-    - test_basic: EM infrastructure required (non-blocking sleep).
+    - test_basic: This should work, it looks like it's working, but the test keeps failing.
     - test_options: broken
   ✓ SessionURLs
   - Protocol:
