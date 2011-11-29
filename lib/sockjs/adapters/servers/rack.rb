@@ -50,7 +50,7 @@ module SockJS
       # => "123sd"
       def cookies
         @cookies ||= begin
-          Rack::Request.new(@env).cookies
+          ::Rack::Request.new(@env).cookies
         end
       end
 
