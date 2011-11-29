@@ -4,8 +4,6 @@ require "forwardable"
 
 require_relative "./rack"
 
-require "rack/chunked"
-
 module SockJS
   module Thin
     class Request < Rack::Request
@@ -47,13 +45,9 @@ module SockJS
 
           callback = @request.env["async.callback"]
 
-          app = lambda { |_| [@status, @headers, @body] }
-          middleware = ::Rack::Chunked.new(app)
-          status, headers, body = middleware.call(@request.env)
+          puts "~ Headers: #{@headers.inspect}"
 
-          puts "~ Headers: #{headers.inspect}"
-
-          callback.call([status, headers, body])
+          callback.call([@status, @headers, @body])
         end
       end
 
