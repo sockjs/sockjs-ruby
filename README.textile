@@ -69,7 +69,22 @@ h2. SockJS Family
 * "SockJS-client":https://github.com/sockjs/sockjs-client JavaScript client library.
 * "SockJS-node":https://github.com/sockjs/sockjs-node Node.js server.
 * "SockJS-ruby":https://github.com/sockjs/sockjs-ruby Ruby server.
-* "SockJS-protocol":https://github.com/sockjs/sockjs-protocol protocol documentation.
+* "SockJS-protocol":https://github.com/sockjs/sockjs-protocol protocol tests and documentation.
+
+h1. Development
+
+Get "sockjs-protocol":https://github.com/sockjs/sockjs-protocol (installation information are in its README) and run @config.ru@ from @examples/app@. Now you can run the tests against it, for instance:
+
+<pre>
+# Run all the tests.
+./venv/bin/python sockjs-protocol-0.1.py
+
+# Run all the tests defined in XhrStreaming.
+./venv/bin/python sockjs-protocol-0.1.py XhrStreaming
+
+# Run only XhrStreaming.test_transport test.
+./venv/bin/python sockjs-protocol-0.1.py XhrStreaming.test_transport
+</pre>
 
 h1. Links
 
