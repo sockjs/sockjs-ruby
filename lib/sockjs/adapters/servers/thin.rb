@@ -73,7 +73,8 @@ module SockJS
 
       def write(chunk)
         STDERR.puts("~ body#write #{chunk.inspect}")
-        @body_callback.call(chunk)
+        data = [chunk.bytesize.to_s(16), TERM, chunk, TERM].join
+        self.__write__(data)
       end
 
       def each(&block)
@@ -82,11 +83,16 @@ module SockJS
       end
 
       def succeed
-        self.write(TAIL, false)
+        self.__write__(TAIL)
         super
       end
 
       alias_method :finish, :succeed
+
+      protected
+      def __write__(data)
+        @body_callback.call(data)
+      end
     end
   end
 end
