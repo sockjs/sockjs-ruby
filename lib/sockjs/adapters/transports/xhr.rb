@@ -96,17 +96,24 @@ module SockJS
       def handle(request)
         match = request.path_info.match(self.class.prefix)
         session_id = match[1]
+
+        response = self.response(request, 200, {"Content-Type" => CONTENT_TYPES[:javascript], "Access-Control-Allow-Origin" => request.origin, "Access-Control-Allow-Credentials" => "true"}) { |response| response.set_session_id(request.session_id) }
+        response.write_head
+
         unless session = self.connection.sessions[session_id]
           session = self.connection.create_session(match[1])
 
           # IE requires 2KB prefix:
           # http://blogs.msdn.com/b/ieinternals/archive/2010/04/06/comet-streaming-in-internet-explorer-with-xmlhttprequest-and-xdomainrequest.aspx
-          body = "h" * 2049 + "\n"
-
-          body = session.open!
+          response.write("h" * 2048 + "\n")
+          response.write(session.open!)
         end
 
-        self.write_response(request, 200, {"Content-Type" => CONTENT_TYPES[:javascript]}, body)
+        EM::PeriodicTimer.new(1) do
+          if data = session.process_buffer
+            response.write(data)
+          end
+        end
       end
     end
 
