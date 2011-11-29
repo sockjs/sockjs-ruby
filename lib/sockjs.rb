@@ -62,7 +62,13 @@ module SockJS
     end
 
     def sessions
-      @sessions ||= Hash.new
+      if @sessions
+        @sessions.delete_if do |session|
+          session.closed?
+        end
+      else
+        @sessions = Hash.new
+      end
     end
 
     def subscribe(&block)
@@ -144,7 +150,12 @@ module SockJS
     def close(status = 3000, message = "Go away!")
       @status = :closing
       @error = SockJS::CloseError.new(status, message)
-      raise @error
+
+      # raise @error # NOPE!
+
+      @close_timer = EM::Timer.new(@disconnect_delay) do
+        self.mark_to_be_garbage_collected
+      end
     end
 
     def send(*messages)
@@ -175,6 +186,10 @@ module SockJS
     def reset_timer
       @disconnect_timer.cancel
       self.set_timer
+    end
+
+    def mark_to_be_garbage_collected
+      @status = :close
     end
 
     def check_status
