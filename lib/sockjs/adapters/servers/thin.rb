@@ -51,6 +51,8 @@ module SockJS
           middleware = ::Rack::Chunked.new(app)
           status, headers, body = middleware.call(@request.env)
 
+          puts "~ Headers: #{headers.inspect}"
+
           callback.call([status, headers, body])
         end
       end
