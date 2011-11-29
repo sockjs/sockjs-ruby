@@ -53,12 +53,10 @@ module SockJS
 
 
     class DelayedResponseBody
+      include EventMachine::Deferrable
+
       TERM ||= "\r\n"
       TAIL ||= "0#{TERM}#{TERM}"
-
-      # rack chunked can't work, it's sync
-      # we have to inherit DelayedResponseBody from it or what
-      include EventMachine::Deferrable
 
       def call(body)
         STDERR.puts("~ body#call #{body.inspect}")
