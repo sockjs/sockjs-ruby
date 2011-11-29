@@ -63,7 +63,7 @@ module SockJS
 
     def sessions
       if @sessions
-        @sessions.delete_if do |session|
+        @sessions.delete_if do |_, session|
           session.closed?
         end
       else
@@ -171,6 +171,10 @@ module SockJS
       end
     rescue SockJS::CloseError => error
       Protocol.close_frame(error.status, error.message)
+    end
+
+    def closed?
+      @status == :close
     end
 
     protected
