@@ -63,7 +63,6 @@ module SockJS
       TAIL ||= "0#{TERM}#{TERM}"
 
       def call(body)
-        STDERR.puts("~ body#call #{body.inspect}")
         body.each do |chunk|
           self.write(chunk)
         end
@@ -76,7 +75,6 @@ module SockJS
       end
 
       def each(&block)
-        STDERR.puts("~ body#each #{block.inspect}")
         @body_callback = block
       end
 
