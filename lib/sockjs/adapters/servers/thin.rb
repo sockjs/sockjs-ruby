@@ -37,7 +37,7 @@ module SockJS
 
       def write_head(status = nil, headers = nil)
         super(status, headers) do
-          if headers.include?("Content-Length")
+          if @headers["Content-Length"]
             raise "WTF, Content-Length with chunking? Get real mate!"
           end
 
