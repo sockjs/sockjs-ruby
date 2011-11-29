@@ -87,6 +87,7 @@ module SockJS
       @callbacks = callbacks
       @received_messages = Array.new
       @messages_for_the_client = Array.new
+      @disconnect_delay = 5 # TODO: make this configurable.
       @status = :created
     end
 
@@ -95,6 +96,7 @@ module SockJS
     # of json-encoded messages, depending on transport.
     def receive_message(data)
       self.check_status
+      self.reset_timer
 
       # Weelll ... "string" is not a valid JSON.
       # However SockJS already work with this,
@@ -115,10 +117,14 @@ module SockJS
 
     def open!
       self.status = :opening
+      self.set_timer
+
       Protocol::OPEN_FRAME
     end
 
     def process_buffer
+      self.reset_timer
+
       response do
         self.check_status
 
@@ -154,6 +160,21 @@ module SockJS
       end
     rescue SockJS::CloseError => error
       Protocol.close_frame(error.status, error.message)
+    end
+
+    protected
+    def set_timer
+      @disconnect_timer = begin
+        EM::Timer.new(@disconnect_delay) do
+          puts "~ Closing the connection."
+          self.close
+        end
+      end
+    end
+
+    def reset_timer
+      @disconnect_timer.cancel
+      self.set_timer
     end
 
     def check_status
