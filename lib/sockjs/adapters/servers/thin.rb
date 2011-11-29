@@ -67,25 +67,18 @@ module SockJS
       def call(body)
         STDERR.puts("~ body#call #{body.inspect}")
         body.each do |chunk|
-          self.write(chunk, false)
+          self.write(chunk)
         end
-        self.write(TERM, false)
       end
 
-      def write(chunk, write_term = true)
+      def write(chunk)
         STDERR.puts("~ body#write #{chunk.inspect}")
-        chunk << TERM if write_term
         @body_callback.call(chunk)
       end
 
       def each(&block)
         STDERR.puts("~ body#each #{block.inspect}")
         @body_callback = block
-      end
-
-      def succeed
-        self.write(TAIL, false)
-        super
       end
 
       alias_method :finish, :succeed
