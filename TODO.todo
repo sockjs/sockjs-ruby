@@ -4,9 +4,11 @@ SockJS 0.1 Protocol Tests:
   ✓ BaseUrlGreeting
   ✓ IframePage
   - ChunkingTest
-    - test_basic: This should work, it looks like it's working, but the test keeps failing.
+    ✓ test_basic
     - test_options: broken
-  ✓ SessionURLs
+  - SessionURLs:
+    - test_anyValue
+    - test_ignoringServerId
   - Protocol:
     - test_simpleSession: EM infrastructure required (wait 5s).
     ✓ test_closeSession
@@ -31,5 +33,4 @@ SockJS 0.1 Protocol Tests:
 
 Implementation:
   ✓ It might be a good idea to make it really agnostic and make Rack just an adapter. Use Node.js-like HttpResponse object.
-  - No Rack::Request etc.
-  - Apparently we can't make Thin respond in HTTP/1.0. In order to support chunking, we therefore need to implement something like Rack::Chunking::Body   https://github.com/rack/rack/blob/master/lib/rack/chunked.rb#L11 We can't use the class straight away, because it's synchronous and it doesn't play well with EventMachine. Bloody hell!
+  ✓ Apparently we can't make Thin respond in HTTP/1.0. In order to support chunking, we therefore need to implement something like Rack::Chunking::Body   https://github.com/rack/rack/blob/master/lib/rack/chunked.rb#L11 We can't use the class straight away, because it's synchronous and it doesn't play well with EventMachine. Bloody hell!
