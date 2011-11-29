@@ -41,7 +41,9 @@ module SockJS
             raise "WTF, Content-Length with chunking? Get real mate!"
           end
 
-          @headers["Transfer-Encoding"] = "chunked"
+          unless @status == 204
+            @headers["Transfer-Encoding"] = "chunked"
+          end
 
           callback = @request.env["async.callback"]
 
