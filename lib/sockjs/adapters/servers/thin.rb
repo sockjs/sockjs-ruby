@@ -81,6 +81,11 @@ module SockJS
         @body_callback = block
       end
 
+      def succeed
+        self.write(TAIL, false)
+        super
+      end
+
       alias_method :finish, :succeed
     end
   end
