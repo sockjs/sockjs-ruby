@@ -36,7 +36,8 @@ module SockJS
 
         timeoutable = SockJS::Timeoutable.new(response.body,
           # IE requires 2KB prelude.
-          0    => " " * 2048 + "h\n",
+          0    => "h\n",
+          1    => " " * 2048 + "h\n",
           5    => "h\n",
           25   => "h\n",
           125  => "h\n",
