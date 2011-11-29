@@ -37,6 +37,12 @@ module SockJS
 
       def write_head(status = nil, headers = nil)
         super(status, headers) do
+          if headers.include?("Content-Length")
+            raise "WTF, Content-Length with chunking? Get real mate!"
+          end
+
+          @headers["Transfer-Encoding"] = "chunked"
+
           callback = @request.env["async.callback"]
 
           app = lambda { |_| [@status, @headers, @body] }
