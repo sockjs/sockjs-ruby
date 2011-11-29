@@ -69,6 +69,10 @@ module SockJS
       end
 
       def write(chunk)
+        unless chunk.respond_to?(:bytesize)
+          raise "Chunk is supposed to respond to #bytesize, but it doesn't.\nChunk: #{chunk.inspect} (#{chunk.class})"
+        end
+
         STDERR.puts("~ body#write #{chunk.inspect}")
         data = [chunk.bytesize.to_s(16), TERM, chunk, TERM].join
         self.__write__(data)
