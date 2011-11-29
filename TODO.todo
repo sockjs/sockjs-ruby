@@ -4,32 +4,33 @@ SockJS 0.1 Protocol Tests:
   ✓ BaseUrlGreeting
   ✓ IframePage
   ✓ ChunkingTest
-  - SessionURLs:
-    - test_anyValue: It works for the first time, fails for the second one.
+  ✓ SessionURLs
   - Protocol:
-    - test_simpleSession: EM infrastructure required (wait 5s).
+    - test_simpleSession: FIXME! NOTE: EM infrastructure required (wait 5s).
     ✓ test_closeSession
+  - XhrPolling:
+    - test_transport: Fails only due to mess in text/plain vs. text/plain; charset=UTF-8 (check https://github.com/sockjs/sockjs-protocol/issues/21).
+    - test_invalid_json: FIXME!
+  ✓ XhrStreaming
+  - EventSource:
+    - test_transport: FIXME! WIP. Chunking required.
+  - HtmlFile:
+    ✓ test_no_callback
+    - test_transport: FIXME! EM infrastructure required (non-blocking sleep).
+  - JsonPolling:
+    - test_content_types: broken
+    - test_invalid_json: 'Broken JSON encoding.' != 'Payload expected.'
+    ✓ test_no_callback
+    - test_transport: Broken.
+  - ProtocolQuirks: Chunking required.
+
   - WebsocketHttpErrors
   - WebsocketHixie76
   - WebsocketHybi10
-  ✓ XhrPolling
-  - XhrStreaming:
-    ✓ test_options
-    - test_transport: Chunking required.
-  - EventSource:
-    - test_transport: Chunking required.
-  - HtmlFile:
-    ✓ test_no_callback
-    - test_transport: EM infrastructure required (non-blocking sleep).
-  - JsonPolling:
-    ✓ test_content_types
-    - test_invalid_json: 'Broken JSON encoding.' != 'Payload expected.'
-    ✓ test_no_callback
-    ✓ test_transport
-  - ProtocolQuirks: Chunking required.
 
 Implementation:
   ✓ It might be a good idea to make it really agnostic and make Rack just an adapter. Use Node.js-like HttpResponse object.
   ✓ Apparently we can't make Thin respond in HTTP/1.0. In order to support chunking, we therefore need to implement something like Rack::Chunking::Body   https://github.com/rack/rack/blob/master/lib/rack/chunked.rb#L11 We can't use the class straight away, because it's synchronous and it doesn't play well with EventMachine. Bloody hell!
   - Support polling with HTTP 1.0 (see https://github.com/rack/rack/blob/master/lib/rack/chunked.rb#L44-53)
-  - curl -X POST http://localhost:8080/echo/a/b/xhr -vv should return o frame, the next curl -X POST http://localhost:8080/echo/a/b/xhr -vv should hang and return a message if there's any or heartbeat after the timeout (see disconnect_delay in sockjs-node). If there's another request during the 5s, we are supposed to reply with another close frame and reset the timer to wait for another 5s.
+  - curl -X POST http://localhost:8080/echo/a/b/xhr -vv should return o frame, the next curl -X POST http://localhost:8080/echo/a/b/xhr -vv should hang and return a message if there's any or heartbeat after the timeout (see disconnect_delay in sockjs-node).
+  - If there's another request during the closing 5s, we are supposed to reply with another close frame and reset the timer to wait for another 5s.
