@@ -26,8 +26,10 @@ module SockJS
       # => http://foo.bar
       def headers
         @headers ||= begin
+          permitted_keys = /^(CONTENT_(LENGTH|TYPE))$/
+
           @env.reduce(Hash.new) do |headers, (key, value)|
-            if key.match(/^HTTP_(.+)$/)
+            if key.match(/^HTTP_(.+)$/) || key.match(permitted_keys)
               headers[$1.downcase.tr("_", "-")] = value
             end
 
