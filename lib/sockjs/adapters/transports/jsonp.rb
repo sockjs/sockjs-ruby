@@ -82,7 +82,7 @@ module SockJS
           self.write_response(request, 500, {"Content-Type" => CONTENT_TYPES[:html]}, "Payload expected!")
         end
       rescue SockJS::HttpError => error
-        error.to_response
+        error.to_response(self, request)
       end
     end
   end
