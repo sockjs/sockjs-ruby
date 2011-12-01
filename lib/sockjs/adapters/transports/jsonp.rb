@@ -65,7 +65,12 @@ module SockJS
                 raise SockJS::HttpError.new("Payload expected.")
               end
 
-              data = data.first.last
+              # It always has to be d=something.
+              if data.first.first == "d"
+                data = data.first.last
+              else
+                data = ""
+              end
             else
               data = raw_form_data
             end
