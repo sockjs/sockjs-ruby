@@ -35,9 +35,7 @@ module SockJS
 
           match = request.path_info.match(self.class.prefix)
 
-          if session = self.connection.sessions[match[1]]
-            raise "TODO"
-          else
+          unless session = self.connection.sessions[match[1]]
             session = self.connection.create_session(match[1])
             body = self.format_frame(session.open!.chomp)
             response.write(body)
@@ -45,7 +43,7 @@ module SockJS
 
           EM::PeriodicTimer.new(1) do |timer|
             if data = session.process_buffer
-              response.write(format_frame(data)) unless data == "a[]\n" # FIXME
+              response.write(format_frame(data.chomp!)) unless data == "a[]\n" # FIXME
               if data[0] == "c" # close frame. TODO: Do this by raising an exception or something, this is a mess :o Actually ... do we need here some 5s timeout as well?
                 timer.cancel
                 response.finish
@@ -53,7 +51,6 @@ module SockJS
             end
           end
 
-          response.finish
           # TODO: wait for the messages.
         else
           self.write_response(request, 500,
