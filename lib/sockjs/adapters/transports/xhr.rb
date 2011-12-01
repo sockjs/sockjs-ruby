@@ -112,7 +112,10 @@ module SockJS
         EM::PeriodicTimer.new(1) do |timer|
           if data = session.process_buffer
             response.write(data)
-            timer.cancel if data[0] == "c" # close frame. TODO: Do this by raising an exception or something, this is a mess :o Actually ... do we need here some 5s timeout as well?
+            if data[0] == "c" # close frame. TODO: Do this by raising an exception or something, this is a mess :o Actually ... do we need here some 5s timeout as well?
+              timer.cancel
+              response.finish
+            end
           end
         end
       end
