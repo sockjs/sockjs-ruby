@@ -75,7 +75,7 @@ module SockJS
           self.write_response(request, 404, {"Content-Type" => CONTENT_TYPES[:plain]}, "Session is not open!") { |response| response.set_session_id(request.session_id) }
         end
       rescue SockJS::HttpError => error
-        error.to_response
+        error.to_response(self, request)
       end
     end
 
@@ -109,9 +109,10 @@ module SockJS
           response.write(session.open!)
         end
 
-        EM::PeriodicTimer.new(1) do
+        EM::PeriodicTimer.new(1) do |timer|
           if data = session.process_buffer
             response.write(data)
+            timer.cancel if data[0] == "c" # close frame. TODO: Do this by raising an exception or something, this is a mess :o Actually ... do we need here some 5s timeout as well?
           end
         end
       end

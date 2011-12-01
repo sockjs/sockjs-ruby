@@ -8,9 +8,8 @@ SockJS 0.1 Protocol Tests:
   - Protocol:
     - test_simpleSession: FIXME! NOTE: EM infrastructure required (wait 5s).
     ✓ test_closeSession
-  - XhrPolling:
-    - test_transport: Fails only due to mess in text/plain vs. text/plain; charset=UTF-8 (check https://github.com/sockjs/sockjs-protocol/issues/21).
-    - test_invalid_json: FIXME!
+  ✓ XhrPolling:
+    ✓ test_transport: Fails only due to mess in text/plain vs. text/plain; charset=UTF-8 (check https://github.com/sockjs/sockjs-protocol/issues/21).
   ✓ XhrStreaming
   - EventSource:
     - test_transport: FIXME! WIP. Chunking required.
