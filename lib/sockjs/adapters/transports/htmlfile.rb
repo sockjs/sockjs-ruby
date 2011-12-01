@@ -28,33 +28,30 @@ module SockJS
           html = data.gsub("{{ callback }}", request.callback)
           body = html + (" " * (1024 - html.bytesize)) + "\r\n\r\n"
 
-          # OK that's not going to fly, is it?
-          # This is polling, we write the first part and then we write messages wrapped in script tag and p() call.
+          response = self.response(request, 200,
+            {"Content-Type" => CONTENT_TYPES[:html], "Cache-Control" => "no-store, no-cache, must-revalidate, max-age=0"}) { |response| response.set_session_id(request.session_id) }
+          response.write_head
+          response.write(body)
 
-          # The only option I can think of is to rewrite #each so it waits ...
-          # def each(&block)
-          #   loop do
-          #     block.call(data) if data = get_data
-          #     sleep 0.1
-          #   end
-          # end
+          match = request.path_info.match(self.class.prefix)
 
-          # OK, forget it, that's bollocks, let's implement it once we'll have EM infrastructure in place.
-
-          self.write_response(request, 200,
-            {"Content-Type" => CONTENT_TYPES[:html], "Cache-Control" => "no-store, no-cache, must-revalidate, max-age=0"}, body) { |response| response.set_session_id(request.session_id) }
-
-          # TODO:
-          # session = transport.Session.bySessionIdOrNew(req.session, req.sockjs_server)
-          # session.register( new HtmlFileReceiver(res, req.sockjs_server.options) )
+          if session = self.connection.sessions[match[1]]
+            raise "TODO"
+          else
+            session = self.connection.create_session(match[1])
+            body = self.format_frame(session.open!.chomp)
+            response.write(body)
+          end
+          response.finish
+          # TODO: wait for the messages.
         else
           self.write_response(request, 500,
             {"Content-Type" => CONTENT_TYPES[:html]}, '"callback" parameter required')
         end
       end
 
-      def send_frame(payload)
-        super("<script>\np(#{payload.to_json});\n</script>\r\n")
+      def format_frame(payload)
+        "<script>\np(#{payload.to_json});\n</script>\r\n"
       end
     end
   end
