@@ -34,8 +34,8 @@ module SockJS
       @message = message
     end
 
-    def to_response
-      [500, {"Content-Length" => self.message.bytesize.to_s, "Content-Type" => "text/plain"}, [self.message]]
+    def to_response(adapter, request)
+      adapter.write_response(request, 500, {"Content-Type" => "text/plain"}, self.message)
     end
   end
 
