@@ -59,32 +59,33 @@ module SockJS
       payload
     end
 
-    def create_session(request, response)
+    # 1) There's no session -> create it. AND CONTINUE
+    # 2) There's a session:
+    #    a) It's closing -> Send c[3000,"Go away!"] AND END
+    #    b) It's open:
+    #       i) There IS NOT any consumer -> OK. AND CONTINUE
+    #       i) There IS a consumer -> Send c[2010,"Another con still open"] AND END
+    def get_session(request, response)
       match = request.path_info.match(self.class.prefix)
 
-      if session = self.connection.sessions[match[1]]
-        if session.has_consumer?
-
+      unless session = self.connection.sessions[match[1]]
+        if session.closing?
+          session.close # TODO: raise or just return nil?
+        elsif session.open? && session.response.nil?
+          return session
+        elsif session.open? && session.response
+          session.close(2010, "Another connection still open") # TODO: raise or just return nil?
         end
       else
         session = self.connection.create_session(match[1])
         body = self.format_frame(session.open!.chomp)
         response.write(body)
-        # Send c[2010,"Another connection still open"]
-
-
-        # 1) There's no session -> create it. AND CONTINUE
-        # 2) There's a session:
-        #    a) It's closing -> Send c[3000,"Go away!"] AND END
-        #    b) It's open:
-        #       i) There IS NOT any consumer -> OK. AND CONTINUE
-        #       i) There IS a consumer -> Send c[2010,"Another con still open"] AND END
-
+        return session
       end
     end
 
     def start_timer(request, response)
-      session = self.create_session(request, response)
+      session = self.get_session(request, response)
       self.init_timer(response, session, 0.1)
     end
 
