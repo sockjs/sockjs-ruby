@@ -39,6 +39,17 @@ module SockJS
             session = self.connection.create_session(match[1])
             body = self.format_frame(session.open!.chomp)
             response.write(body)
+          else
+            # Send c[2010,"Another connection still open"]
+
+
+            # 1) There's no session -> create it.
+            # 2) There's a session:
+            #    a) It's closing -> Send c[3000,"Go away!"]
+            #    b) It's open:
+            #       i) There IS NOT any consumer -> OK.
+            #       i) There IS a consumer -> Send c[2010,"Another con still open"]
+
           end
 
           EM::PeriodicTimer.new(1) do |timer|
