@@ -13,9 +13,7 @@ SockJS 0.1 Protocol Tests:
   ✓ XhrStreaming
   - EventSource:
     - test_transport: FIXME! WIP. Chunking required.
-  - HtmlFile:
-    ✓ test_no_callback
-    - test_transport: FIXME! EM infrastructure required (non-blocking sleep).
+  ✓ HtmlFile
   ✓ JsonPolling
   ✓ ProtocolQuirks
 
