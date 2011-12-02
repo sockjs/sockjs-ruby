@@ -153,6 +153,8 @@ module SockJS
 
       # raise @error # NOPE!
 
+      @close_timer.cancel if @close_timer
+
       @close_timer = EM::Timer.new(@disconnect_delay) do
         self.mark_to_be_garbage_collected
       end
