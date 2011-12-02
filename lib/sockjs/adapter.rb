@@ -55,8 +55,49 @@ module SockJS
       return response
     end
 
-    def send_frame(payload)
+    def format_frame(payload)
       payload
+    end
+
+    def create_session(request, response)
+      match = request.path_info.match(self.class.prefix)
+
+      if session = self.connection.sessions[match[1]]
+        if session.has_consumer?
+
+        end
+      else
+        session = self.connection.create_session(match[1])
+        body = self.format_frame(session.open!.chomp)
+        response.write(body)
+        # Send c[2010,"Another connection still open"]
+
+
+        # 1) There's no session -> create it. AND CONTINUE
+        # 2) There's a session:
+        #    a) It's closing -> Send c[3000,"Go away!"] AND END
+        #    b) It's open:
+        #       i) There IS NOT any consumer -> OK. AND CONTINUE
+        #       i) There IS a consumer -> Send c[2010,"Another con still open"] AND END
+
+      end
+    end
+
+    def start_timer(request, response)
+      session = self.create_session(request, response)
+      self.init_timer(response, session, 0.1)
+    end
+
+    def init_timer(response, session, interval)
+      EM::PeriodicTimer.new(interval) do |timer|
+        if data = session.process_buffer
+          response.write(format_frame(data.chomp!)) unless data == "a[]\n" # FIXME
+          if data[0] == "c" # close frame. TODO: Do this by raising an exception or something, this is a mess :o Actually ... do we need here some 5s timeout as well?
+            timer.cancel
+            response.finish
+          end
+        end
+      end
     end
   end
 end

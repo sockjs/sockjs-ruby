@@ -33,36 +33,7 @@ module SockJS
           response.write_head
           response.write(body)
 
-          match = request.path_info.match(self.class.prefix)
-
-          unless session = self.connection.sessions[match[1]]
-            session = self.connection.create_session(match[1])
-            body = self.format_frame(session.open!.chomp)
-            response.write(body)
-          else
-            # Send c[2010,"Another connection still open"]
-
-
-            # 1) There's no session -> create it.
-            # 2) There's a session:
-            #    a) It's closing -> Send c[3000,"Go away!"]
-            #    b) It's open:
-            #       i) There IS NOT any consumer -> OK.
-            #       i) There IS a consumer -> Send c[2010,"Another con still open"]
-
-          end
-
-          EM::PeriodicTimer.new(1) do |timer|
-            if data = session.process_buffer
-              response.write(format_frame(data.chomp!)) unless data == "a[]\n" # FIXME
-              if data[0] == "c" # close frame. TODO: Do this by raising an exception or something, this is a mess :o Actually ... do we need here some 5s timeout as well?
-                timer.cancel
-                response.finish
-              end
-            end
-          end
-
-          # TODO: wait for the messages.
+          self.start_timer(request, response)
         else
           self.write_response(request, 500,
             {"Content-Type" => CONTENT_TYPES[:html]}, '"callback" parameter required')
