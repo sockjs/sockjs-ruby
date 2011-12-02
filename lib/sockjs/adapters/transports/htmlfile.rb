@@ -33,7 +33,7 @@ module SockJS
           response.write_head
           response.write(body)
 
-          self.start_timer(request, response)
+          self.try_timer_if_valid(request, response)
         else
           self.write_response(request, 500,
             {"Content-Type" => CONTENT_TYPES[:html]}, '"callback" parameter required')

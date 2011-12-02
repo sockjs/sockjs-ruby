@@ -68,13 +68,15 @@ module SockJS
     def get_session(request, response)
       match = request.path_info.match(self.class.prefix)
 
-      unless session = self.connection.sessions[match[1]]
+      if session = self.connection.sessions[match[1]]
         if session.closing?
-          session.close # TODO: raise or just return nil?
+          session.close
+          return nil
         elsif session.open? && session.response.nil?
           return session
         elsif session.open? && session.response
-          session.close(2010, "Another connection still open") # TODO: raise or just return nil?
+          session.close(2010, "Another connection still open")
+          return nil
         end
       else
         session = self.connection.create_session(match[1])
@@ -84,9 +86,9 @@ module SockJS
       end
     end
 
-    def start_timer(request, response)
+    def try_timer_if_valid(request, response)
       session = self.get_session(request, response)
-      self.init_timer(response, session, 0.1)
+      self.init_timer(response, session, 0.1) if session
     end
 
     def init_timer(response, session, interval)
