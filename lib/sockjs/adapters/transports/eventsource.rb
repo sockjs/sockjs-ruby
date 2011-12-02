@@ -18,23 +18,7 @@ module SockJS
         # Opera needs to hear two more initial new lines.
         response.write("\r\n")
 
-        match = request.path_info.match(self.class.prefix)
-
-        unless session = self.connection.sessions[match[1]]
-          session = self.connection.create_session(match[1])
-          body = self.format_frame(session.open!.chomp)
-          response.write(body)
-        end
-
-        EM::PeriodicTimer.new(1) do |timer|
-          if data = session.process_buffer
-            response.write(format_frame(data.chomp!)) unless data == "a[]\n" # FIXME
-            if data[0] == "c" # close frame. TODO: Do this by raising an exception or something, this is a mess :o Actually ... do we need here some 5s timeout as well?
-              timer.cancel
-              response.finish
-            end
-          end
-        end
+        self.try_timer_if_valid(request, response)
       end
 
       def format_frame(payload)

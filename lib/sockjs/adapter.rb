@@ -65,7 +65,7 @@ module SockJS
     #    b) It's open:
     #       i) There IS NOT any consumer -> OK. AND CONTINUE
     #       i) There IS a consumer -> Send c[2010,"Another con still open"] AND END
-    def get_session(request, response)
+    def get_session(request, response, preamble = nil)
       match = request.path_info.match(self.class.prefix)
 
       if session = self.connection.sessions[match[1]]
@@ -79,15 +79,17 @@ module SockJS
           return nil
         end
       else
+        response.write(preamble) if preamble
+
         session = self.connection.create_session(match[1])
-        body = self.format_frame(session.open!.chomp)
+        body = self.format_frame(session.open!)
         response.write(body)
         return session
       end
     end
 
-    def try_timer_if_valid(request, response)
-      session = self.get_session(request, response)
+    def try_timer_if_valid(request, response, preamble = nil)
+      session = self.get_session(request, response, preamble)
       self.init_timer(response, session, 0.1) if session
     end
 

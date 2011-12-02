@@ -2,7 +2,7 @@
 
 module SockJS
   class Protocol
-    OPEN_FRAME  ||= "o\n"
+    OPEN_FRAME  ||= "o"
     CLOSE_FRAME ||= "c"
     ARRAY_FRAME ||= "a"
 

@@ -100,24 +100,14 @@ module SockJS
         response = self.response(request, 200, {"Content-Type" => CONTENT_TYPES[:javascript], "Access-Control-Allow-Origin" => request.origin, "Access-Control-Allow-Credentials" => "true"}) { |response| response.set_session_id(request.session_id) }
         response.write_head
 
-        unless session = self.connection.sessions[session_id]
-          session = self.connection.create_session(match[1])
+        # IE requires 2KB prefix:
+        # http://blogs.msdn.com/b/ieinternals/archive/2010/04/06/comet-streaming-in-internet-explorer-with-xmlhttprequest-and-xdomainrequest.aspx
+        preamble = "h" * 2048 + "\n"
+        self.try_timer_if_valid(request, response, preamble)
+      end
 
-          # IE requires 2KB prefix:
-          # http://blogs.msdn.com/b/ieinternals/archive/2010/04/06/comet-streaming-in-internet-explorer-with-xmlhttprequest-and-xdomainrequest.aspx
-          response.write("h" * 2048 + "\n")
-          response.write(session.open!)
-        end
-
-        EM::PeriodicTimer.new(1) do |timer|
-          if data = session.process_buffer
-            response.write(data)
-            if data[0] == "c" # close frame. TODO: Do this by raising an exception or something, this is a mess :o Actually ... do we need here some 5s timeout as well?
-              timer.cancel
-              response.finish
-            end
-          end
-        end
+      def format_frame(body)
+        "#{body}\n"
       end
     end
 
