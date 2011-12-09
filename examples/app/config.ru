@@ -1,6 +1,9 @@
 #!/usr/bin/env rackup -s thin -p 8080
 # encoding: utf-8
 
+require "bundler"
+require "bundler/setup"
+
 $LOAD_PATH.unshift(File.expand_path("../../../lib", __FILE__))
 
 require "thin"
