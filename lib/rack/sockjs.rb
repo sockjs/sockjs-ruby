@@ -89,7 +89,7 @@ module Rack
       end
 
       # Thin async response
-      [-1, {}, []]
+      ::SockJS::Thin::DUMMY_RESPONSE
     end
 
     def process_http_request(request)
