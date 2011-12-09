@@ -56,7 +56,7 @@ module SockJS
     end
 
     def format_frame(payload)
-      payload
+      "#{payload}\n"
     end
 
     # 1) There's no session -> create it. AND CONTINUE
@@ -96,7 +96,9 @@ module SockJS
     def init_timer(response, session, interval)
       timer = EM::PeriodicTimer.new(interval) do
         if data = session.process_buffer
-          response.write(format_frame(data.chomp!)) unless data == "a[]\n" # FIXME
+          response_data = format_frame(data.chomp!)
+          puts "~ Responding with #{response_data.inspect}"
+          response.write(response_data) unless data == "a[]\n" # FIXME
           if data[0] == "c" # close frame. TODO: Do this by raising an exception or something, this is a mess :o Actually ... do we need here some 5s timeout as well?
             timer.cancel
             response.finish
