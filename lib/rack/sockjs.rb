@@ -65,7 +65,7 @@ module Rack
 
       debug "~ #{request.http_method} #{request.path_info.inspect} (matched: #{!! matched})"
 
-      if matched && env["HTTP_UPGRADE"]
+      if matched && env["HTTP_UPGRADE"] == "WebSocket"
         debug "~ Upgrading to WebSockets ..."
         upgrade_to_websockets(env)
       elsif matched && ! env["HTTP_UPGRADE"]
@@ -80,12 +80,13 @@ module Rack
       ws = Faye::WebSocket.new(env)
 
       ws.onmessage = lambda do |event|
-        ws.send(event.data)
+        debug "~ WS data received: #{event.data.inspect}"
+        # TODO: Implement WebSocket transport.
       end
 
       ws.onclose = lambda do |event|
-        p [:close, event.code, event.reason]
-        ws = nil
+        debug "~ Closing WebSocket connection (#{event.code}, #{event.reason})"
+        # TODO: Implement WebSocket transport.
       end
 
       # Thin async response
