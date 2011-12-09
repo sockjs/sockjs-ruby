@@ -17,3 +17,4 @@ source :rubygems
 
 gem "thin"
 gem "rack"
+gem "faye"
