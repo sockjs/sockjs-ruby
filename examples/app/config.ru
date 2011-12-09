@@ -1,6 +1,8 @@
 #!/usr/bin/env rackup -s thin -p 8080
 # encoding: utf-8
 
+abort "Use ./config.rb instead. For explanation see commit 7d525"
+
 require "bundler"
 require "bundler/setup"
 
