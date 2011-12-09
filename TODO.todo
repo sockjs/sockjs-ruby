@@ -6,7 +6,7 @@ SockJS 0.1 Protocol Tests:
   ✓ ChunkingTest
   ✓ SessionURLs
   - Protocol:
-    - test_simpleSession: Fail if there's more than one open connection to given session. At the moment there's no infrastructure for this in place, we don't keep the status.
+    - test_simpleSession: Fail if there's more than one open connection to given session. At the moment there's no infrastructure for this in place, we don't keep the status. See transport.coffee of sockjs-node.
     ✓ test_closeSession
   ✓ XhrPolling:
     ✓ test_transport: Fails only due to mess in text/plain vs. text/plain; charset=UTF-8 (check https://github.com/sockjs/sockjs-protocol/issues/21).
@@ -15,7 +15,7 @@ SockJS 0.1 Protocol Tests:
   ✓ HtmlFile
   ✓ JsonPolling
   - ProtocolQuirks:
-    - test_closeSession_another_connection
+    - test_closeSession_another_connection: Fail if there's more than one open connection to given session. At the moment there's no infrastructure for this in place, we don't keep the status. See transport.coffee of sockjs-node.
 
   - WebsocketHttpErrors
   - WebsocketHixie76
@@ -27,3 +27,6 @@ Implementation:
   - Support polling with HTTP 1.0 (see https://github.com/rack/rack/blob/master/lib/rack/chunked.rb#L44-53)
   - curl -X POST http://localhost:8080/echo/a/b/xhr -vv should return o frame, the next curl -X POST http://localhost:8080/echo/a/b/xhr -vv should hang and return a message if there's any or heartbeat after the timeout (see disconnect_delay in sockjs-node).
   - If there's another request during the closing 5s, we are supposed to reply with another close frame and reset the timer to wait for another 5s.
+
+Protocol:
+  - Heartbeat
