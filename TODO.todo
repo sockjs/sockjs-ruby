@@ -4,17 +4,18 @@ SockJS 0.1 Protocol Tests:
   ✓ BaseUrlGreeting
   ✓ IframePage
   ✓ ChunkingTest
-  ✓ SessionURLs
+  - SessionURLs
   - Protocol:
     - test_simpleSession: Fail if there's more than one open connection to given session. At the moment there's no infrastructure for this in place, we don't keep the status.
     ✓ test_closeSession
-  ✓ XhrPolling:
+  - XhrPolling:
     ✓ test_transport: Fails only due to mess in text/plain vs. text/plain; charset=UTF-8 (check https://github.com/sockjs/sockjs-protocol/issues/21).
   ✓ XhrStreaming
   ✓ EventSource
   ✓ HtmlFile
   ✓ JsonPolling
-  ✓ ProtocolQuirks
+  - ProtocolQuirks:
+    - test_closeSession_another_connection
 
   - WebsocketHttpErrors
   - WebsocketHixie76
