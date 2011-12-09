@@ -22,7 +22,7 @@ Gem::Specification.new do |s|
   # Dependencies
   s.add_dependency "rack"
   s.add_dependency "thin"
-  s.add_dependency "faye"
+  s.add_dependency "faye-websocket"
 
   # Files
   s.files = `git ls-files`.split("\n")
