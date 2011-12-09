@@ -94,7 +94,7 @@ module SockJS
     end
 
     def init_timer(response, session, interval)
-      EM::PeriodicTimer.new(interval) do |timer|
+      timer = EM::PeriodicTimer.new(interval) do
         if data = session.process_buffer
           response.write(format_frame(data.chomp!)) unless data == "a[]\n" # FIXME
           if data[0] == "c" # close frame. TODO: Do this by raising an exception or something, this is a mess :o Actually ... do we need here some 5s timeout as well?
