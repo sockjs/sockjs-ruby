@@ -13,6 +13,7 @@ require "sockjs/adapters/transports/eventsource"
 require "sockjs/adapters/transports/htmlfile"
 require "sockjs/adapters/transports/iframe"
 require "sockjs/adapters/transports/jsonp"
+require "sockjs/adapters/transports/websocket"
 require "sockjs/adapters/transports/welcome_screen"
 require "sockjs/adapters/transports/xhr"
 
@@ -67,7 +68,7 @@ module Rack
 
       if matched && env["HTTP_UPGRADE"] == "WebSocket"
         debug "~ Upgrading to WebSockets ..."
-        upgrade_to_websockets(env)
+        upgrade_to_websockets(env, request)
       elsif matched && ! env["HTTP_UPGRADE"]
         debug "~ Processing as a normal HTTP request ..."
         process_http_request(request)
@@ -76,17 +77,20 @@ module Rack
       end
     end
 
-    def upgrade_to_websockets(env)
+    def upgrade_to_websockets(env, request)
       ws = Faye::WebSocket.new(env)
+      handler = ::SockJS::Adapters::WebSocket.new(@connection, @options)
+
+      handler.handle_open(request, ws)
 
       ws.onmessage = lambda do |event|
         debug "~ WS data received: #{event.data.inspect}"
-        # TODO: Implement WebSocket transport.
+        handler.handle_message(request, event, ws)
       end
 
       ws.onclose = lambda do |event|
         debug "~ Closing WebSocket connection (#{event.code}, #{event.reason})"
-        # TODO: Implement WebSocket transport.
+        handler.handle_close(request, ws)
       end
 
       # Thin async response
