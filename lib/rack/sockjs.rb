@@ -1,6 +1,8 @@
 # encoding: utf-8
 
 require "rack"
+require "faye/websocket"
+
 require "sockjs"
 require "sockjs/adapter"
 require "sockjs/adapters/servers/thin"
@@ -63,33 +65,57 @@ module Rack
 
       debug "~ #{request.http_method} #{request.path_info.inspect} (matched: #{!! matched})"
 
-      if matched
-        prefix        = request.path_info.sub(/^#{Regexp.quote(@prefix)}\/?/, "")
-        method        = request.http_method
-        handler_klass = ::SockJS::Adapter.handler(prefix, method)
-        if handler_klass
-          debug "~ Handler: #{handler_klass.inspect}"
-          handler = handler_klass.new(@connection, @options)
-          handler.handle(request)
-          ::SockJS::Thin::DUMMY_RESPONSE
-        else
-          body = <<-HTML
-            <!DOCTYPE html>
-            <html>
-              <body>
-                <h1>Handler Not Found</h1>
-                <ul>
-                  <li>Prefix: #{prefix.inspect}</li>
-                  <li>Method: #{method.inspect}</li>
-                  <li>Handlers: #{::SockJS::Adapter.subclasses.inspect}</li>
-                </ul>
-              </body>
-            </html>
-          HTML
-          [404, {"Content-Type" => "text/html; charset=UTF-8", "Content-Length" => body.bytesize.to_s}, [body]]
-        end
+      if matched && env["HTTP_UPGRADE"]
+        debug "~ Upgrading to WebSockets ..."
+        upgrade_to_websockets(env)
+      elsif matched && ! env["HTTP_UPGRADE"]
+        debug "~ Processing as a normal HTTP request ..."
+        process_http_request(request)
       else
         @app.call(env)
+      end
+    end
+
+    def upgrade_to_websockets(env)
+      ws = Faye::WebSocket.new(env)
+
+      ws.onmessage = lambda do |event|
+        ws.send(event.data)
+      end
+
+      ws.onclose = lambda do |event|
+        p [:close, event.code, event.reason]
+        ws = nil
+      end
+
+      # Thin async response
+      [-1, {}, []]
+    end
+
+    def process_http_request(request)
+      prefix        = request.path_info.sub(/^#{Regexp.quote(@prefix)}\/?/, "")
+      method        = request.http_method
+      handler_klass = ::SockJS::Adapter.handler(prefix, method)
+      if handler_klass
+        debug "~ Handler: #{handler_klass.inspect}"
+        handler = handler_klass.new(@connection, @options)
+        handler.handle(request)
+        ::SockJS::Thin::DUMMY_RESPONSE
+      else
+        body = <<-HTML
+          <!DOCTYPE html>
+          <html>
+            <body>
+              <h1>Handler Not Found</h1>
+              <ul>
+                <li>Prefix: #{prefix.inspect}</li>
+                <li>Method: #{method.inspect}</li>
+                <li>Handlers: #{::SockJS::Adapter.subclasses.inspect}</li>
+              </ul>
+            </body>
+          </html>
+        HTML
+        [404, {"Content-Type" => "text/html; charset=UTF-8", "Content-Length" => body.bytesize.to_s}, [body]]
       end
     end
 
