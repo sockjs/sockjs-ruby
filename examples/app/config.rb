@@ -65,6 +65,13 @@ app = Rack::Builder.new do
     end
   end
 
+  use Rack::SockJS, "/disabled_websocket_echo", options.merge(disabled_transports: [::SockJS::Adapters::WebSocket]) do |connection|
+    connection.subscribe do |session, message|
+      debug "~ \033[0;31;40m[Echo]\033[0m message: #{message.inspect}, session: #{session.inspect}"
+      session.send(message)
+    end
+  end
+
   use Rack::SockJS, "/close", options do |connection|
     # With WebSockets this occurs immediately, so the
     # client receives "o" and then "c[3000, "Go away!"]".
