@@ -66,55 +66,10 @@ module Rack
 
       debug "~ #{request.http_method} #{request.path_info.inspect} (matched: #{!! matched})"
 
-      return @app.call(env) unless matched
-
-      if env["HTTP_UPGRADE"] == "WebSocket" && env["HTTP_CONNECTION"] == "Upgrade" && ! disabled_websocket?
-        debug "~ Upgrading to WebSockets ..."
-        upgrade_to_websockets(env, request)
-      elsif env["HTTP_UPGRADE"] == "WebSocket" && disabled_websocket?
-        body = <<-HTML
-          <h1>WebSockets Are Disabled</h1>
-        HTML
-        [404, {"Content-Type" => "text/html", "Content-Length" => body.bytesize.to_s}, [body]]
-      elsif ! env["HTTP_UPGRADE"]
-        debug "~ Processing as a normal HTTP request ..."
-        process_http_request(request)
-      elsif env["HTTP_UPGRADE"] != "WebSocket"
-        body = 'Can "Upgrade" only to "WebSocket".'
-        [400, {"Content-Length" => body.bytesize.to_s}, [body]]
-      elsif env["HTTP_CONNECTION"] != "Upgrade"
-        body = '"Connection" must be "Upgrade".'
-        [400, {"Content-Length" => body.bytesize.to_s}, [body]]
-      end
+      matched ? process_request(request) : @app.call(env)
     end
 
-    def disabled_websocket?
-      disabled_transports = @options[:disabled_transports] || Array.new
-      websocket = ::SockJS::Adapters::WebSocket
-      return disabled_transports.include?(websocket)
-    end
-
-    def upgrade_to_websockets(env, request)
-      ws = Faye::WebSocket.new(env)
-      handler = ::SockJS::Adapters::WebSocket.new(@connection, @options)
-
-      handler.handle_open(request, ws)
-
-      ws.onmessage = lambda do |event|
-        debug "~ WS data received: #{event.data.inspect}"
-        handler.handle_message(request, event, ws)
-      end
-
-      ws.onclose = lambda do |event|
-        debug "~ Closing WebSocket connection (#{event.code}, #{event.reason})"
-        handler.handle_close(request, ws)
-      end
-
-      # Thin async response
-      ::SockJS::Thin::DUMMY_RESPONSE
-    end
-
-    def process_http_request(request)
+    def process_request(request)
       prefix        = request.path_info.sub(/^#{Regexp.quote(@prefix)}\/?/, "")
       method        = request.http_method
       handler_klass = ::SockJS::Adapter.handler(prefix, method)
