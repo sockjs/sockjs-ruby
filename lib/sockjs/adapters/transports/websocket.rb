@@ -12,16 +12,16 @@ module SockJS
       def invalid_request_or_disabled_websocket?(request)
         if self.disabled?
           status, body = 404, "WebSockets Are Disabled"
-        elsif request.env["HTTP_CONNECTION"] != "Upgrade"
-          status, body = 400, '"Connection" must be "Upgrade".'
         elsif request.env["HTTP_UPGRADE"] != "WebSocket"
           status, body = 400, 'Can "Upgrade" only to "WebSocket".'
+        elsif request.env["HTTP_CONNECTION"] != "Upgrade"
+          status, body = 400, '"Connection" must be "Upgrade".'
         else
           return false
         end
 
         p [status, {"Content-Length" => body.bytesize.to_s}, [body]]
-        [status, {"Content-Length" => body.bytesize.to_s}, [body]]
+        self.write_response(request, status, Hash.new, body)
       end
 
       # Handlers.
