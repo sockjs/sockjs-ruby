@@ -18,10 +18,6 @@ SockJS 0.1 Protocol Tests:
     - test_closeSession_another_connection: Fail if there's more than one open connection to given session. At the moment there's no infrastructure for this in place, we don't keep the status. See transport.coffee of sockjs-node.
 
   - WebsocketHttpErrors:
-    - test_disabledTransport: User should be able to turn off WebSocket transport. We need an extra app on /disabled_websocket_echo/.+/.+/websocket.
-    - test_httpMethod: It should return HTTP 400, but it returns HTTP 404 as it's handled as any HTTP request. Suggestion: Don't use prefix + method, but a method which takes a request and check anything it needs. Actually ... we don't use the prefix for WS in the first place, WTF?
-    - test_verifyOrigin
-    - test_invaildConnectionHeader
     - test_invalidMethod
   - WebsocketHixie76:
     - test_transport
