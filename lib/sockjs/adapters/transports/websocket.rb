@@ -60,6 +60,7 @@ module SockJS
 
       def handle_message(request, event, ws)
         p [:ws_message, event.data]
+        ws.send(event.data) # not this way, it's an app responsibility
       end
     end
   end
