@@ -38,6 +38,11 @@ module SockJS
       @connection, @options = connection, options
     end
 
+    def disabled?
+      disabled_transports = @options[:disabled_transports] || Array.new
+      return disabled_transports.include?(self.class)
+    end
+
     # TODO: Make it use the adapter user uses.
     def response_class
       SockJS::Thin::Response
