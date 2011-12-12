@@ -64,9 +64,15 @@ module Rack
       request = ::SockJS::Thin::Request.new(env)
       matched = request.path_info.match(/^#{Regexp.quote(@prefix)}/)
 
-      debug "~ #{request.http_method} #{request.path_info.inspect} (matched: #{!! matched})"
+      debug "~ #{request.http_method} #{request.path_info.inspect} (SockJS prefix matched: #{!! matched})"
 
-      matched ? process_request(request) : @app.call(env)
+      matched ? debug_process_request(request) : @app.call(env)
+    end
+
+    def debug_process_request(request)
+      self.process_request(request).tap do |response|
+        debug "~ #{response.inspect}"
+      end
     end
 
     def process_request(request)
@@ -78,6 +84,9 @@ module Rack
         handler = handler_klass.new(@connection, @options)
         handler.handle(request)
         ::SockJS::Thin::DUMMY_RESPONSE
+      elsif handler_klass = ::SockJS::Adapter.match_handler_for_http_405(prefix, method)
+        # Unsupported method.
+        [405, {}, []]
       else
         body = <<-HTML
           <!DOCTYPE html>
@@ -92,6 +101,7 @@ module Rack
             </body>
           </html>
         HTML
+        debug "~ Handler not found!"
         [404, {"Content-Type" => "text/html; charset=UTF-8", "Content-Length" => body.bytesize.to_s}, [body]]
       end
     end

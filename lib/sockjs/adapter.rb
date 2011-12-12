@@ -23,6 +23,12 @@ module SockJS
       end
     end
 
+    def self.match_handler_for_http_405(prefix, method)
+      self.subclasses.find do |handler|
+        handler.prefix === prefix && handler.method != method
+      end
+    end
+
     def self.inherited(subclass)
       Adapter.subclasses << subclass
       subclass.filters = Array.new
