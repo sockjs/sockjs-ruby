@@ -28,7 +28,7 @@ module SockJS
         unless invalid_request_or_disabled_websocket?(request)
           puts "~ Upgrading to WebSockets ..."
 
-          ws = Faye::WebSocket.new(env)
+          ws = Faye::WebSocket.new(request.env)
           handler = ::SockJS::Adapters::WebSocket.new(@connection, @options)
 
           handler.handle_open(request, ws)
