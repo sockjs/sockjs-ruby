@@ -68,7 +68,7 @@ module Rack
 
       return @app.call(env) unless matched
 
-      if env["HTTP_UPGRADE"] == "WebSocket" && ! disabled_websocket?
+      if env["HTTP_UPGRADE"] == "WebSocket" && env["HTTP_CONNECTION"] == "Upgrade" && ! disabled_websocket?
         debug "~ Upgrading to WebSockets ..."
         upgrade_to_websockets(env, request)
       elsif env["HTTP_UPGRADE"] == "WebSocket" && disabled_websocket?
@@ -81,6 +81,9 @@ module Rack
         process_http_request(request)
       elsif env["HTTP_UPGRADE"] != "WebSocket"
         body = 'Can "Upgrade" only to "WebSocket".'
+        [400, {"Content-Length" => body.bytesize.to_s}, [body]]
+      elsif env["HTTP_CONNECTION"] != "Upgrade"
+        body = '"Connection" must be "Upgrade".'
         [400, {"Content-Length" => body.bytesize.to_s}, [body]]
       end
     end
