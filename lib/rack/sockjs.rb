@@ -69,7 +69,7 @@ module Rack
       if matched && env["HTTP_UPGRADE"] == "WebSocket" && ! disabled_websocket?
         debug "~ Upgrading to WebSockets ..."
         upgrade_to_websockets(env, request)
-      elsif matched && env["HTTP_UPGRADE"] && disabled_websocket?
+      elsif matched && env["HTTP_UPGRADE"] == "WebSocket" && disabled_websocket?
         body = <<-HTML
           <h1>WebSockets Are Disabled</h1>
         HTML
@@ -86,9 +86,9 @@ module Rack
     end
 
     def disabled_websocket?
-      unless @options[:disabled_transports].nil?
-        @options[:disabled_transports].include?(::SockJS::Adapters::Websocket)
-      end
+      disabled_transports = @options[:disabled_transports] || Array.new
+      websocket = ::SockJS::Adapters::WebSocket
+      return disabled_transports.include?(websocket)
     end
 
     def upgrade_to_websockets(env, request)
