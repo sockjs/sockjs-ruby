@@ -76,12 +76,12 @@ module Rack
           <h1>WebSockets Are Disabled</h1>
         HTML
         [404, {"Content-Type" => "text/html", "Content-Length" => body.bytesize.to_s}, [body]]
-      elsif env["HTTP_UPGRADE"] != "WebSocket"
-        body = 'Can "Upgrade" only to "WebSocket".'
-        [400, {"Content-Length" => body.bytesize.to_s}, [body]]
       elsif ! env["HTTP_UPGRADE"]
         debug "~ Processing as a normal HTTP request ..."
         process_http_request(request)
+      elsif env["HTTP_UPGRADE"] != "WebSocket"
+        body = 'Can "Upgrade" only to "WebSocket".'
+        [400, {"Content-Length" => body.bytesize.to_s}, [body]]
       end
     end
 
