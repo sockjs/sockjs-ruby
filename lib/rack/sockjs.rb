@@ -84,8 +84,9 @@ module Rack
         handler = handler_klass.new(@connection, @options)
         handler.handle(request)
         ::SockJS::Thin::DUMMY_RESPONSE
-      elsif handler_klass = ::SockJS::Adapter.match_handler_for_http_405(prefix, method)
+      elsif ::SockJS::Adapter.match_handler_for_http_405(prefix, method)
         # Unsupported method.
+        debug "~ Method not supported!"
         [405, {}, []]
       else
         body = <<-HTML

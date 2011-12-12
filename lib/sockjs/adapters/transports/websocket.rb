@@ -20,7 +20,6 @@ module SockJS
           return false
         end
 
-        p [status, {"Content-Length" => body.bytesize.to_s}, [body]]
         self.write_response(request, status, Hash.new, body)
       end
 
