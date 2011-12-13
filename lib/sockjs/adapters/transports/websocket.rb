@@ -61,6 +61,11 @@ module SockJS
 
         messages = session.process_buffer.chomp
         ws.send(messages.chomp) unless messages == "a[]"
+        # OK, this is a huge mess! Let's rework sessions,
+        # so session#send can work instantly without this
+        # senseless crap ... because obviously in case
+        # of websockets, we don't need to buffer
+        # the messages and wait for sending the response.
       end
 
       def format_frame(payload)
