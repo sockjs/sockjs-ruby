@@ -49,18 +49,20 @@ module SockJS
       end
 
       def handle_open(request, ws)
-        p [:ws_open]
-        ws.send("o")
+        match = request.path_info.match(self.class.prefix)
+        session = self.connection.create_session(match[1])
+        body = self.format_frame(session.open!)
+        ws.send(body)
       end
 
       def handle_close(request, ws)
-        p [:ws_close]
-        ws.send("c")
+        session = self.connection.sessions[match[1]]
+        session.close
       end
 
       def handle_message(request, event, ws)
-        p [:ws_message, event.data]
-        ws.send(event.data) # not this way, it's an app responsibility
+        session.receive_message(event.data)
+        session.process_buffer
       end
     end
   end
