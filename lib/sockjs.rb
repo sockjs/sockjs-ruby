@@ -91,8 +91,6 @@ module SockJS
 
     def initialize(callbacks)
       @callbacks = callbacks
-      @received_messages = Array.new
-      @messages_for_the_client = Array.new
       @disconnect_delay = 5 # TODO: make this configurable.
       @status = :created
     end
@@ -111,9 +109,29 @@ module SockJS
         data = "[#{data}]"
       end
 
-      @received_messages.push(*parse_json(data))
+      process_messages(*parse_json(data))
     end
 
+    def process_messages(*messages)
+      # TODO
+    end
+
+    def send(*messages)
+      # TODO
+    end
+
+    def open!
+      self.status = :opening
+      self.set_timer
+
+      self.send(Protocol::OPEN_FRAME)
+    end
+
+    def closed?
+      @status == :close
+    end
+
+    protected
     def parse_json(data)
       raise EmptyPayload.new if data == "[]"
       JSON.parse(data)
@@ -121,13 +139,43 @@ module SockJS
       raise SockJS::InvalidJSON.new(error.message)
     end
 
-    def open!
-      self.status = :opening
-      self.set_timer
-
-      Protocol::OPEN_FRAME
+    def set_timer
+      @disconnect_timer = begin
+        EM::Timer.new(@disconnect_delay) do
+          puts "~ Closing the connection."
+          self.close
+        end
+      end
     end
 
+    def reset_timer
+      @disconnect_timer.cancel
+      self.set_timer
+    end
+
+    def mark_to_be_garbage_collected
+      @status = :close
+    end
+  end
+
+  class SessionWitchCachedMessages < Session
+    def initialize(callbacks)
+      super(callbacks)
+
+      @received_messages = Array.new
+      @messages_for_the_client = Array.new
+    end
+
+    def send(*messages)
+      @messages_for_the_client.push(*messages)
+    end
+
+    def process_messages(*messages)
+      @received_messages.push(*messages)
+    end
+  end
+
+  class Session
     def process_buffer
       self.reset_timer
 
@@ -162,11 +210,6 @@ module SockJS
       end
     end
 
-    # We need to rewrite this for WS, this is not good enough.
-    def send(*messages)
-      @messages_for_the_client.push(*messages)
-    end
-
     def response(&block)
       block.call
 
@@ -178,34 +221,11 @@ module SockJS
       Protocol.close_frame(error.status, error.message)
     end
 
-    def closed?
-      @status == :close
-    end
-
     def check_status
       if @status == :opening
         @status = :open
         self.execute_callback(:open, self)
       end
-    end
-
-    protected
-    def set_timer
-      @disconnect_timer = begin
-        EM::Timer.new(@disconnect_delay) do
-          puts "~ Closing the connection."
-          self.close
-        end
-      end
-    end
-
-    def reset_timer
-      @disconnect_timer.cancel
-      self.set_timer
-    end
-
-    def mark_to_be_garbage_collected
-      @status = :close
     end
   end
 end
