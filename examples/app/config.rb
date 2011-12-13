@@ -87,5 +87,5 @@ end
 
 EM.run do
   thin = Rack::Handler.get("thin")
-  thin.run(app, Port: 8080)
+  thin.run(app.to_app, Port: 8080)
 end
