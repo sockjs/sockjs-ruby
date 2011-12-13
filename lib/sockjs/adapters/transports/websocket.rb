@@ -55,12 +55,19 @@ module SockJS
         ws.send(body)
       end
 
+      def format_frame(payload)
+        payload
+      end
+
       def handle_close(request, ws)
+        match = request.path_info.match(self.class.prefix)
         session = self.connection.sessions[match[1]]
         session.close
       end
 
       def handle_message(request, event, ws)
+        match = request.path_info.match(self.class.prefix)
+        session = self.connection.sessions[match[1]]
         session.receive_message(event.data)
         session.process_buffer
       end
