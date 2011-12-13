@@ -49,6 +49,7 @@ module SockJS
       end
 
       def handle_open(request, ws)
+        puts "~ Opening WS connection."
         match = request.path_info.match(self.class.prefix)
         session = self.connection.create_session(match[1])
         body = self.format_frame(session.open!)
@@ -60,16 +61,20 @@ module SockJS
       end
 
       def handle_close(request, ws)
+        puts "~ Closing WS connection."
         match = request.path_info.match(self.class.prefix)
         session = self.connection.sessions[match[1]]
         session.close
       end
 
       def handle_message(request, event, ws)
+        puts "~ WS message received: #{event.data.inspect}"
         match = request.path_info.match(self.class.prefix)
         session = self.connection.sessions[match[1]]
         session.receive_message(event.data)
         session.process_buffer
+      rescue SockJS::InvalidJSON
+        session.close
       end
     end
   end
