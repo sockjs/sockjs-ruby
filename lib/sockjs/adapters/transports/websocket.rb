@@ -29,8 +29,11 @@ module SockJS
           puts "~ Upgrading to WebSockets ..."
 
           ws = Faye::WebSocket.new(request.env)
-          handler = ::SockJS::Adapters::WebSocket.new(@connection, @options)
 
+          def ws.send(msg); super msg; puts " WS#send ~ #{msg.inspect}"; end
+
+          # Whops, this is obviously wrong ...
+          handler = ::SockJS::Adapters::WebSocket.new(@connection, @options)
           handler.handle_open(request, ws)
 
           ws.onmessage = lambda do |event|
@@ -55,8 +58,9 @@ module SockJS
         body = self.format_frame(session.open!)
         ws.send(body)
         session.check_status
-        messages = session.process_buffer
-        ws.send(messages)
+
+        messages = session.process_buffer.chomp
+        ws.send(messages.chomp) unless messages == "a[]"
       end
 
       def format_frame(payload)
@@ -68,6 +72,9 @@ module SockJS
         match = request.path_info.match(self.class.prefix)
         session = self.connection.sessions[match[1]]
         session.close
+
+        messages = session.process_buffer.chomp
+        ws.send(messages)
       end
 
       def handle_message(request, event, ws)
@@ -75,7 +82,9 @@ module SockJS
         match = request.path_info.match(self.class.prefix)
         session = self.connection.sessions[match[1]]
         session.receive_message(event.data)
-        session.process_buffer
+        messages = session.process_buffer.chomp
+        p [:mess, messages]
+        ws.send(messages)
       rescue SockJS::InvalidJSON
         session.close
       end
