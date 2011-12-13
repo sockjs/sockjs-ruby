@@ -64,7 +64,7 @@ module Rack
       request = ::SockJS::Thin::Request.new(env)
       matched = request.path_info.match(/^#{Regexp.quote(@prefix)}/)
 
-      debug "~ #{request.http_method} #{request.path_info.inspect} (SockJS prefix matched: #{!! matched})"
+      debug "\n~ \e[31m#{request.http_method} \e[32m#{request.path_info.inspect}\e[0m (SockJS prefix matched: #{!! matched})"
 
       matched ? debug_process_request(request) : @app.call(env)
     end
