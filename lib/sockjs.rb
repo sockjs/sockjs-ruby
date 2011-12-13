@@ -149,9 +149,11 @@ module SockJS
 
     def close(status = 3000, message = "Go away!")
       @status = :closing
-      @error = SockJS::CloseError.new(status, message)
 
+      @error = SockJS::CloseError.new(status, message)
       # raise @error # NOPE!
+
+      self.send(Protocol.close_frame(status, message))
 
       @close_timer.cancel if @close_timer
 
@@ -160,6 +162,7 @@ module SockJS
       end
     end
 
+    # We need to rewrite this for WS, this is not good enough.
     def send(*messages)
       @messages_for_the_client.push(*messages)
     end
