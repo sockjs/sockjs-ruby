@@ -179,6 +179,13 @@ module SockJS
       @status == :close
     end
 
+    def check_status
+      if @status == :opening
+        @status = :open
+        self.execute_callback(:open, self)
+      end
+    end
+
     protected
     def set_timer
       @disconnect_timer = begin
@@ -196,13 +203,6 @@ module SockJS
 
     def mark_to_be_garbage_collected
       @status = :close
-    end
-
-    def check_status
-      if @status == :opening
-        @status = :open
-        self.execute_callback(:open, self)
-      end
     end
   end
 end

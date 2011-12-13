@@ -54,6 +54,7 @@ module SockJS
         session = self.connection.create_session(match[1])
         body = self.format_frame(session.open!)
         ws.send(body)
+        session.check_status
       end
 
       def format_frame(payload)
