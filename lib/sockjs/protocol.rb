@@ -4,8 +4,8 @@ require "json"
 
 module SockJS
   class Protocol
-    OPEN_FRAME      ||= "o"
-    CLOSE_FRAME     ||= "c"
+    OPENING_FRAME   ||= "o"
+    CLOSING_FRAME   ||= "c"
     ARRAY_FRAME     ||= "a"
     HEARTBEAT_FRAME ||= "h"
 
@@ -17,7 +17,7 @@ module SockJS
       validate Integer, status
       validate String, message
 
-      "#{CLOSE_FRAME}[#{status},#{message.inspect}]"
+      "#{CLOSING_FRAME}[#{status},#{message.inspect}]"
     end
 
     protected

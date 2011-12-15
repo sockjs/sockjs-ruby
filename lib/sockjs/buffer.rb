@@ -21,13 +21,13 @@ class SockJS
     def open
       if @status == :created
         @status = :opened
-        @frame  = Protocol::OPEN_FRAME
+        @frame  = Protocol::OPENING_FRAME
       else
         raise StateMachineError.new(@status, :opened)
       end
     end
 
-    # Close frame can occur at any time, except if the session isn't open yet.
+    # Close frame can occur at any time, except if the session isn't opened yet.
     # Also, if the buffer is already closed, let's fail: I believe this is more transparent behaviour.
     def close(*args)
       unless @status == :created or @status == :closed
