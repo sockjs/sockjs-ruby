@@ -25,8 +25,8 @@ module SockJS
 
             self.write_response(request, 200, {"Content-Type" => CONTENT_TYPES[:plain]}, body)
           else
-            session = self.connection.create_session(match[1])
-            body = self.send_frame(request.callback, session.open!.chomp)
+            session = self.connection.create_session(match[1], self)
+            session.open!(request.callback)
 
             self.write_response(request, 200, {"Content-Type" => CONTENT_TYPES[:javascript], "Access-Control-Allow-Origin" => request.origin, "Access-Control-Allow-Credentials" => "true", "Cache-Control" => "no-store, no-cache, must-revalidate, max-age=0"}, body) { |response| response.set_session_id(request.session_id) }
           end
@@ -36,7 +36,7 @@ module SockJS
         end
       end
 
-      def send_frame(callback_function, payload)
+      def format_frame(callback_function, payload)
         # Yes, JSONed twice, there isn't a better way, we must pass
         # a string back, and the script, will be evaled() by the browser.
         "#{callback_function}(#{payload.chomp.to_json});\r\n"

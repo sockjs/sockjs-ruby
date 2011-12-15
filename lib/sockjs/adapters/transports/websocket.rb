@@ -54,9 +54,8 @@ module SockJS
       def handle_open(request, ws)
         puts "~ Opening WS connection."
         match = request.path_info.match(self.class.prefix)
-        session = self.connection.create_session(match[1])
-        body = self.format_frame(session.open!)
-        ws.send(body)
+        session = self.connection.create_session(match[1], self)
+        session.open!
         session.check_status
 
         messages = session.process_buffer.chomp
