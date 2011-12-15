@@ -1,4 +1,4 @@
-# ./venv/bin/python sockjs-protocol-0.1.py ChunkingTest
+# ./venv/bin/python sockjs-protocol-0.1.py BaseUrlGreeting IframePage ChunkingTest SessionURLs Protocol ProtocolQuirks WebsocketHttpErrors
 
 SockJS 0.1 Protocol Tests:
   ✓ BaseUrlGreeting

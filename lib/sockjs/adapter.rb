@@ -76,6 +76,7 @@ module SockJS
     #    b) It's open:
     #       i) There IS NOT any consumer -> OK. AND CONTINUE
     #       i) There IS a consumer -> Send c[2010,"Another con still open"] AND END
+    # TODO: use this method
     def get_session(request, response, preamble = nil)
       match = request.path_info.match(self.class.prefix)
 
