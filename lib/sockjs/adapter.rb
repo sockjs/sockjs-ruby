@@ -1,5 +1,7 @@
 # encoding: utf-8
 
+require "sockjs/buffer"
+
 module SockJS
   class Adapter
     CONTENT_TYPES ||= {
@@ -17,6 +19,7 @@ module SockJS
     self.subclasses ||= Array.new
     self.filters    ||= Array.new
 
+    # TODO: refactor the following two methods: just find the prefix and check the method later on, so we won't need the second method at all.
     def self.handler(prefix, method)
       self.subclasses.find do |handler|
         handler.prefix === prefix && handler.method == method
@@ -41,7 +44,7 @@ module SockJS
     # Instance methods.
     attr_reader :connection, :options
     def initialize(connection, options)
-      @connection, @options = connection, options
+      @connection, @options, @buffer = connection, options, Buffer.new
     end
 
     def disabled?
@@ -70,6 +73,10 @@ module SockJS
       "#{payload}\n"
     end
 
+    def send(data, *args)
+      @buffer << self.format_frame(data, *args)
+    end
+
     # 1) There's no session -> create it. AND CONTINUE
     # 2) There's a session:
     #    a) It's closing -> Send c[3000,"Go away!"] AND END
@@ -93,9 +100,8 @@ module SockJS
       else
         response.write(preamble) if preamble
 
-        session = self.connection.create_session(match[1])
-        body = self.format_frame(session.open!)
-        response.write(body)
+        session = self.connection.create_session(match[1], self)
+        session.open!
         return session
       end
     end
