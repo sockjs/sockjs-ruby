@@ -1,5 +1,6 @@
 # encoding: utf-8
 
+require "forwardable"
 require "sockjs/adapter"
 
 module SockJS
@@ -28,22 +29,22 @@ module SockJS
         unless invalid_request_or_disabled_websocket?(request)
           puts "~ Upgrading to WebSockets ..."
 
-          ws = Faye::WebSocket.new(request.env)
+          @ws = Faye::WebSocket.new(request.env)
 
-          def ws.send(msg); super msg; puts " WS#send ~ #{msg.inspect}"; end
+          def @ws.send(msg); super msg; puts " WS#send ~ #{msg.inspect}"; end
 
           # Whops, this is obviously wrong ...
           handler = ::SockJS::Adapters::WebSocket.new(@connection, @options)
-          handler.handle_open(request, ws)
+          handler.handle_open(request)
 
-          ws.onmessage = lambda do |event|
+          @ws.onmessage = lambda do |event|
             debug "~ WS data received: #{event.data.inspect}"
-            handler.handle_message(request, event, ws)
+            handler.handle_message(request, event)
           end
 
-          ws.onclose = lambda do |event|
+          @ws.onclose = lambda do |event|
             debug "~ Closing WebSocket connection (#{event.code}, #{event.reason})"
-            handler.handle_close(request, ws)
+            handler.handle_close(request)
           end
 
           # Thin async response
@@ -51,7 +52,7 @@ module SockJS
         end
       end
 
-      def handle_open(request, ws)
+      def handle_open(request)
         puts "~ Opening WS connection."
         match = request.path_info.match(self.class.prefix)
         session = self.connection.create_session(match[1], self)
@@ -59,7 +60,7 @@ module SockJS
         session.check_status
 
         messages = session.process_buffer.chomp
-        ws.send(messages.chomp) unless messages == "a[]"
+        @ws.send(messages.chomp) unless messages == "a[]"
         # OK, this is a huge mess! Let's rework sessions,
         # so session#send can work instantly without this
         # senseless crap ... because obviously in case
@@ -67,28 +68,30 @@ module SockJS
         # the messages and wait for sending the response.
       end
 
+      def_delegator :@ws, :send
+
       def format_frame(payload)
         payload
       end
 
-      def handle_close(request, ws)
+      def handle_close(request)
         puts "~ Closing WS connection."
         match = request.path_info.match(self.class.prefix)
         session = self.connection.sessions[match[1]]
         session.close
 
         messages = session.process_buffer.chomp
-        ws.send(messages)
+        @ws.send(messages)
       end
 
-      def handle_message(request, event, ws)
+      def handle_message(request, event)
         puts "~ WS message received: #{event.data.inspect}"
         match = request.path_info.match(self.class.prefix)
         session = self.connection.sessions[match[1]]
         session.receive_message(event.data)
         messages = session.process_buffer.chomp
         p [:mess, messages]
-        ws.send(messages)
+        @ws.send(messages)
       rescue SockJS::InvalidJSON
         session.close
       end
