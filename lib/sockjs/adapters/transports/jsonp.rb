@@ -10,7 +10,6 @@ module SockJS
       # Settings.
       self.prefix  = /[^.]+\/([^.]+)\/jsonp$/
       self.method  = "GET"
-      self.filters = [:h_sid, :h_no_cache, :jsonp]
 
       # Handler.
       def handle(request)
@@ -48,7 +47,6 @@ module SockJS
       # Settings.
       self.prefix  = /[^.]+\/([^.]+)\/jsonp_send$/
       self.method  = "POST"
-      self.filters = [:h_sid, :expect_form, :jsonp_send]
 
       # Handler.
       def handle(request)

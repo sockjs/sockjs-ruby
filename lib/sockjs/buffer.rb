@@ -2,7 +2,7 @@
 
 require "sockjs/protocol"
 
-class SockJS
+module SockJS
   class BufferNotOpenError < StandardError
   end
 

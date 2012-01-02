@@ -3,7 +3,7 @@
 require "json"
 
 module SockJS
-  class Protocol
+  module Protocol
     OPENING_FRAME   ||= "o"
     CLOSING_FRAME   ||= "c"
     ARRAY_FRAME     ||= "a"
@@ -20,8 +20,7 @@ module SockJS
       "#{CLOSING_FRAME}[#{status},#{message.inspect}]"
     end
 
-    protected
-    def validate(desired_class, object)
+    def self.validate(desired_class, object)
       unless object.is_a?(desired_class)
         raise ArgumentError.new("#{desired_class} object expected, but object is an instance of #{object.class} (object: #{object.inspect}).")
       end

@@ -10,7 +10,6 @@ module SockJS
       # Settings.
       self.prefix  = /iframe[0-9\-.a-z_]*.html/
       self.method  = "GET"
-      self.filters = [:iframe, :cache_for, :expose]
 
       # Handler.
       def handle(request)

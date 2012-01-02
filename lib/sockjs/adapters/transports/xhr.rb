@@ -8,7 +8,6 @@ module SockJS
       # Settings.
       self.prefix  = /[^.]+\/([^.]+)\/xhr$/
       self.method  = "POST"
-      self.filters = [:h_sid, :xhr_cors, :xhr_poll]
 
       # Handler.
       def handle(request)
@@ -36,7 +35,6 @@ module SockJS
       # Settings.
       self.prefix  = /[^.]+\/([^.]+)\/xhr$/
       self.method  = "OPTIONS"
-      self.filters = [:h_sid, :xhr_cors, :cache_for, :xhr_options, :expose]
 
       # Handler.
       def handle(request)
@@ -50,7 +48,6 @@ module SockJS
       # Settings.
       self.prefix  = /[^.]+\/([^.]+)\/xhr_send$/
       self.method  = "POST"
-      self.filters = [:h_sid, :xhr_cors, :expect_xhr, :xhr_send]
 
       # Handler.
       def handle(request)
@@ -83,31 +80,35 @@ module SockJS
       # Settings.
       self.prefix  = /[^.]+\/([^.]+)\/xhr_send$/
       self.method  = "OPTIONS"
-      self.filters = [:h_sid, :xhr_cors, :cache_for, :xhr_options, :expose]
     end
 
     class XHRStreamingPost < Adapter
       # Settings.
       self.prefix  = /[^.]+\/([^.]+)\/xhr_streaming$/
       self.method  = "POST"
-      self.filters = [:h_sid, :xhr_cors, :xhr_streaming]
 
       # Handler.
       def handle(request)
         match = request.path_info.match(self.class.prefix)
         session_id = match[1]
 
-        response = self.response(request, 200, {"Content-Type" => CONTENT_TYPES[:javascript], "Access-Control-Allow-Origin" => request.origin, "Access-Control-Allow-Credentials" => "true"}) { |response| response.set_session_id(request.session_id) }
-        response.write_head
+        @response = self.response(request, 200, {"Content-Type" => CONTENT_TYPES[:javascript], "Access-Control-Allow-Origin" => request.origin, "Access-Control-Allow-Credentials" => "true"}) { |response| response.set_session_id(request.session_id) }
+        @response.write_head
 
         # IE requires 2KB prefix:
         # http://blogs.msdn.com/b/ieinternals/archive/2010/04/06/comet-streaming-in-internet-explorer-with-xmlhttprequest-and-xdomainrequest.aspx
         preamble = "h" * 2048 + "\n"
-        self.try_timer_if_valid(request, response, preamble)
+        self.try_timer_if_valid(request, @response, preamble)
       end
 
       def format_frame(body)
         "#{body}\n"
+      end
+
+      def send(*messages)
+        messages.each do |message|
+          @response.write(message)
+        end
       end
     end
 
@@ -115,7 +116,6 @@ module SockJS
       # Settings.
       self.prefix  = /[^.]+\/([^.]+)\/xhr_streaming$/
       self.method  = "OPTIONS"
-      self.filters = [:h_sid, :xhr_cors, :cache_for, :xhr_options, :expose]
     end
   end
 end

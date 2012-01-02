@@ -1,8 +1,9 @@
 # encoding: utf-8
 
 require "eventmachine"
+require "forwardable"
 require "sockjs/utils"
-require "sockjs/protocol"
+require "sockjs/buffer"
 require "sockjs/version"
 
 module SockJS
@@ -79,17 +80,22 @@ module SockJS
       self.callbacks[:session_open] << block
     end
 
-    def create_session(key)
+    def create_session(key, transport)
       self.sessions[key] ||= begin
-        Session.new(open: callbacks[:session_open], buffer: callbacks[:subscribe])
+        Session.new(transport, open: callbacks[:session_open], buffer: callbacks[:subscribe])
       end
     end
   end
 
   class Session
+    extend Forwardable
+
     include CallbackMixin
 
-    def initialize(callbacks)
+    def_delegator :@transport, :send
+
+    def initialize(transport, callbacks)
+      @transport = transport
       @callbacks = callbacks
       @disconnect_delay = 5 # TODO: make this configurable.
       @status = :created
@@ -116,19 +122,16 @@ module SockJS
       # TODO
     end
 
-    def send(*messages)
-      # TODO
-    end
-
-    def open!
+    def open!(*args)
       self.status = :opening
       self.set_timer
 
-      self.send(Protocol::OPEN_FRAME)
+      @transport.buffer.open
+      self.send(Protocol::OPENING_FRAME, *args)
     end
 
     def closed?
-      @status == :close
+      @status == :closed
     end
 
     protected
@@ -154,7 +157,7 @@ module SockJS
     end
 
     def mark_to_be_garbage_collected
-      @status = :close
+      @status = :closed
     end
   end
 

@@ -6,6 +6,8 @@ require "sockjs/adapter"
 module SockJS
   module Adapters
     class WebSocket < Adapter
+      extend Forwardable
+
       # Settings.
       self.prefix  = /[^.]+\/([^.]+)\/websocket$/
       self.method  = "GET"

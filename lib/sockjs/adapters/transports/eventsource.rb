@@ -8,7 +8,6 @@ module SockJS
       # Settings.
       self.prefix  = /[^.]+\/([^.]+)\/eventsource$/
       self.method  = "GET"
-      self.filters = [:h_sid, :h_no_cache, :eventsource]
 
       # Handler.
       def handle(request)

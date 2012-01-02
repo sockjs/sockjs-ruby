@@ -8,7 +8,6 @@ module SockJS
       # Settings.
       self.prefix  = "chunking_test"
       self.method  = "OPTIONS"
-      self.filters = [:h_sid, :xhr_cors, :cache_for, :xhr_options, :expose]
 
       # Handler.
       def handle(request)
@@ -25,7 +24,6 @@ module SockJS
 
     class ChunkingTestPost < ChunkingTestOptions
       self.method  = "POST"
-      self.filters = [:h_sid, :xhr_cors, :expect_xhr, :chunking_test]
 
       # Handler.
       def handle(request)

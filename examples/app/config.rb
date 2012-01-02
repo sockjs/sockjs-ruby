@@ -10,6 +10,14 @@ require "rack"
 require "thin"
 require "eventmachine"
 
+def next_argument(argument)
+  if ARGV.include?(argument)
+    ARGV[ARGV.index(argument) + 1]
+  end
+end
+
+PORT = next_argument("-p") || 8081
+
 ::Thin::Connection.class_eval do
   def handle_error(error = $!)
     log "[#{error.class}] #{error.message}\n  - "
@@ -87,5 +95,5 @@ end
 
 EM.run do
   thin = Rack::Handler.get("thin")
-  thin.run(app.to_app, Port: 8080)
+  thin.run(app.to_app, Port: PORT)
 end

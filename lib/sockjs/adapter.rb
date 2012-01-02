@@ -12,12 +12,11 @@ module SockJS
     }
 
     class << self
-      attr_accessor :prefix, :method, :filters, :subclasses
+      attr_accessor :prefix, :method, :subclasses
     end
 
     self.method     ||= "GET"
     self.subclasses ||= Array.new
-    self.filters    ||= Array.new
 
     # TODO: refactor the following two methods: just find the prefix and check the method later on, so we won't need the second method at all.
     def self.handler(prefix, method)
@@ -34,15 +33,13 @@ module SockJS
 
     def self.inherited(subclass)
       Adapter.subclasses << subclass
-      subclass.filters = Array.new
 
       subclass.method  = self.method
       subclass.prefix  = self.prefix
-      subclass.filters = self.filters
     end
 
     # Instance methods.
-    attr_reader :connection, :options
+    attr_reader :connection, :options, :buffer
     def initialize(connection, options)
       @connection, @options, @buffer = connection, options, Buffer.new
     end

@@ -9,7 +9,6 @@ module SockJS
       # Settings.
       self.prefix  = /[^.]+\/([^.]+)\/htmlfile$/
       self.method  = "GET"
-      self.filters = [:h_sid, :h_no_cache, :htmlfile]
 
       # Handler.
       def handle(request)
