@@ -59,11 +59,11 @@ module SockJS
     end
 
     def write_response(request, status, headers, body, &block)
-      response = self.response(request, status, headers, &block)
-      response.write_head
-      response.write(body)
-      response.finish
-      return response
+      self.response(request, status, headers, &block)
+      @response.write_head
+      @response.write(body) unless body.nil?
+      @response.finish
+      return @response
     end
 
     def format_frame(payload)
@@ -72,6 +72,10 @@ module SockJS
 
     def send(data, *args)
       @buffer << self.format_frame(data, *args)
+    end
+
+    def finish
+      @response.write(@buffer.to_frame)
     end
 
     # 1) There's no session -> create it. AND CONTINUE

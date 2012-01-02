@@ -82,8 +82,10 @@ module Rack
       handler_klass = ::SockJS::Adapter.handler(prefix, method)
       if handler_klass
         debug "~ Handler: #{handler_klass.inspect}"
-        handler = handler_klass.new(@connection, @options)
-        handler.handle(request)
+        EM.next_tick do
+          handler = handler_klass.new(@connection, @options)
+          handler.handle(request)
+        end
         ::SockJS::Thin::DUMMY_RESPONSE
       elsif ::SockJS::Adapter.match_handler_for_http_405(prefix, method)
         # Unsupported method.

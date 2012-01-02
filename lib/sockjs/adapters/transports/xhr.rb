@@ -22,11 +22,12 @@ module SockJS
           self.write_response(request, 200, {"Content-Type" => CONTENT_TYPES[:plain]}, body)
         else
           session = self.connection.create_session(match[1], self)
-          session.open!
 
           self.write_response(request, 200, {"Content-Type" => CONTENT_TYPES[:javascript], "Access-Control-Allow-Origin" => request.origin, "Access-Control-Allow-Credentials" => "true"}, body) do |response|
             response.set_session_id(request.session_id)
           end
+
+          session.open!
         end
       end
     end
@@ -92,7 +93,7 @@ module SockJS
         match = request.path_info.match(self.class.prefix)
         session_id = match[1]
 
-        @response = self.response(request, 200, {"Content-Type" => CONTENT_TYPES[:javascript], "Access-Control-Allow-Origin" => request.origin, "Access-Control-Allow-Credentials" => "true"}) { |response| response.set_session_id(request.session_id) }
+        self.response(request, 200, {"Content-Type" => CONTENT_TYPES[:javascript], "Access-Control-Allow-Origin" => request.origin, "Access-Control-Allow-Credentials" => "true"}) { |response| response.set_session_id(request.session_id) }
         @response.write_head
 
         # IE requires 2KB prefix:

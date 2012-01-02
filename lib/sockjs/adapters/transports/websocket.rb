@@ -72,6 +72,11 @@ module SockJS
 
       def_delegator :@ws, :send
 
+      # In this adapter we send everything straight away,
+      # hence there's no need for #finish.
+      def finish
+      end
+
       def format_frame(payload)
         payload
       end

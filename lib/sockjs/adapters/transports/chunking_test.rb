@@ -29,10 +29,10 @@ module SockJS
       def handle(request)
         headers = {"Content-Type" => CONTENT_TYPES[:javascript], "Access-Control-Allow-Origin" => "*", "Access-Control-Allow-Credentials" => "true", "Allow" => "OPTIONS, POST"}
 
-        response = self.response(request, 200, headers)
-        response.write_head
+        self.response(request, 200, headers)
+        @response.write_head
 
-        timeoutable = SockJS::Timeoutable.new(response.body,
+        timeoutable = SockJS::Timeoutable.new(@response.body,
           # IE requires 2KB prelude.
           0    => "h\n",
           1    => " " * 2048 + "h\n",
@@ -43,7 +43,7 @@ module SockJS
           3125 => "h\n",
         )
 
-        response.body.call(timeoutable)
+        @response.body.call(timeoutable)
       end
     end
   end

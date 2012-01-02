@@ -4,6 +4,9 @@ require "sockjs/protocol"
 
 module SockJS
   class BufferNotOpenError < StandardError
+    def initialize(*)
+      super("Open frame hasn't been sent yet!")
+    end
   end
 
   class StandardError < StandardError
@@ -28,7 +31,7 @@ module SockJS
     end
 
     # Close frame can occur at any time, except if the session isn't opened yet.
-    # Also, if the buffer is already closed, let's fail: I believe this is more transparent behaviour.
+    # Also, if the buffer is already closed, let's fail: I believe this is a more transparent behaviour.
     def close(*args)
       unless @status == :created or @status == :closed
         @status = :closed
@@ -40,6 +43,7 @@ module SockJS
 
     # Add message to the list of messages.
     def <<(message)
+      p [:m, message]
       raise BufferNotOpenError.new if @frame
       @messages << message
     end

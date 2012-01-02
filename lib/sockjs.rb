@@ -127,7 +127,20 @@ module SockJS
       self.set_timer
 
       @transport.buffer.open
-      self.send(Protocol::OPENING_FRAME, *args)
+      @transport.finish
+    end
+
+    def close(status = 3000, message = "Go away!")
+      self.status = :closing
+
+      @transport.buffer.close(status, message)
+      @transport.finish
+
+      @close_timer.cancel if @close_timer
+
+      @close_timer = EM::Timer.new(@disconnect_delay) do
+        self.mark_to_be_garbage_collected
+      end
     end
 
     def closed?
@@ -198,20 +211,21 @@ module SockJS
       end
     end
 
-    def close(status = 3000, message = "Go away!")
-      @status = :closing
-
-      @error = SockJS::CloseError.new(status, message)
-      # raise @error # NOPE!
-
-      self.send(Protocol.close_frame(status, message))
-
-      @close_timer.cancel if @close_timer
-
-      @close_timer = EM::Timer.new(@disconnect_delay) do
-        self.mark_to_be_garbage_collected
-      end
-    end
+    # def close(status = 3000, message = "Go away!")
+    #   @status = :closing
+    #
+    #   @error = SockJS::CloseError.new(status, message)
+    #   # raise @error # NOPE!
+    #
+    #   self.send(Protocol.close_frame(status, message))
+    #   @transport.buffer.close
+    #
+    #   @close_timer.cancel if @close_timer
+    #
+    #   @close_timer = EM::Timer.new(@disconnect_delay) do
+    #     self.mark_to_be_garbage_collected
+    #   end
+    # end
 
     def response(&block)
       block.call
