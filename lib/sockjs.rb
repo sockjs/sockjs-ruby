@@ -82,7 +82,7 @@ module SockJS
 
     def create_session(key, transport)
       self.sessions[key] ||= begin
-        Session.new(transport, open: callbacks[:session_open], buffer: callbacks[:subscribe])
+        transport.class.session_class.new(transport, open: callbacks[:session_open], buffer: callbacks[:subscribe])
       end
     end
   end
@@ -99,6 +99,7 @@ module SockJS
       @callbacks = callbacks
       @disconnect_delay = 5 # TODO: make this configurable.
       @status = :created
+      @received_messages = Array.new
     end
 
     # All incoming data is treated as incoming messages,
@@ -119,7 +120,42 @@ module SockJS
     end
 
     def process_messages(*messages)
-      # TODO
+      @received_messages.push(*messages)
+    end
+
+    def process_buffer
+      self.reset_timer
+
+      response do
+        self.check_status
+
+        # The error is supposed to be cached for 5s
+        # in case the connection dies. For the time
+        # being we cache it infinitely.
+        raise @error if @error
+
+        @received_messages.each do |message|
+          self.execute_callback(:buffer, self, message)
+        end
+
+        @messages_for_the_client
+      end
+    end
+
+    def response(&block)
+      block.call
+
+      @received_messages.clear
+      @transport.buffer.to_frame
+    rescue SockJS::CloseError => error
+      Protocol.close_frame(error.status, error.message)
+    end
+
+    def check_status
+      if @status == :opening
+        @status = :open
+        self.execute_callback(:open, self)
+      end
     end
 
     def open!(*args)
@@ -160,6 +196,7 @@ module SockJS
         EM::Timer.new(@disconnect_delay) do
           puts "~ Closing the connection."
           self.close
+          puts "~ Connection closed."
         end
       end
     end
@@ -175,74 +212,14 @@ module SockJS
   end
 
   class SessionWitchCachedMessages < Session
-    def initialize(callbacks)
-      super(callbacks)
-
-      @received_messages = Array.new
-      @messages_for_the_client = Array.new
-    end
-
     def send(*messages)
-      @messages_for_the_client.push(*messages)
-    end
-
-    def process_messages(*messages)
-      @received_messages.push(*messages)
-    end
-  end
-
-  class Session
-    def process_buffer
-      self.reset_timer
-
-      response do
-        self.check_status
-
-        # The error is supposed to be cached for 5s
-        # in case the connection dies. For the time
-        # being we cache it infinitely.
-        raise @error if @error
-
-        @received_messages.each do |message|
-          self.execute_callback(:buffer, self, message)
-        end
-
-        @messages_for_the_client
-      end
-    end
-
-    # def close(status = 3000, message = "Go away!")
-    #   @status = :closing
-    #
-    #   @error = SockJS::CloseError.new(status, message)
-    #   # raise @error # NOPE!
-    #
-    #   self.send(Protocol.close_frame(status, message))
-    #   @transport.buffer.close
-    #
-    #   @close_timer.cancel if @close_timer
-    #
-    #   @close_timer = EM::Timer.new(@disconnect_delay) do
-    #     self.mark_to_be_garbage_collected
-    #   end
-    # end
-
-    def response(&block)
-      block.call
-
-      Protocol.array_frame(@messages_for_the_client).tap do |_|
-        @messages_for_the_client.clear
-        @received_messages.clear
-      end
-    rescue SockJS::CloseError => error
-      Protocol.close_frame(error.status, error.message)
-    end
-
-    def check_status
-      if @status == :opening
-        @status = :open
-        self.execute_callback(:open, self)
-      end
+      self.buffer.push(*messages)
     end
   end
 end
+
+# def handle
+#   super(200) do |response|
+#     # set_session_id is called automatically
+#   end
+# end

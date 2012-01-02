@@ -10,6 +10,8 @@ module SockJS
     HEARTBEAT_FRAME ||= "h"
 
     def self.array_frame(array)
+      validate Array, array
+
       "#{ARRAY_FRAME}#{array.to_json}"
     end
 

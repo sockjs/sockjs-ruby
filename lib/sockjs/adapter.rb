@@ -12,11 +12,12 @@ module SockJS
     }
 
     class << self
-      attr_accessor :prefix, :method, :subclasses
+      attr_accessor :prefix, :method, :subclasses, :session_class
     end
 
-    self.method     ||= "GET"
-    self.subclasses ||= Array.new
+    self.method        ||= "GET"
+    self.subclasses    ||= Array.new
+    self.session_class ||= SessionWitchCachedMessages
 
     # TODO: refactor the following two methods: just find the prefix and check the method later on, so we won't need the second method at all.
     def self.handler(prefix, method)
@@ -34,8 +35,9 @@ module SockJS
     def self.inherited(subclass)
       Adapter.subclasses << subclass
 
-      subclass.method  = self.method
-      subclass.prefix  = self.prefix
+      subclass.method        = self.method
+      subclass.prefix        = self.prefix
+      subclass.session_class = self.session_class
     end
 
     # Instance methods.
@@ -75,7 +77,7 @@ module SockJS
     end
 
     def finish
-      @response.write(@buffer.to_frame)
+      @response.finish(@buffer.to_frame)
     end
 
     # 1) There's no session -> create it. AND CONTINUE

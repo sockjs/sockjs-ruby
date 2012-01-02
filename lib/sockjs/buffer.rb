@@ -9,7 +9,7 @@ module SockJS
     end
   end
 
-  class StandardError < StandardError
+  class StateMachineError < StandardError
     def initialize(actual_status, aim_status)
       super("Can't change from #{actual_status} to #{aim_status}!")
     end
@@ -43,9 +43,14 @@ module SockJS
 
     # Add message to the list of messages.
     def <<(message)
-      p [:m, message]
       raise BufferNotOpenError.new if @frame
       @messages << message
+    end
+
+    def push(*messages)
+      messages.each do |message|
+        self << message
+      end
     end
 
     # In case you need to rewrite content of the buffer, you can do so calling #clear.

@@ -62,6 +62,11 @@ module SockJS
       TERM ||= "\r\n"
       TAIL ||= "0#{TERM}#{TERM}"
 
+      def initialize
+        @status = :created
+        super # TODO: Is this necessary?
+      end
+
       def call(body)
         body.each do |chunk|
           self.write(chunk)
@@ -69,6 +74,10 @@ module SockJS
       end
 
       def write(chunk)
+        unless @status == :opened
+          raise "Body isn't open (status: #{@status})"
+        end
+
         unless chunk.respond_to?(:bytesize)
           raise "Chunk is supposed to respond to #bytesize, but it doesn't.\nChunk: #{chunk.inspect} (#{chunk.class})"
         end
@@ -79,11 +88,13 @@ module SockJS
       end
 
       def each(&block)
+        @status = :opened
         @body_callback = block
       end
 
       def succeed
         self.__write__(TAIL)
+        @status = :closed
         super
       end
 

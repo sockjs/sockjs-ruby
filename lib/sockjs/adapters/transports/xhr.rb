@@ -23,11 +23,11 @@ module SockJS
         else
           session = self.connection.create_session(match[1], self)
 
-          self.write_response(request, 200, {"Content-Type" => CONTENT_TYPES[:javascript], "Access-Control-Allow-Origin" => request.origin, "Access-Control-Allow-Credentials" => "true"}, body) do |response|
-            response.set_session_id(request.session_id)
-          end
+          self.response(request, 200, {"Content-Type" => CONTENT_TYPES[:javascript], "Access-Control-Allow-Origin" => request.origin, "Access-Control-Allow-Credentials" => "true"})
 
+          @response.set_session_id(request.session_id)
           session.open!
+          @response.finish
         end
       end
     end
@@ -85,8 +85,9 @@ module SockJS
 
     class XHRStreamingPost < Adapter
       # Settings.
-      self.prefix  = /[^.]+\/([^.]+)\/xhr_streaming$/
-      self.method  = "POST"
+      self.prefix        = /[^.]+\/([^.]+)\/xhr_streaming$/
+      self.method        = "POST"
+      self.session_class = Session
 
       # Handler.
       def handle(request)
