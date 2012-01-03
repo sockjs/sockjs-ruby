@@ -59,7 +59,11 @@ module SockJS
     end
 
     def finish(data = nil, &block)
-      self.write(data) if data
+      if data
+        self.write(data)
+      else
+        self.write_head unless self.head_written?
+      end
 
       (block || NOT_IMPLEMENTED_PROC).call
     end

@@ -51,8 +51,21 @@ module SockJS
         end
       end
 
-      def_delegator :body, :write
-      def_delegator :body, :finish
+      def write(data)
+        super() do
+          @body.write(data)
+        end
+      end
+
+      def finish(data = nil)
+        super(data) do
+          @body.finish
+        end
+      end
+
+      # Delegators don't care about writing head etc.
+      # def_delegator :body, :write
+      # def_delegator :body, :finish
     end
 
 
