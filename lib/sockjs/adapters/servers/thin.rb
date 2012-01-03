@@ -88,11 +88,13 @@ module SockJS
       end
 
       def each(&block)
+        STDERR.puts("~ Opening the response.")
         @status = :opened
         @body_callback = block
       end
 
       def succeed
+        STDERR.puts("~ Closing the response.")
         self.__write__(TAIL)
         @status = :closed
         super
