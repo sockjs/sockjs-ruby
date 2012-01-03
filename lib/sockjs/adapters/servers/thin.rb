@@ -36,7 +36,7 @@ module SockJS
       def write_head(status = nil, headers = nil)
         super(status, headers) do
           if @headers["Content-Length"]
-            raise "WTF, Content-Length with chunking? Get real mate!"
+            raise "You can't use Content-Length with chunking!"
           end
 
           unless @status == 204
@@ -100,7 +100,10 @@ module SockJS
         super
       end
 
-      alias_method :finish, :succeed
+      def finish(data = nil)
+        self.write(data) if data
+        self.succeed
+      end
 
       protected
       def __write__(data)
