@@ -94,6 +94,7 @@ module SockJS
 
     def_delegator :@transport, :send
     def_delegator :@transport, :finish
+    def_delegator :@transport, :buffer
 
     def initialize(transport, callbacks)
       @transport = transport
@@ -176,6 +177,14 @@ module SockJS
       @close_timer = EM::Timer.new(@disconnect_delay) do
         self.mark_to_be_garbage_collected
       end
+    end
+
+    def open?
+      @status == :open
+    end
+
+    def closing?
+      @status == :closing
     end
 
     def closed?
