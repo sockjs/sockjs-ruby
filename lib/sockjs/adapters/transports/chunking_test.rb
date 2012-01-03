@@ -14,10 +14,15 @@ module SockJS
         year = 31536000
         time = Time.now + year
 
-        headers = {"Access-Control-Allow-Origin" => request.origin, "Access-Control-Allow-Credentials" => "true", "Allow" => "OPTIONS, POST", "Cache-Control" => "public, max-age=#{year}", "Expires" => time.gmtime.to_s, "Access-Control-Max-Age" => "1000001"}
+        respond(request, 204, set_session_id: true) do |response, session|
+          response.set_header("Access-Control-Allow-Origin", request.origin)
+          response.set_header("Access-Control-Allow-Credentials", "true")
+          response.set_header("Allow", "OPTIONS, POST")
+          response.set_header("Cache-Control", "public, max-age=#{year}")
+          response.set_header("Expires", time.gmtime.to_s)
+          response.set_header("Access-Control-Max-Age", "1000001")
 
-        self.write_response(request, 204, headers, "") do |response|
-          response.set_session_id(request.session_id)
+          response.finish
         end
       end
     end
@@ -27,23 +32,26 @@ module SockJS
 
       # Handler.
       def handle(request)
-        headers = {"Content-Type" => CONTENT_TYPES[:javascript], "Access-Control-Allow-Origin" => "*", "Access-Control-Allow-Credentials" => "true", "Allow" => "OPTIONS, POST"}
+        respond(request, 200) do |response, session|
+          response.set_header("Content-Type", CONTENT_TYPES[:javascript])
+          response.set_header("Access-Control-Allow-Origin", request.origin)
+          response.set_header("Access-Control-Allow-Credentials", "true")
+          response.set_header("Allow", "OPTIONS, POST")
+          response.write_head
 
-        self.response(request, 200, headers)
-        @response.write_head
+          timeoutable = SockJS::Timeoutable.new(response.body,
+            # IE requires 2KB prelude.
+            0    => "h\n",
+            1    => " " * 2048 + "h\n",
+            5    => "h\n",
+            25   => "h\n",
+            125  => "h\n",
+            625  => "h\n",
+            3125 => "h\n",
+          )
 
-        timeoutable = SockJS::Timeoutable.new(@response.body,
-          # IE requires 2KB prelude.
-          0    => "h\n",
-          1    => " " * 2048 + "h\n",
-          5    => "h\n",
-          25   => "h\n",
-          125  => "h\n",
-          625  => "h\n",
-          3125 => "h\n",
-        )
-
-        @response.body.call(timeoutable)
+          response.body.call(timeoutable)
+        end
       end
     end
   end
