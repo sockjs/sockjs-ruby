@@ -80,9 +80,13 @@ module SockJS
       @response.finish(@buffer.to_frame)
     end
 
-    def handle(request, status, &block)
+    def respond(request, status, options = Hash.new, &block)
       response = self.response(request, status)
-      response.set_session_id(request.session_id)
+
+      if options[:set_session_id]
+        response.set_session_id(request.session_id)
+      end
+
       session = self.get_session(request, response) # TODO: preamble
       block.call(response, session)
     end
