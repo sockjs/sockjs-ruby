@@ -22,16 +22,19 @@ module SockJS
               raise TypeError, "Block has to return a string or a string-like object responding to #bytesize, but instead an object of #{body.class} class has been returned (object: #{body.inspect})."
             end
 
-            self.write_response(request, 200, {"Content-Type" => CONTENT_TYPES[:plain]}, body)
+            super(request, 200) do |response, session|
+              response.set_header("Content-Type", CONTENT_TYPES[:plain])
+              response.write(body)
+              response.finish
+            end
           else
             session = self.connection.create_session(match[1], self)
             session.open!(request.callback)
 
-            self.write_response(request, 200, {"Content-Type" => CONTENT_TYPES[:javascript], "Access-Control-Allow-Origin" => request.origin, "Access-Control-Allow-Credentials" => "true", "Cache-Control" => "no-store, no-cache, must-revalidate, max-age=0"}, body) { |response| response.set_session_id(request.session_id) }
+            self.write_response(request, 200, {"Content-Type" => CONTENT_TYPES[:javascript], "Access-Control-Allow-Origin" => request.origin, "Access-Control-Allow-Credentials" => "true", "Cache-Control" => "no-store, no-cache, must-revalidate, max-age=0"}, body)
           end
         else
-          body = '"callback" parameter required'
-          self.write_response(request, 500, {"Content-Type" => CONTENT_TYPES[:html]}, body)
+          self.error(500, :html, '"callback" parameter required')
         end
       end
 

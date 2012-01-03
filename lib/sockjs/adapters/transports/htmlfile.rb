@@ -27,15 +27,16 @@ module SockJS
           html = data.gsub("{{ callback }}", request.callback)
           body = html + (" " * (1024 - html.bytesize)) + "\r\n\r\n"
 
-          self.response(request, 200,
-            {"Content-Type" => CONTENT_TYPES[:html], "Cache-Control" => "no-store, no-cache, must-revalidate, max-age=0"}) { |response| response.set_session_id(request.session_id) }
-          @response.write_head
-          @response.write(body)
+          super(request, 200) do |response, session|
+            response.set_header("Content-Type", CONTENT_TYPES[:html])
+            response.set_header("Cache-Control", "no-store, no-cache, must-revalidate, max-age=0")
+            response.write_head
+            response.write(body)
 
-          self.try_timer_if_valid(request, @response)
+            self.try_timer_if_valid(request, response)
+          end
         else
-          self.write_response(request, 500,
-            {"Content-Type" => CONTENT_TYPES[:html]}, '"callback" parameter required')
+          self.error(500, :html, '"callback" parameter required')
         end
       end
 

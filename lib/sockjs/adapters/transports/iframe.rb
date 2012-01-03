@@ -21,25 +21,25 @@ module SockJS
         end
 
         body = data.gsub("{{ sockjs_url }}", options[:sockjs_url])
-        headers = self.headers(body)
 
-        if request.headers["if-none-match"] == headers["ETag"]
+        if request.headers["if-none-match"] == self.etag(body)
           self.write_response(request, 304, Hash.new, String.new)
         else
-          self.write_response(request, 200, headers, body)
+          year = 31536000
+          time = Time.now + year
+
+          respond(request, 200) do |response, session|
+            response.set_header("Content-Type",  CONTENT_TYPES[:html])
+            response.set_header("ETag",          self.etag(body))
+            response.set_header("Cache-Control", "public, max-age=#{year}")
+            response.set_header("Expires",       time.gmtime.to_s)
+            response.finish(body)
+          end
         end
       end
 
-      def headers(body)
-        year = 31536000
-        time = Time.now + year
-
-        {
-          "Content-Type"  => CONTENT_TYPES[:html],
-          "ETag"          => '"' + self.digest.hexdigest(body) + '"',
-          "Cache-Control" => "public, max-age=#{year}",
-          "Expires"       => time.gmtime.to_s
-        }
+      def etag(body)
+        '"' + self.digest.hexdigest(body) + '"'
       end
 
       def digest

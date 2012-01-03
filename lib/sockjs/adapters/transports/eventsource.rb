@@ -11,13 +11,16 @@ module SockJS
 
       # Handler.
       def handle(request)
-        self.response(request, 200, {"Content-Type" => CONTENT_TYPES[:event_stream], "Cache-Control" => "no-store, no-cache, must-revalidate, max-age=0"})  { |response| response.set_session_id(request.session_id) }
-        @response.write_head
+        super(request, 200) do |response, session|
+          response.set_header("Content-Type", CONTENT_TYPES[:event_stream])
+          response.set_header("Cache-Control", "no-store, no-cache, must-revalidate, max-age=0")
+          response.write_head
 
-        # Opera needs to hear two more initial new lines.
-        @response.write("\r\n")
+          # Opera needs to hear two more initial new lines.
+          response.write("\r\n")
 
-        self.try_timer_if_valid(request, @response)
+          self.try_timer_if_valid(request, response)
+        end
       end
 
       def format_frame(payload)
