@@ -220,9 +220,3 @@ module SockJS
     end
   end
 end
-
-# def handle
-#   super(200) do |response|
-#     # set_session_id is called automatically
-#   end
-# end
