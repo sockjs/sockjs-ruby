@@ -80,13 +80,19 @@ module SockJS
       @response.finish(@buffer.to_frame)
     end
 
+    def handle(request, status, &block)
+      response = self.response(request, status)
+      response.set_session_id(request.session_id)
+      session = self.get_session(request, response) # TODO: preamble
+      block.call(response, session)
+    end
+
     # 1) There's no session -> create it. AND CONTINUE
     # 2) There's a session:
     #    a) It's closing -> Send c[3000,"Go away!"] AND END
     #    b) It's open:
     #       i) There IS NOT any consumer -> OK. AND CONTINUE
     #       i) There IS a consumer -> Send c[2010,"Another con still open"] AND END
-    # TODO: use this method
     def get_session(request, response, preamble = nil)
       match = request.path_info.match(self.class.prefix)
 
