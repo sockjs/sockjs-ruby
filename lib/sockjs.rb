@@ -93,6 +93,7 @@ module SockJS
     include CallbackMixin
 
     def_delegator :@transport, :send
+    def_delegator :@transport, :finish
 
     def initialize(transport, callbacks)
       @transport = transport
@@ -137,8 +138,6 @@ module SockJS
         @received_messages.each do |message|
           self.execute_callback(:buffer, self, message)
         end
-
-        @messages_for_the_client
       end
     end
 
@@ -162,15 +161,15 @@ module SockJS
       self.status = :opening
       self.set_timer
 
-      @transport.buffer.open
-      @transport.finish
+      self.buffer.open
+      self.finish
     end
 
     def close(status = 3000, message = "Go away!")
       self.status = :closing
 
-      @transport.buffer.close(status, message)
-      @transport.finish
+      self.buffer.close(status, message)
+      self.finish
 
       @close_timer.cancel if @close_timer
 
@@ -214,6 +213,10 @@ module SockJS
   class SessionWitchCachedMessages < Session
     def send(*messages)
       self.buffer.push(*messages)
+    end
+
+    def finish
+      self.buffer.to_frame
     end
   end
 end
