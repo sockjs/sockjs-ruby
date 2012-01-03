@@ -87,6 +87,10 @@ module SockJS
       block.call(response, session)
     end
 
+    def error(http_status, content_type, body)
+      raise NotImplementedError.new("TODO: Implement Adapter#error")
+    end
+
     # 1) There's no session -> create it. AND CONTINUE
     # 2) There's a session:
     #    a) It's closing -> Send c[3000,"Go away!"] AND END
