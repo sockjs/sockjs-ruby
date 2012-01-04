@@ -36,7 +36,7 @@ module SockJS
       end
     end
 
-    # Close frame can occur at any time, except if the session isn't opened yet.
+    # Close frame can occur at any time, except if the session isn't open yet.
     # Also, if the buffer is already closed, let's fail: I believe this is a more transparent behaviour.
     def close(*args)
       # Beware of discarding messages with primitive transports.
@@ -50,7 +50,7 @@ module SockJS
       # delivered and then the close frame will be send.
       # However with primitive transports such as long
       # polling, only the close frame will be send.
-      if @status == :opened
+      if @status == :open
         @status = :closed
         @frame  = Protocol.close_frame(*args)
       else

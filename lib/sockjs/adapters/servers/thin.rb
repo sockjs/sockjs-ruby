@@ -87,7 +87,7 @@ module SockJS
       end
 
       def write(chunk)
-        unless @status == :opened
+        unless @status == :open
           raise "Body isn't open (status: #{@status})"
         end
 
@@ -102,7 +102,7 @@ module SockJS
 
       def each(&block)
         STDERR.puts("~ Opening the response.")
-        @status = :opened
+        @status = :open
         @body_callback = block
       end
 
