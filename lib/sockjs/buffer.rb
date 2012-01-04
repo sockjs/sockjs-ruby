@@ -61,9 +61,9 @@ module SockJS
       #
       # With advanced transports such as WebSockets,
       # everything is fine, the first message will be
-      # delivered and then the close frame will be send.
+      # delivered and then the closing frame will be send.
       # However with primitive transports such as long
-      # polling, only the close frame will be send.
+      # polling, only the closing frame will be send.
       if self.open?
         @status = :closing
         @frame  = Protocol.closing_frame(status, message)

@@ -38,7 +38,7 @@ Implementation:
   ✓ Apparently we can't make Thin respond in HTTP/1.0. In order to support chunking, we therefore need to implement something like Rack::Chunking::Body   https://github.com/rack/rack/blob/master/lib/rack/chunked.rb#L11 We can't use the class straight away, because it's synchronous and it doesn't play well with EventMachine. Bloody hell!
   - Support polling with HTTP 1.0 (see https://github.com/rack/rack/blob/master/lib/rack/chunked.rb#L44-53)
   - curl -X POST http://localhost:8080/echo/a/b/xhr -vv should return o frame, the next curl -X POST http://localhost:8080/echo/a/b/xhr -vv should hang and return a message if there's any or heartbeat after the timeout (see disconnect_delay in sockjs-node).
-  - If there's another request during the closing 5s, we are supposed to reply with another close frame and reset the timer to wait for another 5s.
+  - If there's another request during the closing 5s, we are supposed to reply with another closing frame and reset the timer to wait for another 5s.
 
 Protocol:
   - Heartbeat

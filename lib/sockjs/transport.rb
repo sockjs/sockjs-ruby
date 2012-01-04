@@ -137,7 +137,7 @@ module SockJS
           response_data = format_frame(data.chomp!)
           puts "~ Responding with #{response_data.inspect}"
           response.write(response_data) unless data == "a[]\n" # FIXME
-          if data[0] == "c" # close frame. TODO: Do this by raising an exception or something, this is a mess :o Actually ... do we need here some 5s timeout as well?
+          if data[0] == "c" # closing frame. TODO: Do this by raising an exception or something, this is a mess :o Actually ... do we need here some 5s timeout as well?
             timer.cancel
             response.finish
           end
