@@ -67,26 +67,29 @@ module SockJS
 
       # Handler.
       def handle(request)
-        match = request.path_info.match(self.class.prefix)
-        session_id = match[1]
-        session = self.connection.sessions[session_id]
-        if session
-          session.receive_message(request.data.read)
+        respond(request, 204) do |response, session|
+          if session
+            session.receive_message(request.data.read)
 
-          # When we use HTTP 204 with Content-Type, Rack::Lint
-          # will be bitching about it. That's understandable,
-          # as Lint is suppose to make sure that given response
-          # is valid according to the HTTP standard. However
-          # what's totally sick is that Lint is included by default
-          # in the development mode. It'd be really dishonest
-          # to change this behaviour, regardless how jelly brain
-          # minded it is. Funnily enough users can't deactivate
-          # Lint either in development, so we'll have to tell them
-          # to hack it. Bloody hell, that just can't be happening!
-          self.write_response(request, 204, {"Content-Type" => CONTENT_TYPES[:plain], "Access-Control-Allow-Origin" => request.origin, "Access-Control-Allow-Credentials" => "true"}, "") { |response| response.set_session_id(request.session_id) }
-        else
-          self.write_response(request, 404, {"Content-Type" => CONTENT_TYPES[:plain]}, "Session is not open!") { |response| response.set_session_id(request.session_id) }
+            # When we use HTTP 204 with Content-Type, Rack::Lint
+            # will be bitching about it. That's understandable,
+            # as Lint is suppose to make sure that given response
+            # is valid according to the HTTP standard. However
+            # what's totally sick is that Lint is included by default
+            # in the development mode. It'd be really dishonest
+            # to change this behaviour, regardless how jelly brain
+            # minded it is. Funnily enough users can't deactivate
+            # Lint either in development, so we'll have to tell them
+            # to hack it. Bloody hell, that just can't be happening!
+            response.set_header("Content-Type", CONTENT_TYPES[:plain])
+            response.set_header("Access-Control-Allow-Origin", request.origin)
+            response.set_header("Access-Control-Allow-Credentials", "true")
+            response.finish
+          else
+            self.error(404, :plain, "Session is not open!")
+          end
         end
+
       rescue SockJS::HttpError => error
         error.to_response(self, request)
       end
