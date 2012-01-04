@@ -60,30 +60,6 @@ describe SockJS::Transport do
     end
   end
 
-  describe ".session_class" do
-    subject do
-      Class.new(described_class)
-    end
-
-    it "should default to SessionWitchCachedMessages" do
-      subject.session_class.should eql(SockJS::SessionWitchCachedMessages)
-    end
-
-    it "should be readable and writable" do
-      subject.session_class = SockJS::Session
-      subject.session_class.should eql(SockJS::Session)
-    end
-
-    it "should be inheritable" do
-      klass = Class.new(described_class)
-      klass.session_class = SockJS::Session
-      klass.session_class.should eql(SockJS::Session)
-
-      subclass = Class.new(klass)
-      subclass.session_class.should eql(SockJS::Session)
-    end
-  end
-
   describe ".subclasses" do
     before(:all) do
       described_class.subclasses.clear

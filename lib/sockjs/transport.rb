@@ -13,12 +13,11 @@ module SockJS
     }
 
     class << self
-      attr_accessor :prefix, :method, :session_class, :subclasses
+      attr_accessor :prefix, :method, :subclasses
     end
 
-    self.method        ||= "GET"
-    self.subclasses    ||= Array.new
-    self.session_class ||= SessionWitchCachedMessages
+    self.method     ||= "GET"
+    self.subclasses ||= Array.new
 
     def self.handler(prefix)
       self.subclasses.find do |subclass|
@@ -29,9 +28,8 @@ module SockJS
     def self.inherited(subclass)
       Transport.subclasses << subclass
 
-      subclass.method        = self.method
-      subclass.prefix        = self.prefix
-      subclass.session_class = self.session_class
+      subclass.method = self.method
+      subclass.prefix = self.prefix
     end
 
     # Instance methods.
@@ -39,10 +37,15 @@ module SockJS
     def initialize(connection, options)
       @connection, @options, @buffer = connection, options, Buffer.new
     end
+    # TODO: buffer must be handled in some other way.
 
     def disabled?
       disabled_transports = @options[:disabled_transports] || Array.new
       return disabled_transports.include?(self.class)
+    end
+
+    def session_class
+      SockJS::SessionWitchCachedMessages
     end
 
     # TODO: Make it use the adapter user uses.

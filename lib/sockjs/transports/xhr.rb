@@ -103,9 +103,12 @@ module SockJS
 
     class XHRStreamingPost < Transport
       # Settings.
-      self.prefix        = /[^.]+\/([^.]+)\/xhr_streaming$/
-      self.method        = "POST"
-      self.session_class = Session
+      self.prefix = /[^.]+\/([^.]+)\/xhr_streaming$/
+      self.method = "POST"
+
+      def session_class
+        SockJS::Session
+      end
 
       # Handler.
       def handle(request)

@@ -9,9 +9,12 @@ module SockJS
       extend Forwardable
 
       # Settings.
-      self.prefix        = /[^.]+\/([^.]+)\/websocket$/
-      self.method        = "GET"
-      self.session_class = Session
+      self.prefix = /[^.]+\/([^.]+)\/websocket$/
+      self.method = "GET"
+
+      def session_class
+        SockJS::Session
+      end
 
       def invalid_request_or_disabled_websocket?(request)
         if self.disabled?

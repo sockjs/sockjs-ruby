@@ -80,7 +80,7 @@ module SockJS
 
     def create_session(key, transport)
       self.sessions[key] ||= begin
-        transport.class.session_class.new(transport, open: callbacks[:session_open], buffer: callbacks[:subscribe])
+        transport.session_class.new(transport, open: callbacks[:session_open], buffer: callbacks[:subscribe])
       end
     end
   end
