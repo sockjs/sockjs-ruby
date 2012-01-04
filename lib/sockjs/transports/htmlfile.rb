@@ -4,8 +4,8 @@ require "json"
 require "sockjs/adapter"
 
 module SockJS
-  module Adapters
-    class HTMLFile < Adapter
+  module Transports
+    class HTMLFile < Transport
       # Settings.
       self.prefix  = /[^.]+\/([^.]+)\/htmlfile$/
       self.method  = "GET"

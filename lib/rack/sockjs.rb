@@ -7,7 +7,7 @@ require "sockjs"
 require "sockjs/adapter"
 require "sockjs/adapters/servers/thin"
 
-# Adapters.
+# Transports.
 require "sockjs/adapters/transports/chunking_test"
 require "sockjs/adapters/transports/eventsource"
 require "sockjs/adapters/transports/htmlfile"
@@ -51,7 +51,7 @@ module Rack
       end
 
       # Validate options.
-      if options[:sockjs_url].nil? && ! options[:disabled_transports].include?(::SockJS::Adapters::IFrame)
+      if options[:sockjs_url].nil? && ! options[:disabled_transports].include?(::SockJS::Transports::IFrame)
         raise RuntimeError.new("You have to provide sockjs_url in options, it's required for the iframe transport!")
       end
 
@@ -79,7 +79,7 @@ module Rack
     def process_request(request)
       prefix        = request.path_info.sub(/^#{Regexp.quote(@prefix)}\/?/, "")
       method        = request.http_method
-      handler_klass = ::SockJS::Adapter.handler(prefix, method)
+      handler_klass = ::SockJS::Transport.handler(prefix, method)
       if handler_klass
         debug "~ Handler: #{handler_klass.inspect}"
         EM.next_tick do
@@ -87,7 +87,7 @@ module Rack
           handler.handle(request)
         end
         ::SockJS::Thin::DUMMY_RESPONSE
-      elsif ::SockJS::Adapter.match_handler_for_http_405(prefix, method)
+      elsif ::SockJS::Transport.match_handler_for_http_405(prefix, method)
         # Unsupported method.
         debug "~ Method not supported!"
         [405, {}, []]
@@ -100,7 +100,7 @@ module Rack
               <ul>
                 <li>Prefix: #{prefix.inspect}</li>
                 <li>Method: #{method.inspect}</li>
-                <li>Handlers: #{::SockJS::Adapter.subclasses.inspect}</li>
+                <li>Handlers: #{::SockJS::Transport.subclasses.inspect}</li>
               </ul>
             </body>
           </html>

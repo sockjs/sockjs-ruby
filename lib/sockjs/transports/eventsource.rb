@@ -3,8 +3,8 @@
 require "sockjs/adapter"
 
 module SockJS
-  module Adapters
-    class EventSource < Adapter
+  module Transports
+    class EventSource < Transport
       # Settings.
       self.prefix  = /[^.]+\/([^.]+)\/eventsource$/
       self.method  = "GET"

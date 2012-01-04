@@ -3,8 +3,8 @@
 require "sockjs/adapter"
 
 module SockJS
-  module Adapters
-    class XHRPost < Adapter
+  module Transports
+    class XHRPost < Transport
       # Settings.
       self.prefix  = /[^.]+\/([^.]+)\/xhr$/
       self.method  = "POST"
@@ -37,7 +37,7 @@ module SockJS
       end
     end
 
-    class XHROptions < Adapter
+    class XHROptions < Transport
       # Settings.
       self.prefix  = /[^.]+\/([^.]+)\/xhr$/
       self.method  = "OPTIONS"
@@ -60,7 +60,7 @@ module SockJS
       end
     end
 
-    class XHRSendPost < Adapter
+    class XHRSendPost < Transport
       # Settings.
       self.prefix  = /[^.]+\/([^.]+)\/xhr_send$/
       self.method  = "POST"
@@ -101,7 +101,7 @@ module SockJS
       self.method  = "OPTIONS"
     end
 
-    class XHRStreamingPost < Adapter
+    class XHRStreamingPost < Transport
       # Settings.
       self.prefix        = /[^.]+\/([^.]+)\/xhr_streaming$/
       self.method        = "POST"

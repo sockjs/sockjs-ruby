@@ -3,8 +3,8 @@
 require "sockjs/adapter"
 
 module SockJS
-  module Adapters
-    class WelcomeScreen < Adapter
+  module Transports
+    class WelcomeScreen < Transport
       # Settings.
       self.prefix = ""
       self.method = "GET"

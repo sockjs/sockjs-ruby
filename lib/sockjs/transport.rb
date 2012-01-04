@@ -3,7 +3,7 @@
 require "sockjs/buffer"
 
 module SockJS
-  class Adapter
+  class Transport
     CONTENT_TYPES ||= {
       plain: "text/plain; charset=UTF-8",
       html: "text/html; charset=UTF-8",
@@ -33,7 +33,7 @@ module SockJS
     end
 
     def self.inherited(subclass)
-      Adapter.subclasses << subclass
+      Transport.subclasses << subclass
 
       subclass.method        = self.method
       subclass.prefix        = self.prefix
@@ -95,7 +95,7 @@ module SockJS
     end
 
     def error(http_status, content_type, body)
-      raise NotImplementedError.new("TODO: Implement Adapter#error")
+      raise NotImplementedError.new("TODO: Implement Transport#error")
     end
 
     # 1) There's no session -> create it. AND CONTINUE

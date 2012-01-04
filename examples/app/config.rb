@@ -61,7 +61,7 @@ class MyHelloWorld
   end
 end
 
-puts "~ Available handlers: #{::SockJS::Adapter.subclasses.inspect}"
+puts "~ Available handlers: #{::SockJS::Transport.subclasses.inspect}"
 
 options = {sockjs_url: "http://cdn.sockjs.org/sockjs-0.1.min.js"}
 
@@ -73,7 +73,7 @@ app = Rack::Builder.new do
     end
   end
 
-  use Rack::SockJS, "/disabled_websocket_echo", options.merge(disabled_transports: [::SockJS::Adapters::WebSocket]) do |connection|
+  use Rack::SockJS, "/disabled_websocket_echo", options.merge(disabled_transports: [::SockJS::Transports::WebSocket]) do |connection|
     connection.subscribe do |session, message|
       debug "~ \033[0;31;40m[Echo]\033[0m message: #{message.inspect}, session: #{session.inspect}"
       session.send(message)

@@ -4,8 +4,8 @@ require "forwardable"
 require "sockjs/adapter"
 
 module SockJS
-  module Adapters
-    class WebSocket < Adapter
+  module Transports
+    class WebSocket < Transport
       extend Forwardable
 
       # Settings.
@@ -37,7 +37,7 @@ module SockJS
           def @ws.send(msg); super msg; puts " WS#send ~ #{msg.inspect}"; end
 
           # Whops, this is obviously wrong ...
-          handler = ::SockJS::Adapters::WebSocket.new(@connection, @options)
+          handler = ::SockJS::Transports::WebSocket.new(@connection, @options)
           handler.handle_open(request)
 
           @ws.onmessage = lambda do |event|

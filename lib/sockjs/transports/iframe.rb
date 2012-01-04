@@ -5,8 +5,8 @@ require "sockjs/adapter"
 
 # ['GET', p('/iframe[0-9-.a-z_]*.html'), ['iframe', 'cache_for', 'expose']],
 module SockJS
-  module Adapters
-    class IFrame < Adapter
+  module Transports
+    class IFrame < Transport
       # Settings.
       self.prefix  = /iframe[0-9\-.a-z_]*.html/
       self.method  = "GET"

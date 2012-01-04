@@ -3,8 +3,8 @@
 require "sockjs/adapter"
 
 module SockJS
-  module Adapters
-    class ChunkingTestOptions < Adapter
+  module Transports
+    class ChunkingTestOptions < Transport
       # Settings.
       self.prefix  = "chunking_test"
       self.method  = "OPTIONS"

@@ -3,10 +3,10 @@
 require "sockjs/adapter"
 
 module SockJS
-  module Adapters
+  module Transports
 
     # This is the receiver.
-    class JSONP < Adapter
+    class JSONP < Transport
       # Settings.
       self.prefix  = /[^.]+\/([^.]+)\/jsonp$/
       self.method  = "GET"
@@ -48,7 +48,7 @@ module SockJS
     end
 
     # This is the sender.
-    class JSONPSend < Adapter
+    class JSONPSend < Transport
       # Settings.
       self.prefix  = /[^.]+\/([^.]+)\/jsonp_send$/
       self.method  = "POST"
