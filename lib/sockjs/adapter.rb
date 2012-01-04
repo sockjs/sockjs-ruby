@@ -88,6 +88,7 @@ module SockJS
       end
 
       session = self.get_session(request, response) # TODO: preamble
+      @buffer = session ? Buffer.new(:opened) : Buffer.new # TODO: don't set buffer twice!
       block.call(response, session)
     end
 

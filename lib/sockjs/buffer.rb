@@ -16,24 +16,41 @@ module SockJS
   end
 
   class Buffer
-    def initialize
-      @status, @messages = :created, Array.new
+    # There's a new buffer instance created for every new request,
+    # so we must not forget to set the proper state for every one.
+    def initialize(status = nil)
+      @status, @messages = status, Array.new
     end
 
     # Open frame has to be the first frame.
     def open
-      if @status == :created
-        @status = :opened
+      unless @messages.empty?
+        raise "You can't send any messages before sending the open frame!"
+      end
+
+      if @status == nil
+        @status = :opening
         @frame  = Protocol::OPENING_FRAME
       else
-        raise StateMachineError.new(@status, :opened)
+        raise StateMachineError.new(@status, :opening)
       end
     end
 
     # Close frame can occur at any time, except if the session isn't opened yet.
     # Also, if the buffer is already closed, let's fail: I believe this is a more transparent behaviour.
     def close(*args)
-      unless @status == :created or @status == :closed
+      # Beware of discarding messages with primitive transports.
+      #
+      # For instance:
+      #   session.send("I love SockJS!")
+      #   session.close(1212, "I'm a bit bored now.")
+      #
+      # With advanced transports such as WebSockets,
+      # everything is fine, the first message will be
+      # delivered and then the close frame will be send.
+      # However with primitive transports such as long
+      # polling, only the close frame will be send.
+      if @status == :opened
         @status = :closed
         @frame  = Protocol.close_frame(*args)
       else
