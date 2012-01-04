@@ -64,13 +64,13 @@ module Rack
       request = ::SockJS::Thin::Request.new(env)
       matched = request.path_info.match(/^#{Regexp.quote(@prefix)}/)
 
-      debug "\n~ \e[31m#{request.http_method} \e[32m#{request.path_info.inspect}\e[0m (SockJS prefix matched: #{!! matched})"
-      puts "\e[90mcurl -X #{request.http_method} http://localhost:8080#{request.path_info}\e[0m"
-
       matched ? debug_process_request(request) : @app.call(env)
     end
 
     def debug_process_request(request)
+      debug "\n~ \e[31m#{request.http_method} \e[32m#{request.path_info.inspect} \e[0m(\e[34m#{@prefix} app\e[0m)"
+      puts "\e[90mcurl -X #{request.http_method} http://localhost:8080#{request.path_info}\e[0m"
+
       self.process_request(request).tap do |response|
         debug "~ #{response.inspect}"
       end
