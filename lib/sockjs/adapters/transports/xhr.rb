@@ -67,7 +67,7 @@ module SockJS
 
       # Handler.
       def handle(request)
-        respond(request, 204) do |response, session|
+        respond(request, 204, set_session_id: true) do |response, session|
           if session
             session.receive_message(request.data.read)
 
@@ -109,16 +109,17 @@ module SockJS
 
       # Handler.
       def handle(request)
-        match = request.path_info.match(self.class.prefix)
-        session_id = match[1]
+        respond(request, 200, set_session_id: true) do |response, session|
+          response.set_header("Content-Type", CONTENT_TYPES[:javascript])
+          response.set_header("Access-Control-Allow-Origin", request.origin)
+          response.set_header("Access-Control-Allow-Credentials", "true")
+          response.write_head
 
-        self.response(request, 200, {"Content-Type" => CONTENT_TYPES[:javascript], "Access-Control-Allow-Origin" => request.origin, "Access-Control-Allow-Credentials" => "true"}) { |response| response.set_session_id(request.session_id) }
-        @response.write_head
-
-        # IE requires 2KB prefix:
-        # http://blogs.msdn.com/b/ieinternals/archive/2010/04/06/comet-streaming-in-internet-explorer-with-xmlhttprequest-and-xdomainrequest.aspx
-        preamble = "h" * 2048 + "\n"
-        self.try_timer_if_valid(request, @response, preamble)
+          # IE requires 2KB prefix:
+          # http://blogs.msdn.com/b/ieinternals/archive/2010/04/06/comet-streaming-in-internet-explorer-with-xmlhttprequest-and-xdomainrequest.aspx
+          preamble = "h" * 2048 + "\n"
+          self.try_timer_if_valid(request, response, preamble)
+        end
       end
 
       def format_frame(body)
