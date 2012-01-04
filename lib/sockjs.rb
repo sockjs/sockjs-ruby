@@ -168,7 +168,7 @@ module SockJS
 
     def close(status = 3000, message = "Go away!")
       if self.status == :created
-        raise "You can change from #{self.status} to closing!"
+        raise "You can't change from #{self.status} to closing!"
       end
 
       self.status = :closing
