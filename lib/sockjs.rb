@@ -206,9 +206,11 @@ module SockJS
     def set_timer
       @disconnect_timer = begin
         EM::Timer.new(@disconnect_delay) do
-          puts "~ Closing the connection."
-          self.close unless self.closed? or self.closing?
-          puts "~ Connection closed."
+          unless self.closed? or self.closing?
+            puts "~ Closing the connection."
+            self.close
+            puts "~ Connection closed."
+          end
         end
       end
     end
