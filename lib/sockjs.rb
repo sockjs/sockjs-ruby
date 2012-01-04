@@ -148,7 +148,7 @@ module SockJS
       @received_messages.clear
       @transport.buffer.to_frame
     rescue SockJS::CloseError => error
-      Protocol.close_frame(error.status, error.message)
+      Protocol.closing_frame(error.status, error.message)
     end
 
     def check_status

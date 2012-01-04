@@ -66,7 +66,7 @@ module SockJS
       # polling, only the close frame will be send.
       if self.open?
         @status = :closing
-        @frame  = Protocol.close_frame(status, message)
+        @frame  = Protocol.closing_frame(status, message)
       else
         raise StateMachineError.new(@status, :closing)
       end
