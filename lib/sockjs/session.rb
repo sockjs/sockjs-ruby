@@ -10,7 +10,8 @@ module SockJS
 
     def_delegator :@transport, :send
     def_delegator :@transport, :finish
-    def_delegator :@transport, :buffer
+
+    attr_accessor :buffer
 
     def initialize(transport, callbacks)
       @transport = transport
