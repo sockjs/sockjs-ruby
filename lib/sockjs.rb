@@ -167,6 +167,10 @@ module SockJS
     end
 
     def close(status = 3000, message = "Go away!")
+      if self.status == :created
+        raise "You can change from #{self.status} to closing!"
+      end
+
       self.status = :closing
 
       self.buffer.close(status, message)
@@ -203,7 +207,7 @@ module SockJS
       @disconnect_timer = begin
         EM::Timer.new(@disconnect_delay) do
           puts "~ Closing the connection."
-          self.close
+          self.close unless self.closed? or self.closing?
           puts "~ Connection closed."
         end
       end
