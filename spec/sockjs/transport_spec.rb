@@ -134,11 +134,7 @@ describe SockJS::Transport do
       end
     end
 
-    describe "#send(data, *args)" do
-      # TODO
-    end
-
-    describe "#finish" do
+    describe "#response(request, status)" do
       # TODO
     end
 

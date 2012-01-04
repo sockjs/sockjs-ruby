@@ -34,11 +34,10 @@ module SockJS
     end
 
     # Instance methods.
-    attr_reader :connection, :options, :buffer
+    attr_reader :connection, :options
     def initialize(connection, options)
-      @connection, @options, @buffer = connection, options, Buffer.new
+      @connection, @options = connection, options
     end
-    # TODO: buffer must be handled in some other way.
 
     def disabled?
       disabled_transports = @options[:disabled_transports] || Array.new
@@ -54,34 +53,14 @@ module SockJS
       SockJS::Thin::Response
     end
 
-    # @deprecated
-    # @nospecs
-    def response(*args, &block)
-      @response ||= self.response_class.new(*args, &block)
-    end
-
-    # @deprecated
-    # @nospecs
-    def write_response(request, status, headers, body, &block)
-      self.response(request, status, headers, &block)
-      @response.write_head
-      @response.write(body) unless body.nil?
-      @response.finish
-      return @response
-    end
-
     def format_frame(payload)
       raise TypeError.new if payload.nil?
 
       "#{payload}\n"
     end
 
-    def send(data, *args)
-      @buffer << self.format_frame(data, *args)
-    end
-
-    def finish
-      @response.finish(@buffer.to_frame)
+    def response(request, status)
+      self.response_class.new(status)
     end
 
     def respond(request, status, options = Hash.new, &block)
@@ -92,8 +71,9 @@ module SockJS
       end
 
       session = self.get_session(request, response) # TODO: preamble
-      @buffer = session ? Buffer.new(:open) : Buffer.new # TODO: don't set buffer twice!
-      block.call(response, session)
+      session.buffer = session ? Buffer.new(:open) : Buffer.new
+      session.response = response
+      block.call(response, session) # TODO: maybe it's better to do everything throught session, it knows response already anyway.
     end
 
     def error(http_status, content_type, body)

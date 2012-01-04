@@ -1,17 +1,10 @@
 # encoding: utf-8
 
-require "forwardable"
-
 module SockJS
   class Session
-    extend Forwardable
-
     include CallbackMixin
 
-    def_delegator :@transport, :send
-    def_delegator :@transport, :finish
-
-    attr_accessor :buffer
+    attr_accessor :buffer, :response
 
     def initialize(transport, callbacks)
       @transport = transport
@@ -19,6 +12,14 @@ module SockJS
       @disconnect_delay = 5 # TODO: make this configurable.
       @status = :created
       @received_messages = Array.new
+    end
+
+    def send(data, *args)
+      @buffer << @transport.format_frame(data, *args)
+    end
+
+    def finish
+      @response.finish(@buffer.to_frame)
     end
 
     # All incoming data is treated as incoming messages,
