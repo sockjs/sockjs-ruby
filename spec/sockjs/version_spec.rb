@@ -8,4 +8,9 @@ describe SockJS do
     constants = described_class.constants.map(&:to_sym)
     constants.should include(:VERSION)
   end
+
+  it "should define PROTOCOL_VERSION" do
+    constants = described_class.constants.map(&:to_sym)
+    constants.should include(:PROTOCOL_VERSION)
+  end
 end
