@@ -13,23 +13,16 @@ module SockJS
     }
 
     class << self
-      attr_accessor :prefix, :method, :subclasses, :session_class
+      attr_accessor :prefix, :method, :session_class, :subclasses
     end
 
     self.method        ||= "GET"
     self.subclasses    ||= Array.new
     self.session_class ||= SessionWitchCachedMessages
 
-    # TODO: refactor the following two methods: just find the prefix and check the method later on, so we won't need the second method at all.
-    def self.handler(prefix, method)
-      self.subclasses.find do |handler|
-        handler.prefix === prefix && handler.method == method
-      end
-    end
-
-    def self.match_handler_for_http_405(prefix, method)
-      self.subclasses.find do |handler|
-        handler.prefix === prefix && handler.method != method
+    def self.handler(prefix)
+      self.subclasses.find do |subclass|
+        subclass.prefix === prefix
       end
     end
 
