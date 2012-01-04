@@ -46,7 +46,17 @@ module SockJS
       def handle(request)
         year = 31536000
         time = Time.now + year
-        self.write_response(request, 204, {"Allow" => "OPTIONS, POST", "Access-Control-Max-Age" => "2000000", "Cache-Control" => "public, max-age=#{year}", "Expires" => time.gmtime.to_s, "Access-Control-Allow-Origin" => request.origin, "Access-Control-Allow-Credentials" => "true"}, "") { |response| response.set_session_id(request.session_id) }
+
+        respond(request, 204) do |response, session|
+          response.set_header("Allow", "OPTIONS, POST")
+          response.set_header("Access-Control-Max-Age", "2000000")
+          response.set_header("Cache-Control", "public, max-age=#{year}")
+          response.set_header("Expires", time.gmtime.to_s)
+          response.set_header("Access-Control-Allow-Origin", request.origin)
+          response.set_header("Access-Control-Allow-Credentials", "true")
+
+          response.finish
+        end
       end
     end
 
