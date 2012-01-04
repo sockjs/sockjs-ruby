@@ -1,6 +1,7 @@
 # encoding: utf-8
 
 require "sockjs/buffer"
+require "sockjs/session"
 
 module SockJS
   class Transport
