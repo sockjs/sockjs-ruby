@@ -11,23 +11,28 @@ module SockJS
 
       # Handler.
       def handle(request)
-        match = request.path_info.match(self.class.prefix)
-        if session = self.connection.sessions[match[1]]
-          body = session.process_buffer
+        respond(request, 200) do |response, session|
+          if session
+            body = session.process_buffer
 
-          unless body.respond_to?(:bytesize)
-            raise TypeError, "Block has to return a string or a string-like object responding to #bytesize, but instead an object of #{body.class} class has been returned (object: #{body.inspect})."
+            unless body.respond_to?(:bytesize)
+              raise TypeError, "Block has to return a string or a string-like object responding to #bytesize, but instead an object of #{body.class} class has been returned (object: #{body.inspect})."
+            end
+
+            response.set_header("Content-Type", CONTENT_TYPES[:plain])
+            response.finish(body)
+          else
+            # TODO: refactor this.
+            match = request.path_info.match(self.class.prefix)
+            session = self.connection.create_session(match[1], self)
+
+            response.set_header("Content-Type", CONTENT_TYPES[:javascript])
+            response.set_header("Access-Control-Allow-Origin", request.origin)
+            response.set_header("Access-Control-Allow-Credentials", "true")
+            response.set_session_id(request.session_id)
+            session.open!
+            response.finish
           end
-
-          self.write_response(request, 200, {"Content-Type" => CONTENT_TYPES[:plain]}, body)
-        else
-          session = self.connection.create_session(match[1], self)
-
-          self.response(request, 200, {"Content-Type" => CONTENT_TYPES[:javascript], "Access-Control-Allow-Origin" => request.origin, "Access-Control-Allow-Credentials" => "true"})
-
-          @response.set_session_id(request.session_id)
-          session.open!
-          @response.finish
         end
       end
     end
