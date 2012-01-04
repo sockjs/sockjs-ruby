@@ -22,7 +22,7 @@ module SockJS
               raise TypeError, "Block has to return a string or a string-like object responding to #bytesize, but instead an object of #{body.class} class has been returned (object: #{body.inspect})."
             end
 
-            super(request, 200) do |response, session|
+            respond(request, 200) do |response, session|
               response.set_header("Content-Type", CONTENT_TYPES[:plain])
               response.write(body)
               response.finish
