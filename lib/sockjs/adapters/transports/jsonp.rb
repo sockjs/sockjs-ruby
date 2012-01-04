@@ -39,6 +39,8 @@ module SockJS
       end
 
       def format_frame(callback_function, payload)
+        raise TypeError.new if payload.nil?
+
         # Yes, JSONed twice, there isn't a better way, we must pass
         # a string back, and the script, will be evaled() by the browser.
         "#{callback_function}(#{payload.chomp.to_json});\r\n"

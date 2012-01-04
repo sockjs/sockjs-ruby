@@ -40,6 +40,8 @@ module SockJS
       end
 
       def format_frame(payload)
+        raise TypeError.new if payload.nil?
+
         "<script>\np(#{payload.to_json});\n</script>\r\n"
       end
     end

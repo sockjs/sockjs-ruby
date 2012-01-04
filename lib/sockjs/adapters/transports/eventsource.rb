@@ -23,6 +23,8 @@ module SockJS
       end
 
       def format_frame(payload)
+        raise TypeError.new if payload.nil?
+
         # Beware of leading whitespace
         ["data: ", payload, "\r\n\r\n"].join
         # ["data: ", escape_selected(payload, "\r\n\x00"), "\r\n\r\n"].join

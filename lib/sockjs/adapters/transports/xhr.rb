@@ -122,10 +122,6 @@ module SockJS
         end
       end
 
-      def format_frame(body)
-        "#{body}\n"
-      end
-
       def send(*messages)
         messages.each do |message|
           @response.write(message)

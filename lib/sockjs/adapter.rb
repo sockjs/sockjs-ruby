@@ -69,6 +69,8 @@ module SockJS
     end
 
     def format_frame(payload)
+      raise TypeError.new if payload.nil?
+
       "#{payload}\n"
     end
 
