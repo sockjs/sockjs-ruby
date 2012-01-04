@@ -18,3 +18,7 @@ source :rubygems
 gem "thin"
 gem "rack"
 gem "faye-websocket"
+
+group(:test) do
+  gem "rspec"
+end
