@@ -1,7 +1,7 @@
 # encoding: utf-8
 
-require "sockjs/request"
-require "sockjs/response"
+require "sockjs/servers/request"
+require "sockjs/servers/response"
 
 module SockJS
   module Rack

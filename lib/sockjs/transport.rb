@@ -2,6 +2,7 @@
 
 require "sockjs/buffer"
 require "sockjs/session"
+require "sockjs/servers/thin"
 
 module SockJS
   class Transport
@@ -53,10 +54,14 @@ module SockJS
       SockJS::Thin::Response
     end
 
+    # @deprecated
+    # @nospecs
     def response(*args, &block)
       @response ||= self.response_class.new(*args, &block)
     end
 
+    # @deprecated
+    # @nospecs
     def write_response(request, status, headers, body, &block)
       self.response(request, status, headers, &block)
       @response.write_head
