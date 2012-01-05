@@ -1,7 +1,7 @@
 # encoding: utf-8
 
 require "forwardable"
-require "sockjs/adapter"
+require "sockjs/transport"
 
 module SockJS
   module Transports

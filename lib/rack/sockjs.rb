@@ -4,7 +4,7 @@ require "rack"
 require "faye/websocket"
 
 require "sockjs"
-require "sockjs/adapter"
+require "sockjs/transport"
 require "sockjs/adapters/servers/thin"
 
 # Transports.
