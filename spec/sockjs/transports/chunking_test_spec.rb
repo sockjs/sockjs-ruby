@@ -58,4 +58,54 @@ describe SockJS::Transports::ChunkingTestOptions do
 end
 
 describe SockJS::Transports::ChunkingTestPost do
+  it_should_have_prefix "chunking_test"
+  it_should_have_method "POST"
+
+  # TODO: test if Transport#handler(prefix) can find it (it can't).
+  describe "#handle(request)" do
+    let(:transport) do
+      described_class.new(Object.new, Hash.new)
+    end
+
+    let(:request) do
+      @request ||= FakeRequest.new
+    end
+
+    let(:response) do
+      SockJS::Timeoutable.class_eval do
+        def each(&block)
+          @hash.each do |ms, data|
+            block.call(data)
+          end
+        end
+      end
+
+      transport.handle(request)
+    end
+
+    it "should respond with javascript MIME type" do
+      response.headers["Content-Type"].should match("application/javascript")
+    end
+
+    it "should set access control" do
+      response.headers["Access-Control-Allow-Origin"].should eql(request.origin)
+      response.headers["Access-Control-Allow-Credentials"].should eql("true")
+    end
+
+    it "should set Allow header to OPTIONS, POST" do
+      response.headers["Allow"].should eql("OPTIONS, POST")
+    end
+
+    it "should write chunks to the body" do
+      response # Run the handler.
+
+      request.chunks[0].should eql("h\n")
+      request.chunks[1].should eql(" " * 2048 + "h\n")
+      request.chunks[2].should eql("h\n")
+      request.chunks[3].should eql("h\n")
+      request.chunks[4].should eql("h\n")
+      request.chunks[5].should eql("h\n")
+      request.chunks[6].should eql("h\n")
+    end
+  end
 end

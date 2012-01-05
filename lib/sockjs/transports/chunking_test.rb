@@ -1,6 +1,7 @@
 # encoding: utf-8
 
 require "sockjs/transport"
+require "sockjs/utils"
 
 module SockJS
   module Transports
