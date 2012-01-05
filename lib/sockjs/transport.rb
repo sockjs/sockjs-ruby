@@ -6,6 +6,7 @@ require "sockjs/servers/thin"
 
 module SockJS
   class Transport
+    # @deprecated: See response.rb
     CONTENT_TYPES ||= {
       plain: "text/plain; charset=UTF-8",
       html: "text/html; charset=UTF-8",
@@ -60,7 +61,7 @@ module SockJS
     end
 
     def response(request, status, &block)
-      response = self.response_class.new(status)
+      response = self.response_class.new(request, status)
 
       case block.arity
       when 1
@@ -78,7 +79,7 @@ module SockJS
     end
 
     def respond(*args, &block)
-      response(*args, &block).finish
+      response(*args, &block).tap(&:finish)
     end
 
     # 1) There's no session -> create it. AND CONTINUE

@@ -94,5 +94,20 @@ module SockJS
     def set_no_cache
       self.set_header("Cache-Control", "no-store, no-cache, must-revalidate,  max-age=0")
     end
+
+    CONTENT_TYPES ||= {
+      plain: "text/plain; charset=UTF-8",
+      html: "text/html; charset=UTF-8",
+      javascript: "application/javascript; charset=UTF-8",
+      event_stream: "text/event-stream; charset=UTF-8"
+    }
+
+    def set_content_type(symbol)
+      if string = CONTENT_TYPES[symbol]
+        self.set_header("Content-Type", string)
+      else
+        raise "No such content type: #{symbol}"
+      end
+    end
   end
 end

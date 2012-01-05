@@ -21,7 +21,7 @@ module SockJS
     class Response < Response
       extend Forwardable
 
-      attr_reader :body
+      attr_reader :status, :headers, :body
       def initialize(request, status = nil, headers = Hash.new, &block)
         @request, @body   = request, DelayedResponseBody.new
         @status, @headers = status, headers
