@@ -77,17 +77,18 @@ module Rack
     end
 
     def process_request(request)
-      prefix        = request.path_info.sub(/^#{Regexp.quote(@prefix)}\/?/, "")
-      method        = request.http_method
-      handler_klass = ::SockJS::Transport.handler(prefix)
-      if handler_klass && handler_klass.method == method
+      prefix   = request.path_info.sub(/^#{Regexp.quote(@prefix)}\/?/, "")
+      method   = request.http_method
+      handlers = ::SockJS::Transport.handlers(prefix)
+      handler  = handlers.find { |handler| handler.method == method }
+      if handler
         debug "~ Handler: #{handler_klass.inspect}"
         EM.next_tick do
           handler = handler_klass.new(@connection, @options)
           handler.handle(request)
         end
         ::SockJS::Thin::DUMMY_RESPONSE
-      elsif handler_klass && handler_klass.method != method
+      elsif handler.nil? && ! handlers.empty?
         # Unsupported method.
         debug "~ Method not supported!"
         [405, {}, []]

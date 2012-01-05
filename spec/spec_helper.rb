@@ -8,6 +8,19 @@ module TransportSpecMacros
   def it_should_have_method(method)
     described_class.method.should == method
   end
+
+  def transport_handler_eql(prefix, method)
+    describe SockJS::Transport do
+      describe ".handler(#{prefix}, #{method})" do
+        it "should return #{described_class}" do
+          transports = SockJS::Transport.handlers(url)
+          transports.find { |transport|
+            transport.method == method
+          }.should == described_class
+        end
+      end
+    end
+  end
 end
 
 class FakeRequest

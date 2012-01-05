@@ -82,16 +82,16 @@ describe SockJS::Transport do
     end
   end
 
-  describe ".handler" do
+  describe ".handlers" do
     let(:transport_class) { Class.new(described_class) }
 
     it "should match the handler which is mounted on given prefix" do
       transport_class.prefix = "/test"
-      described_class.handler("/test").should eql(transport_class)
+      described_class.handlers("/test").should eql([transport_class])
 
       transport_class = Class.new(described_class)
       transport_class.prefix = /[^.]+\/([^.]+)\/websocket$/
-      described_class.handler("/a/b/websocket").should eql(transport_class)
+      described_class.handlers("/a/b/websocket").should eql([transport_class])
     end
   end
 

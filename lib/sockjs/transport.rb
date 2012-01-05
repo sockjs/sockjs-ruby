@@ -21,8 +21,8 @@ module SockJS
     self.method     ||= "GET"
     self.subclasses ||= Array.new
 
-    def self.handler(prefix)
-      self.subclasses.find do |subclass|
+    def self.handlers(prefix)
+      self.subclasses.select do |subclass|
         subclass.prefix === prefix
       end
     end

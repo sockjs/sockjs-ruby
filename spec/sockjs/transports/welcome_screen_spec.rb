@@ -9,6 +9,7 @@ require "sockjs/transports/welcome_screen"
 describe SockJS::Transports::WelcomeScreen do
   it_should_have_prefix ""
   it_should_have_method "GET"
+  transport_handler_eql "", "GET"
 
   describe "#handle(request)" do
     let(:transport) do

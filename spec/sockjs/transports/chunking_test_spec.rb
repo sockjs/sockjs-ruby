@@ -9,6 +9,7 @@ require "sockjs/transports/chunking_test"
 describe SockJS::Transports::ChunkingTestOptions do
   it_should_have_prefix "chunking_test"
   it_should_have_method "OPTIONS"
+  transport_handler_eql "chunking_test", "OPTIONS"
 
   describe "#handle(request)" do
     let(:transport) do
@@ -54,12 +55,12 @@ describe SockJS::Transports::ChunkingTestOptions do
       request.chunks.should be_empty
     end
   end
-
 end
 
 describe SockJS::Transports::ChunkingTestPost do
   it_should_have_prefix "chunking_test"
   it_should_have_method "POST"
+  transport_handler_eql "chunking_test", "POST"
 
   # TODO: test if Transport#handler(prefix) can find it (it can't).
   describe "#handle(request)" do
