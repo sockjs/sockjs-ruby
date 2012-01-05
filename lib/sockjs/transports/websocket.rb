@@ -27,7 +27,9 @@ module SockJS
           return false
         end
 
-        self.write_response(request, status, Hash.new, body)
+        respond(request, status) do |response|
+          response.write(body)
+        end
       end
 
       # Handlers.

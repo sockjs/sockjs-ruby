@@ -59,12 +59,8 @@ module SockJS
       "#{payload}\n"
     end
 
-    def response(request, status)
-      self.response_class.new(status)
-    end
-
-    def respond(request, status, options = Hash.new, &block)
-      response = self.response(request, status)
+    def response(request, status, options = Hash.new, &block)
+      response = self.response_class.new(status)
 
       if options[:set_session_id]
         response.set_session_id(request.session_id)
@@ -74,6 +70,14 @@ module SockJS
       session.buffer = session ? Buffer.new(:open) : Buffer.new
       session.response = response
       block.call(response, session) # TODO: maybe it's better to do everything throught session, it knows response already anyway.
+      # Also we shouldn't set status straight away, we can't rewrite it then
+      # And use set_content_type or sth.
+
+      response
+    end
+
+    def respond(*args, &block)
+      response(*args, &block).finish
     end
 
     def error(http_status, content_type, body)

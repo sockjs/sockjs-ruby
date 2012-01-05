@@ -23,17 +23,13 @@ module SockJS
         body = data.gsub("{{ sockjs_url }}", options[:sockjs_url])
 
         if request.headers["if-none-match"] == self.etag(body)
-          self.write_response(request, 304, Hash.new, String.new)
+          respond(request, 304)
         else
-          year = 31536000
-          time = Time.now + year
-
           respond(request, 200) do |response, session|
-            response.set_header("Content-Type",  CONTENT_TYPES[:html])
-            response.set_header("ETag",          self.etag(body))
-            response.set_header("Cache-Control", "public, max-age=#{year}")
-            response.set_header("Expires",       time.gmtime.to_s)
-            response.finish(body)
+            response.set_content_type(:html)
+            response.set_header("ETag", self.etag(body))
+            response.set_cache_control
+            response.write(body)
           end
         end
       end

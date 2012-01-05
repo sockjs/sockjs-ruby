@@ -71,5 +71,30 @@ module SockJS
     def async?
       NOT_IMPLEMENTED_PROC.call
     end
+
+    # === Helpers === #
+    def set_access_control(origin)
+      self.set_header("Access-Control-Allow-Origin", origin)
+      self.set_header("Access-Control-Allow-Credentials", "true")
+    end
+
+    def set_cache_control
+      year = 31536000
+      time = Time.now + year
+
+      self.set_header("Cache-Control", "public, max-age=#{year}")
+      self.set_header("Expires", time.gmtime.to_s)
+      self.set_header("Access-Control-Max-Age", "1000001")
+    end
+
+    def set_allow_options_post
+      self.set_header("Allow", "OPTIONS, POST")
+    end
+
+    def set_no_cache
+      self.set_header("Cache-Control", "no-store, no-cache, must-revalidate,  max-age=0")
+    end
+
+
   end
 end

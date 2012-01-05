@@ -6,37 +6,30 @@ module SockJS
   module Transports
     class ChunkingTestOptions < Transport
       # Settings.
-      self.prefix  = "chunking_test"
-      self.method  = "OPTIONS"
+      self.prefix = "chunking_test"
+      self.method = "OPTIONS"
 
       # Handler.
       def handle(request)
-        year = 31536000
-        time = Time.now + year
-
-        respond(request, 204, set_session_id: true) do |response, session|
-          response.set_header("Access-Control-Allow-Origin", request.origin)
-          response.set_header("Access-Control-Allow-Credentials", "true")
-          response.set_header("Allow", "OPTIONS, POST")
-          response.set_header("Cache-Control", "public, max-age=#{year}")
-          response.set_header("Expires", time.gmtime.to_s)
-          response.set_header("Access-Control-Max-Age", "1000001")
-
-          response.finish
+        respond(request, 204) do |response|
+          response.set_session_id(request.session_id)
+          response.set_access_control(request.origin)
+          response.set_allow_options_post
+          response.set_cache_control
         end
       end
     end
 
     class ChunkingTestPost < ChunkingTestOptions
-      self.method  = "POST"
+      self.method = "POST"
 
       # Handler.
       def handle(request)
-        respond(request, 200) do |response, session|
-          response.set_header("Content-Type", CONTENT_TYPES[:javascript])
-          response.set_header("Access-Control-Allow-Origin", request.origin)
-          response.set_header("Access-Control-Allow-Credentials", "true")
-          response.set_header("Allow", "OPTIONS, POST")
+        response(request, 200) do |response|
+          response.set_content_type(:javascript)
+          response.set_access_control(request.origin)
+          response.set_allow_options_post
+
           response.write_head
 
           timeoutable = SockJS::Timeoutable.new(response.body,

@@ -19,19 +19,18 @@ module SockJS
               raise TypeError, "Block has to return a string or a string-like object responding to #bytesize, but instead an object of #{body.class} class has been returned (object: #{body.inspect})."
             end
 
-            response.set_header("Content-Type", CONTENT_TYPES[:plain])
-            response.finish(body)
+            response.set_content_type(:plain)
+            response.write(body)
           else
             # TODO: refactor this.
             match = request.path_info.match(self.class.prefix)
             session = self.connection.create_session(match[1], self)
 
-            response.set_header("Content-Type", CONTENT_TYPES[:javascript])
-            response.set_header("Access-Control-Allow-Origin", request.origin)
-            response.set_header("Access-Control-Allow-Credentials", "true")
+            response.set_content_type(:javascript)
+            response.set_access_control(request.origin)
             response.set_session_id(request.session_id)
+
             session.open!
-            response.finish
           end
         end
       end
@@ -44,18 +43,10 @@ module SockJS
 
       # Handler.
       def handle(request)
-        year = 31536000
-        time = Time.now + year
-
         respond(request, 204) do |response, session|
-          response.set_header("Allow", "OPTIONS, POST")
-          response.set_header("Access-Control-Max-Age", "2000000")
-          response.set_header("Cache-Control", "public, max-age=#{year}")
-          response.set_header("Expires", time.gmtime.to_s)
-          response.set_header("Access-Control-Allow-Origin", request.origin)
-          response.set_header("Access-Control-Allow-Credentials", "true")
-
-          response.finish
+          response.set_allow_options_post
+          response.set_cache_control
+          response.set_access_control(request.origin)
         end
       end
     end
@@ -67,7 +58,7 @@ module SockJS
 
       # Handler.
       def handle(request)
-        respond(request, 204, set_session_id: true) do |response, session|
+        respond(request, 204) do |response, session|
           if session
             session.receive_message(request.data.read)
 
@@ -81,10 +72,9 @@ module SockJS
             # minded it is. Funnily enough users can't deactivate
             # Lint either in development, so we'll have to tell them
             # to hack it. Bloody hell, that just can't be happening!
-            response.set_header("Content-Type", CONTENT_TYPES[:plain])
-            response.set_header("Access-Control-Allow-Origin", request.origin)
-            response.set_header("Access-Control-Allow-Credentials", "true")
-            response.finish
+            response.set_content_type(:plain)
+            response.set_access_control(request.origin)
+            response.set_session_id(request.session_id)
           else
             self.error(404, :plain, "Session is not open!")
           end
@@ -112,10 +102,10 @@ module SockJS
 
       # Handler.
       def handle(request)
-        respond(request, 200, set_session_id: true) do |response, session|
-          response.set_header("Content-Type", CONTENT_TYPES[:javascript])
-          response.set_header("Access-Control-Allow-Origin", request.origin)
-          response.set_header("Access-Control-Allow-Credentials", "true")
+        response(request, 200) do |response, session|
+          response.set_content_type(:javascript)
+          response.set_access_control(request.origin)
+          response.set_session_id(request.session_id)
           response.write_head
 
           # IE requires 2KB prefix:

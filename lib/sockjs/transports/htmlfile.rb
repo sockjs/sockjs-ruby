@@ -27,9 +27,9 @@ module SockJS
           html = data.gsub("{{ callback }}", request.callback)
           body = html + (" " * (1024 - html.bytesize)) + "\r\n\r\n"
 
-          respond(request, 200) do |response, session|
-            response.set_header("Content-Type", CONTENT_TYPES[:html])
-            response.set_header("Cache-Control", "no-store, no-cache, must-revalidate, max-age=0")
+          response(request, 200) do |response|
+            response.set_content_type(:html)
+            response.set_no_cache
             response.write(body)
 
             self.try_timer_if_valid(request, response)

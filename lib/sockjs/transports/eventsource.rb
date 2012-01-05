@@ -11,9 +11,9 @@ module SockJS
 
       # Handler.
       def handle(request)
-        respond(request, 200) do |response, session|
-          response.set_header("Content-Type", CONTENT_TYPES[:event_stream])
-          response.set_header("Cache-Control", "no-store, no-cache, must-revalidate, max-age=0")
+        response(request, 200) do |response|
+          response.set_content_type(:event_stream)
+          response.set_no_cache
 
           # Opera needs to hear two more initial new lines.
           response.write("\r\n")
