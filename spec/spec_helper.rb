@@ -5,15 +5,19 @@ module TransportSpecMacros
     described_class.prefix.should == prefix
   end
 
+  def it_should_match_path(path)
+    described_class.prefix.should =~ path
+  end
+
   def it_should_have_method(method)
     described_class.method.should == method
   end
 
-  def transport_handler_eql(prefix, method)
+  def transport_handler_eql(path, method)
     describe SockJS::Transport do
-      describe ".handler(#{prefix}, #{method})" do
+      describe ".handler(#{path}, #{method})" do
         it "should return #{described_class}" do
-          transports = SockJS::Transport.handlers(url)
+          transports = SockJS::Transport.handlers(path)
           transports.find { |transport|
             transport.method == method
           }.should == described_class
