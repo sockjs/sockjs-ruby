@@ -35,7 +35,10 @@ module SockJS
             self.try_timer_if_valid(request, response)
           end
         else
-          self.error(500, :html, '"callback" parameter required')
+          respond(resquest, 500) do |response|
+            response.set_content_type(:html)
+            response.write('"callback" parameter required')
+          end
         end
       end
 
