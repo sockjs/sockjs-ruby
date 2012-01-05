@@ -94,7 +94,5 @@ module SockJS
     def set_no_cache
       self.set_header("Cache-Control", "no-store, no-cache, must-revalidate,  max-age=0")
     end
-
-
   end
 end

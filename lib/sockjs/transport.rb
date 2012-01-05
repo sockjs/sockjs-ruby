@@ -59,19 +59,20 @@ module SockJS
       "#{payload}\n"
     end
 
-    def response(request, status, options = Hash.new, &block)
+    def response(request, status, &block)
       response = self.response_class.new(status)
 
-      if options[:set_session_id]
-        response.set_session_id(request.session_id)
+      case block.arity
+      when 1
+        block.call(response)
+      when 2
+        session = self.get_session(request, response) # TODO: preamble
+        session.buffer = session ? Buffer.new(:open) : Buffer.new
+        session.response = response
+        block.call(response, session) # TODO: maybe it's better to do everything throught session, it knows response already anyway ... but sometimes we don't need   session, for instance in the welcome screen or iframe.
+      else
+        raise ArgumentError.new("Block in response takes either 1 or 2 arguments!")
       end
-
-      session = self.get_session(request, response) # TODO: preamble
-      session.buffer = session ? Buffer.new(:open) : Buffer.new
-      session.response = response
-      block.call(response, session) # TODO: maybe it's better to do everything throught session, it knows response already anyway.
-      # Also we shouldn't set status straight away, we can't rewrite it then
-      # And use set_content_type or sth.
 
       response
     end
