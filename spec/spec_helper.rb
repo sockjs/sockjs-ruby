@@ -2,11 +2,11 @@
 
 module TransportSpecMacros
   def it_should_have_prefix(prefix)
-    described_class.prefix.should eql(prefix)
+    described_class.prefix.should == prefix
   end
 
   def it_should_have_method(method)
-    described_class.method.should eql(method)
+    described_class.method.should == method
   end
 end
 

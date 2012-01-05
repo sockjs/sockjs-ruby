@@ -7,6 +7,9 @@ require "sockjs"
 require "sockjs/transports/welcome_screen"
 
 describe SockJS::Transports::WelcomeScreen do
+  it_should_have_prefix ""
+  it_should_have_method "GET"
+
   describe "#handle(request)" do
     let(:transport) do
       described_class.new(Object.new, Hash.new)
