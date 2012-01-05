@@ -29,6 +29,14 @@ class FakeRequest
     }
   end
 
+  def session_id
+    "session-id"
+  end
+
+  def origin
+    "*"
+  end
+
   def method_missing(method, *args, &block)
     puts "~ Please define #{method}(#{args.inspect[1..-2]})"
     super
