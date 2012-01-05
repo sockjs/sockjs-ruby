@@ -2,6 +2,8 @@
 # encoding: utf-8
 
 require "spec_helper"
+
+require "sockjs"
 require "sockjs/transports/htmlfile"
 
 describe SockJS::Transports::HTMLFile do

@@ -2,6 +2,8 @@
 # encoding: utf-8
 
 require "spec_helper"
+
+require "sockjs"
 require "sockjs/transports/websocket"
 
 describe SockJS::Transports::WebSocket do
