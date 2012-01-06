@@ -29,6 +29,7 @@ end
 
 class FakeRequest
   attr_reader :chunks
+  attr_accessor :path_info
 
   def env
     @env ||= {
@@ -52,11 +53,6 @@ class FakeRequest
 
   def origin
     "*"
-  end
-
-  def method_missing(method, *args, &block)
-    puts "~ Please define #{method}(#{args.inspect[1..-2]})"
-    super
   end
 end
 
