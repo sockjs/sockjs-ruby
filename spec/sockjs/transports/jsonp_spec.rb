@@ -102,5 +102,32 @@ describe SockJS::Transports::JSONP do
   end
 end
 
+
+
 describe SockJS::Transports::JSONPSend do
+  it_should_match_path  "server/session/jsonp_send"
+  it_should_have_method "POST"
+  transport_handler_eql "a/b/jsonp_send", "POST"
+
+  describe "#handle(request)" do
+    context "with raw form data" do
+      context "with application/x-www-form-urlencoded" do
+        context "with empty data" do
+          # TODO
+        end
+
+        context "with valid data" do
+          # TODO
+        end
+      end
+
+      context "with any other MIME type" do
+        # TODO
+      end
+    end
+
+    context "without raw form data" do
+      # TODO
+    end
+  end
 end
