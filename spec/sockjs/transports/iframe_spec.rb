@@ -35,7 +35,9 @@ describe SockJS::Transports::IFrame do
 
     context "If-None-Match header matches ETag of current body" do
       let(:request) do
-        @request ||= FakeRequest.new(if_none_match: "x").tap do |request|
+        @request ||= FakeRequest.new.tap do |request|
+          etag = '"af0ca7deb5298aeb946c4f7b96d1501b"'
+          request.if_none_match = etag
           request.path_info = "/iframe.html"
         end
       end

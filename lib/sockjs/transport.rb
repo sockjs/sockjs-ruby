@@ -63,7 +63,8 @@ module SockJS
     def response(request, status, &block)
       response = self.response_class.new(request, status)
 
-      case block.arity
+      case block && block.arity
+      when nil # no block
       when 1
         block.call(response)
       when 2
