@@ -3,7 +3,6 @@
 require "digest/md5"
 require "sockjs/transport"
 
-# ['GET', p('/iframe[0-9-.a-z_]*.html'), ['iframe', 'cache_for', 'expose']],
 module SockJS
   module Transports
     class IFrame < Transport
@@ -13,7 +12,7 @@ module SockJS
 
       # Handler.
       def handle(request)
-        # Copied from the HTML file adapter.
+        # TODO: Investigate why we can't use __DATA__
         data = begin
           lines = File.readlines(__FILE__)
           index = lines.index("__END__\n")
@@ -22,7 +21,7 @@ module SockJS
 
         body = data.gsub("{{ sockjs_url }}", options[:sockjs_url])
 
-        if request.headers["if-none-match"] == self.etag(body)
+        if request.fresh?(self.etag(body))
           respond(request, 304)
         else
           respond(request, 200) do |response, session|
