@@ -55,6 +55,9 @@ describe SockJS::Transports::HTMLFile do
         response # Run the handler.
         request.chunks.last.should match(/document.domain = document.domain/)
       end
+
+      it "should have at least 1024 bytes"
+      it "should replace {{ callback }} with the actual callback name"
     end
 
     context "without callback specified" do
