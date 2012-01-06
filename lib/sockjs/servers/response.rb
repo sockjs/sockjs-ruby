@@ -73,10 +73,6 @@ module SockJS
     end
 
     # === Helpers === #
-    def fresh?(etag)
-      self.headers["if-none-match"] == etag
-    end
-
     def set_access_control(origin)
       self.set_header("Access-Control-Allow-Origin", origin)
       self.set_header("Access-Control-Allow-Credentials", "true")

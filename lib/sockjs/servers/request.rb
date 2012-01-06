@@ -62,5 +62,9 @@ module SockJS
     def data
       raise NotImplementedError.new("You are supposed to rewrite #data in a subclass!")
     end
+
+    def fresh?(etag)
+      self.headers["if-none-match"] == etag
+    end
   end
 end
