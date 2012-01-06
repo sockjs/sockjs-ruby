@@ -13,9 +13,7 @@ module SockJS
       # Handler.
       def handle(request)
         if request.callback
-          # What the fuck is wrong with Ruby???
-          # The bloody pseudoconstant ::DATA is supposed
-          # to be avaible anywhere where we have __END__!
+          # TODO: Investigate why we can't use __DATA__
           data = begin
             lines = File.readlines(__FILE__)
             index = lines.index("__END__\n")
@@ -35,7 +33,7 @@ module SockJS
             self.try_timer_if_valid(request, response)
           end
         else
-          respond(resquest, 500) do |response|
+          respond(request, 500) do |response|
             response.set_content_type(:html)
             response.write('"callback" parameter required')
           end

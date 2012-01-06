@@ -38,7 +38,7 @@ module SockJS
             end
           end
         else
-          respond(resquest, 500) do |response|
+          respond(request, 500) do |response|
             response.set_content_type(:html)
             response.write('"callback" parameter required')
           end

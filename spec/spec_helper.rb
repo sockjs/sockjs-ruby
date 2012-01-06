@@ -35,7 +35,7 @@ end
 
 class FakeRequest
   attr_reader :chunks
-  attr_accessor :path_info
+  attr_accessor :path_info, :callback
 
   def env
     @env ||= {
