@@ -32,8 +32,7 @@ describe SockJS::Transports::HTMLFile do
 
     context "with callback specified" do
       let(:request) do
-        @request ||= begin
-          request = FakeRequest.new
+        @request ||= FakeRequest.new.tap do |request|
           request.callback = "clbk"
           request
         end
