@@ -83,4 +83,14 @@ describe SockJS::Transports::IFrame do
       end
     end
   end
+
+  describe "#etag(body)" do
+    subject do
+      described_class.new(Object.new, Hash.new)
+    end
+
+    it "must be same for the same string" do
+      subject.etag("test").should eql(subject.etag("test"))
+    end
+  end
 end

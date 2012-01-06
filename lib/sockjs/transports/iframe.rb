@@ -24,7 +24,7 @@ module SockJS
         if request.fresh?(self.etag(body))
           respond(request, 304)
         else
-          respond(request, 200) do |response, session|
+          respond(request, 200) do |response|
             response.set_content_type(:html)
             response.set_header("ETag", self.etag(body))
             response.set_cache_control
@@ -37,6 +37,7 @@ module SockJS
         '"' + self.digest.hexdigest(body) + '"'
       end
 
+      protected
       def digest
         @digest ||= Digest::MD5.new
       end

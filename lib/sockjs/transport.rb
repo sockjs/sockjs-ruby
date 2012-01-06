@@ -72,6 +72,8 @@ module SockJS
           session.buffer = session ? Buffer.new(:open) : Buffer.new
           session.response = response
           block.call(response, session) # TODO: maybe it's better to do everything throught session, it knows response already anyway ... but sometimes we don't need   session, for instance in the welcome screen or iframe.
+        else
+          puts "~ Session can't be retrieved."
         end
       else
         raise ArgumentError.new("Block in response takes either 1 or 2 arguments!")
@@ -94,17 +96,18 @@ module SockJS
 
       if session = self.connection.sessions[match[1]]
         if session.closing?
-          p 1
+          puts "~ Session is closing"
           session.close(3000, "Session is closing")
           return nil
         elsif session.open? && session.response.nil?
-          p 2
           return session
         elsif session.open? && session.response
-          p 3
+          puts "~ Another connection still open"
           session.close(2010, "Another connection still open")
           return nil
         end
+      else
+        puts "~ Session #{match[1].inspect} hasn't been created yet."
       end
     end
 
