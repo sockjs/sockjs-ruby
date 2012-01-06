@@ -2,15 +2,21 @@
 
 module TransportSpecMacros
   def it_should_have_prefix(prefix)
-    described_class.prefix.should == prefix
+    it "should have prefix #{prefix}" do
+      described_class.prefix.should == prefix
+    end
   end
 
   def it_should_match_path(path)
-    described_class.prefix.should =~ path
+    it "should match path #{path}" do
+      described_class.prefix.should match(path)
+    end
   end
 
   def it_should_have_method(method)
-    described_class.method.should == method
+    it "should have method #{method}" do
+      described_class.method.should == method
+    end
   end
 
   def transport_handler_eql(path, method)
