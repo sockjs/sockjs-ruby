@@ -5,17 +5,17 @@ require "faye/websocket"
 
 require "sockjs"
 require "sockjs/transport"
-require "sockjs/adapters/servers/thin"
+require "sockjs/servers/thin"
 
 # Transports.
-require "sockjs/adapters/transports/chunking_test"
-require "sockjs/adapters/transports/eventsource"
-require "sockjs/adapters/transports/htmlfile"
-require "sockjs/adapters/transports/iframe"
-require "sockjs/adapters/transports/jsonp"
-require "sockjs/adapters/transports/websocket"
-require "sockjs/adapters/transports/welcome_screen"
-require "sockjs/adapters/transports/xhr"
+require "sockjs/transports/chunking_test"
+require "sockjs/transports/eventsource"
+require "sockjs/transports/htmlfile"
+require "sockjs/transports/iframe"
+require "sockjs/transports/jsonp"
+require "sockjs/transports/websocket"
+require "sockjs/transports/welcome_screen"
+require "sockjs/transports/xhr"
 
 # This is a Rack middleware for SockJS.
 #
