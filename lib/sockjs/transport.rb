@@ -67,10 +67,11 @@ module SockJS
       when 1
         block.call(response)
       when 2
-        session = self.get_session(request, response) # TODO: preamble
-        session.buffer = session ? Buffer.new(:open) : Buffer.new
-        session.response = response
-        block.call(response, session) # TODO: maybe it's better to do everything throught session, it knows response already anyway ... but sometimes we don't need   session, for instance in the welcome screen or iframe.
+        if session = self.get_session(request.path_info)
+          session.buffer = session ? Buffer.new(:open) : Buffer.new
+          session.response = response
+          block.call(response, session) # TODO: maybe it's better to do everything throught session, it knows response already anyway ... but sometimes we don't need   session, for instance in the welcome screen or iframe.
+        end
       else
         raise ArgumentError.new("Block in response takes either 1 or 2 arguments!")
       end
@@ -82,32 +83,36 @@ module SockJS
       response(*args, &block).tap(&:finish)
     end
 
-    # 1) There's no session -> create it. AND CONTINUE
-    # 2) There's a session:
-    #    a) It's closing -> Send c[3000,"Go away!"] AND END
-    #    b) It's open:
-    #       i) There IS NOT any consumer -> OK. AND CONTINUE
-    #       i) There IS a consumer -> Send c[2010,"Another con still open"] AND END
-    def get_session(request, response, preamble = nil)
-      match = request.path_info.match(self.class.prefix)
+    # There's a session:
+    #   a) It's closing -> Send c[3000,"Go away!"] AND END
+    #   b) It's open:
+    #      i) There IS NOT any consumer -> OK. AND CONTINUE
+    #      i) There IS a consumer -> Send c[2010,"Another con still open"] AND END
+    def get_session(path_info)
+      match = path_info.match(self.class.prefix)
 
       if session = self.connection.sessions[match[1]]
         if session.closing?
-          session.close
+          p 1
+          session.close(3000, "Session is closing")
           return nil
         elsif session.open? && session.response.nil?
+          p 2
           return session
         elsif session.open? && session.response
+          p 3
           session.close(2010, "Another connection still open")
           return nil
         end
-      else
-        response.write(preamble) if preamble
-
-        session = self.connection.create_session(match[1], self)
-        session.open!
-        return session
       end
+    end
+
+    def create_session(response, preamble = nil)
+      response.write(preamble) if preamble
+
+      session = self.connection.create_session(match[1], self)
+      session.open!
+      return session
     end
 
     def try_timer_if_valid(request, response, preamble = nil)
