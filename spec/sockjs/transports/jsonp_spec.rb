@@ -115,7 +115,9 @@ describe SockJS::Transports::JSONPSend do
     end
 
     let(:request) do
-      @request ||= FakeRequest.new
+      @request ||= FakeRequest.new.tap do |request|
+        request.path_info = "/a/b/jsonp_send"
+      end
     end
 
     let(:response) do
@@ -127,6 +129,7 @@ describe SockJS::Transports::JSONPSend do
         context "with empty data" do
           let(:request) do
             @request ||= FakeRequest.new.tap do |request|
+              request.path_info = "/a/b/jsonp_send"
               request.content_type = "application/x-www-form-urlencoded"
               request.data = ""
             end
@@ -138,6 +141,7 @@ describe SockJS::Transports::JSONPSend do
         context "with valid data" do
           let(:request) do
             @request ||= FakeRequest.new.tap do |request|
+              request.path_info = "/a/b/jsonp_send"
               request.content_type = "application/x-www-form-urlencoded"
               request.data = "d=sth"
             end
@@ -150,6 +154,7 @@ describe SockJS::Transports::JSONPSend do
       context "with any other MIME type" do
         let(:request) do
           @request ||= FakeRequest.new.tap do |request|
+            request.path_info = "/a/b/jsonp_send"
             request.data = "data"
           end
         end
@@ -159,7 +164,18 @@ describe SockJS::Transports::JSONPSend do
     end
 
     context "without any data" do
-      # TODO
+      it "should respond with HTTP 500" do
+        response.status.should eql(500)
+      end
+
+      it "should respond with HTML MIME type" do
+        response.headers["Content-Type"].should match("text/html")
+      end
+
+      it "should return error message in the body" do
+        response # Run the handler.
+        request.chunks.last.should match(/Payload expected!/)
+      end
     end
   end
 end

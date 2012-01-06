@@ -69,7 +69,7 @@ class FakeRequest
   end
 
   def data
-    StringIO.new(@data)
+    StringIO.new(@data || "")
   end
 end
 
