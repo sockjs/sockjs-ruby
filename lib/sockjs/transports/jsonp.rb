@@ -27,14 +27,15 @@ module SockJS
               response.write(body)
             end
           else
-            session = self.connection.create_session(match[1], self)
-            session.open!(request.callback)
+            self.create_session(request.path_info)
 
-            respond(request, 200) do |response|
+            respond(request, 200, session: :create) do |response, session|
               response.set_content_type(:javascript)
               response.set_access_control(request.origin)
               response.set_no_cache
-              response.write(body)
+              # response.write(body)
+
+              session.open!(request.callback)
             end
           end
         else

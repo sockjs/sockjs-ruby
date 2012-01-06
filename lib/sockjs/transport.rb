@@ -5,6 +5,9 @@ require "sockjs/session"
 require "sockjs/servers/thin"
 
 module SockJS
+  class SessionUnavailableError < StandardError
+  end
+
   class Transport
     # @deprecated: See response.rb
     CONTENT_TYPES ||= {
@@ -60,7 +63,7 @@ module SockJS
       "#{payload}\n"
     end
 
-    def response(request, status, &block)
+    def response(request, status, options = Hash.new, &block)
       response = self.response_class.new(request, status)
 
       case block && block.arity
@@ -69,7 +72,13 @@ module SockJS
         block.call(response)
       when 2
         if session = self.get_session(request.path_info)
-          session.buffer = session ? Buffer.new(:open) : Buffer.new
+          session.buffer = Buffer.new(:open)
+        elsif options[:session] == :create
+          session = self.create_session(request.path_info)
+          session.buffer = Buffer.new
+        end
+
+        if session
           session.response = response
           block.call(response, session) # TODO: maybe it's better to do everything throught session, it knows response already anyway ... but sometimes we don't need   session, for instance in the welcome screen or iframe.
         else
@@ -96,27 +105,27 @@ module SockJS
 
       if session = self.connection.sessions[match[1]]
         if session.closing?
-          puts "~ Session is closing"
           session.close(3000, "Session is closing")
-          return nil
+          raise SessionUnavailableError.new("Session is closing")
         elsif session.open? && session.response.nil?
           return session
         elsif session.open? && session.response
           puts "~ Another connection still open"
           session.close(2010, "Another connection still open")
-          return nil
+          raise SessionUnavailableError.new("Another connection still open")
         end
       else
         puts "~ Session #{match[1].inspect} hasn't been created yet."
+        return nil
       end
     end
 
-    def create_session(response, preamble = nil)
+    def create_session(path_info, response = nil, preamble = nil)
       response.write(preamble) if preamble
 
-      session = self.connection.create_session(match[1], self)
-      session.open!
-      return session
+      match = path_info.match(self.class.prefix)
+
+      return self.connection.create_session(match[1], self)
     end
 
     def try_timer_if_valid(request, response, preamble = nil)

@@ -6,6 +6,15 @@ require "spec_helper"
 require "sockjs"
 require "sockjs/transports/jsonp"
 
+class SockJS::Transports::JSONP
+  def session_class
+    Class.new(SockJS::Session) do
+      def set_timer
+      end
+    end
+  end
+end
+
 describe SockJS::Transports::JSONP do
   it_should_match_path  "server/session/jsonp"
   it_should_have_method "GET"
@@ -17,25 +26,20 @@ describe SockJS::Transports::JSONP do
     end
 
     let(:request) do
-      @request ||= begin
-        request = FakeRequest.new
-        request.path_info = "/echo/a/b/eventsource"
-        request
+      @request ||= FakeRequest.new.tap do |request|
+        request.path_info = "/echo/a/b/jsonp"
       end
     end
 
     let(:response) do
-      def transport.try_timer_if_valid(*)
-      end
-
       transport.handle(request)
     end
 
     context "with callback specified" do
       let(:request) do
         @request ||= FakeRequest.new.tap do |request|
+          request.path_info = "/echo/a/b/jsonp"
           request.callback = "clbk"
-          request
         end
       end
 
