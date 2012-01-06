@@ -35,7 +35,7 @@ end
 
 class FakeRequest
   attr_reader :chunks
-  attr_accessor :path_info, :callback
+  attr_accessor :path_info, :callback, :if_none_match
 
   def env
     @env ||= {
@@ -59,6 +59,10 @@ class FakeRequest
 
   def origin
     "*"
+  end
+
+  def fresh?(etag)
+    @if_none_match == etag
   end
 end
 
