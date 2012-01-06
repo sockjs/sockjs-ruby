@@ -110,23 +110,55 @@ describe SockJS::Transports::JSONPSend do
   transport_handler_eql "a/b/jsonp_send", "POST"
 
   describe "#handle(request)" do
-    context "with raw form data" do
+    let(:transport) do
+      described_class.new(SockJS::Connection.new {}, Hash.new)
+    end
+
+    let(:request) do
+      @request ||= FakeRequest.new
+    end
+
+    let(:response) do
+      transport.handle(request)
+    end
+
+    context "with data" do
       context "with application/x-www-form-urlencoded" do
         context "with empty data" do
+          let(:request) do
+            @request ||= FakeRequest.new.tap do |request|
+              request.content_type = "application/x-www-form-urlencoded"
+              request.data = ""
+            end
+          end
+
           # TODO
         end
 
         context "with valid data" do
+          let(:request) do
+            @request ||= FakeRequest.new.tap do |request|
+              request.content_type = "application/x-www-form-urlencoded"
+              request.data = "d=sth"
+            end
+          end
+
           # TODO
         end
       end
 
       context "with any other MIME type" do
+        let(:request) do
+          @request ||= FakeRequest.new.tap do |request|
+            request.data = "data"
+          end
+        end
+
         # TODO
       end
     end
 
-    context "without raw form data" do
+    context "without any data" do
       # TODO
     end
   end

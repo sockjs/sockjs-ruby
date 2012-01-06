@@ -33,9 +33,12 @@ module TransportSpecMacros
   end
 end
 
+require "stringio"
+
 class FakeRequest
   attr_reader :chunks
-  attr_accessor :path_info, :callback, :if_none_match
+  attr_writer :data
+  attr_accessor :path_info, :callback, :if_none_match, :content_type
 
   def env
     @env ||= {
@@ -63,6 +66,10 @@ class FakeRequest
 
   def fresh?(etag)
     @if_none_match == etag
+  end
+
+  def data
+    StringIO.new(@data)
   end
 end
 
