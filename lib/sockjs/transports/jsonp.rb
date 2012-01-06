@@ -16,19 +16,13 @@ module SockJS
         if request.callback
           match = request.path_info.match(self.class.prefix)
           if session = self.connection.sessions[match[1]]
-            body = self.send_frame(request.callback, session.process_buffer)
-
-            unless body.respond_to?(:bytesize)
-              raise TypeError, "Block has to return a string or a string-like object responding to #bytesize, but instead an object of #{body.class} class has been returned (object: #{body.inspect})."
-            end
-
-            respond(request, 200) do |response|
+            respond(request, 200) do |response, session|
               response.set_content_type(:plain)
+
+              body = self.format_frame(request.callback, session.process_buffer)
               response.write(body)
             end
           else
-            self.create_session(request.path_info)
-
             respond(request, 200, session: :create) do |response, session|
               response.set_content_type(:javascript)
               response.set_access_control(request.origin)

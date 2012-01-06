@@ -8,10 +8,7 @@ require "sockjs/transports/jsonp"
 
 class SockJS::Transports::JSONP
   def session_class
-    Class.new(SockJS::Session) do
-      def set_timer
-      end
-    end
+    FakeSession
   end
 end
 
@@ -44,6 +41,13 @@ describe SockJS::Transports::JSONP do
       end
 
       context "with a session" do
+        let(:transport) do
+          connection = SockJS::Connection.new {}
+          connection.sessions["b"] = FakeSession.new(self, Hash.new)
+
+          described_class.new(connection, Hash.new)
+        end
+
         it "should respond with HTTP 200" do
           response.status.should eql(200)
         end

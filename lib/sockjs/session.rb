@@ -64,7 +64,7 @@ module SockJS
       block.call
 
       @received_messages.clear
-      @transport.buffer.to_frame
+      @buffer.to_frame
     rescue SockJS::CloseError => error
       Protocol.closing_frame(error.status, error.message)
     end
@@ -94,11 +94,12 @@ module SockJS
       self.buffer.close(status, message)
       self.finish
 
-      @close_timer.cancel if @close_timer
+      self.reset_close_timer
+    end
 
-      @close_timer = EM::Timer.new(@disconnect_delay) do
-        self.mark_to_be_garbage_collected
-      end
+    # TODO: specs
+    def newly_created?
+      @status == :created
     end
 
     def open?
@@ -136,6 +137,14 @@ module SockJS
     def reset_timer
       @disconnect_timer.cancel
       self.set_timer
+    end
+
+    def reset_close_timer
+      @close_timer.cancel if @close_timer
+
+      @close_timer = EM::Timer.new(@disconnect_delay) do
+        self.mark_to_be_garbage_collected
+      end
     end
 
     def mark_to_be_garbage_collected

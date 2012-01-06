@@ -107,7 +107,7 @@ module SockJS
         if session.closing?
           session.close(3000, "Session is closing")
           raise SessionUnavailableError.new("Session is closing")
-        elsif session.open? && session.response.nil?
+        elsif (session.open? && session.response.nil?) || session.newly_created?
           return session
         elsif session.open? && session.response
           puts "~ Another connection still open"

@@ -8,10 +8,7 @@ require "sockjs/transports/iframe"
 
 class SockJS::Transports::IFrame
   def session_class
-    Class.new(SockJS::Session) do
-      def set_timer
-      end
-    end
+    FakeSession
   end
 end
 

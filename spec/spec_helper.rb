@@ -66,6 +66,20 @@ class FakeRequest
   end
 end
 
+require "sockjs"
+require "sockjs/session"
+
+class FakeSession < SockJS::Session
+  def set_timer
+  end
+
+  def reset_timer
+  end
+
+  def reset_close_timer
+  end
+end
+
 RSpec.configure do |config|
   config.extend(TransportSpecMacros)
 end
