@@ -138,7 +138,13 @@ describe SockJS::Transports::JSONPSend do
             end
           end
 
-          # TODO
+          context "with a valid session" do
+            # TODO
+          end
+
+          context "without a valid session" do
+            # TODO
+          end
         end
       end
 
@@ -150,7 +156,13 @@ describe SockJS::Transports::JSONPSend do
           end
         end
 
-        # TODO
+        context "with a valid session" do
+          # TODO
+        end
+
+        context "without a valid session" do
+          # TODO
+        end
       end
     end
 
