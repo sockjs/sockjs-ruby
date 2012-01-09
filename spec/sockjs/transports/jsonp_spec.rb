@@ -174,7 +174,7 @@ describe SockJS::Transports::JSONPSend do
 
         it "should return error message in the body" do
           response # Run the handler.
-          request.chunks.last.should match(/Payload expected!/)
+          request.chunks.last.should match(/Payload expected./)
         end
       end
     end

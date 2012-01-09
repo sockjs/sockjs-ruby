@@ -57,42 +57,62 @@ module SockJS
 
       # Handler.
       def handle(request)
-        if raw_form_data = request.data.read && raw_form_data != "" || (raw_form_data != "d=" && request.content_type == "application/x-www-form-urlencoded")
-          match = request.path_info.match(self.class.prefix)
-          session_id = match[1]
-          session = self.connection.sessions[session_id]
-          if session
+        if request.content_type == "application/x-www-form-urlencoded"
+          self.handle_form_data(request)
+        else
+          self.handle_raw_data(request)
+        end
+      rescue SockJS::HttpError => error
+        respond(request, 500) do |response|
+          response.set_content_type(:html)
+          response.write(error.message)
+        end
+      end
 
-            if request.content_type == "application/x-www-form-urlencoded"
-              data = URI.decode_www_form(raw_form_data)
+      def handle_form_data(request)
+        raw_data = request.data.read || empty_payload
+        data = URI.decode_www_form(raw_data)
 
-              # It always has to be d=something.
-              if data.first.first == "d"
-                data = data.first.last
-              end
-            else
-              data = raw_form_data
-            end
+        # It always has to be d=something.
+        if data && data.first && data.first.first == "d"
+          data = data.first.last
+          self.handle_clean_data(request, data)
+        else
+          empty_payload
+        end
+      end
 
-            session.receive_message(data)
+      def handle_raw_data(request)
+        raw_data = request.data.read
+        if raw_data && raw_data != ""
+          self.handle_clean_data(request, raw_data)
+        else
+          empty_payload
+        end
+      end
 
-            respond(request, 200) do |response|
-              response.set_session_id(request.session_id)
-              response.write("ok")
-            end
-          else
-            respond(request, 404) do |response|
-              response.set_content_type(:plain)
-              response.set_session_id(request.session_id)
-              response.write("Session is not open!")
-            end
+      def handle_clean_data(request, data)
+        match = request.path_info.match(self.class.prefix)
+        session_id = match[1]
+        session = self.connection.sessions[session_id]
+        if session
+          session.receive_message(data)
+
+          respond(request, 200) do |response|
+            response.set_session_id(request.session_id)
+            response.write("ok")
           end
         else
-          respond(request, 500) do |response|
-            response.set_content_type(:html)
-            response.write("Payload expected!")
+          respond(request, 404) do |response|
+            response.set_content_type(:plain)
+            response.set_session_id(request.session_id)
+            response.write("Session is not open!")
           end
         end
+      end
+
+      def empty_payload
+        raise SockJS::HttpError.new("Payload expected.")
       end
     end
   end
