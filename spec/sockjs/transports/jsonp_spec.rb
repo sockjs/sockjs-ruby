@@ -163,7 +163,18 @@ describe SockJS::Transports::JSONPSend do
             end
           end
 
-          # TODO
+          it "should respond with HTTP 404" do
+            response.status.should eql(404)
+          end
+
+          it "should respond with plain text MIME type" do
+            response.headers["Content-Type"].should match("text/plain")
+          end
+
+          it "should return error message in the body" do
+            response # Run the handler.
+            request.chunks.last.should match(/Session is not open\!/)
+          end
         end
       end
 
@@ -199,7 +210,18 @@ describe SockJS::Transports::JSONPSend do
             end
           end
 
-          # TODO
+          it "should respond with HTTP 404" do
+            response.status.should eql(404)
+          end
+
+          it "should respond with plain text MIME type" do
+            response.headers["Content-Type"].should match("text/plain")
+          end
+
+          it "should return error message in the body" do
+            response # Run the handler.
+            request.chunks.last.should match(/Session is not open\!/)
+          end
         end
       end
     end
