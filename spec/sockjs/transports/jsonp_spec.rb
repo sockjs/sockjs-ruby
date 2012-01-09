@@ -118,8 +118,8 @@ describe SockJS::Transports::JSONPSend do
     end
 
     let(:request) do
-      @request ||= FakeRequest.new.tap do |request|
-        request.path_info = "/a/b/jsonp_send"
+      FakeRequest.new.tap do |request|
+        request.path_info = "/a/_/jsonp_send"
       end
     end
 
@@ -129,36 +129,64 @@ describe SockJS::Transports::JSONPSend do
 
     context "with valid data" do
       context "with application/x-www-form-urlencoded" do
-        let(:request) do
-          @request ||= FakeRequest.new.tap do |request|
-            request.path_info = "/a/b/jsonp_send"
-            request.content_type = "application/x-www-form-urlencoded"
-            request.data = "d=sth"
+        # TODO: test with invalid data like d=sth, we should get Broken encoding.
+        context "with a valid session" do
+          let(:request) do
+            FakeRequest.new.tap do |request|
+              request.path_info = "/a/b/jsonp_send"
+              request.content_type = "application/x-www-form-urlencoded"
+              request.data = "d=%22sth%22"
+            end
+          end
+
+          it "should respond with HTTP 200" do
+            response.status.should eql(200)
+          end
+
+          it "should set session ID" do
+            cookie = response.headers["Set-Cookie"]
+            cookie.should match("JSESSIONID=#{request.session_id}; path=/")
+          end
+
+          it "should write 'ok' to the body stream" do
+            response # Run the handler.
+            request.chunks.last.should eql("ok")
           end
         end
 
-        context "with a valid session" do
-          # TODO
-        end
-
         context "without a valid session" do
+          let(:request) do
+            FakeRequest.new.tap do |request|
+              request.path_info = "/a/_/jsonp_send"
+              request.content_type = "application/x-www-form-urlencoded"
+              request.data = "d=sth"
+            end
+          end
+
           # TODO
         end
       end
 
       context "with any other MIME type" do
-        let(:request) do
-          FakeRequest.new.tap do |request|
-            request.path_info = "/a/b/jsonp_send"
-            request.data = "data"
-          end
-        end
-
         context "with a valid session" do
+          let(:request) do
+            FakeRequest.new.tap do |request|
+              request.path_info = "/a/b/jsonp_send"
+              request.data = "data"
+            end
+          end
+
           # TODO
         end
 
         context "without a valid session" do
+          let(:request) do
+            FakeRequest.new.tap do |request|
+              request.path_info = "/a/_/jsonp_send"
+              request.data = "data"
+            end
+          end
+
           # TODO
         end
       end
