@@ -67,7 +67,10 @@ module SockJS
               data = URI.decode_www_form(raw_form_data)
 
               if data.nil? || data.first.nil? || data.first.last.nil?
-                raise SockJS::HttpError.new("Payload expected.")
+                return respond(request, 500) do |response|
+                  response.set_content_type(:html)
+                  response.write("Payload expected!")
+                end
               end
 
               # It always has to be d=something.
@@ -99,8 +102,6 @@ module SockJS
             response.write("Payload expected!")
           end
         end
-      rescue SockJS::HttpError => error
-        error.to_response(self, request)
       end
     end
   end

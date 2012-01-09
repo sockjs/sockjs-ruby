@@ -111,7 +111,10 @@ describe SockJS::Transports::JSONPSend do
 
   describe "#handle(request)" do
     let(:transport) do
-      described_class.new(SockJS::Connection.new {}, Hash.new)
+      connection = SockJS::Connection.new {}
+      connection.sessions["b"] = FakeSession.new(self, Hash.new)
+
+      described_class.new(connection, Hash.new)
     end
 
     let(:request) do
@@ -126,18 +129,6 @@ describe SockJS::Transports::JSONPSend do
 
     context "with data" do
       context "with application/x-www-form-urlencoded" do
-        context "with empty data" do
-          let(:request) do
-            @request ||= FakeRequest.new.tap do |request|
-              request.path_info = "/a/b/jsonp_send"
-              request.content_type = "application/x-www-form-urlencoded"
-              request.data = ""
-            end
-          end
-
-          # TODO
-        end
-
         context "with valid data" do
           let(:request) do
             @request ||= FakeRequest.new.tap do |request|
@@ -153,7 +144,7 @@ describe SockJS::Transports::JSONPSend do
 
       context "with any other MIME type" do
         let(:request) do
-          @request ||= FakeRequest.new.tap do |request|
+          FakeRequest.new.tap do |request|
             request.path_info = "/a/b/jsonp_send"
             request.data = "data"
           end
@@ -163,18 +154,28 @@ describe SockJS::Transports::JSONPSend do
       end
     end
 
-    context "without any data" do
-      it "should respond with HTTP 500" do
-        response.status.should eql(500)
-      end
+    [nil, "", "d="].each do |data|
+      context "without data = #{data.inspect}" do
+        let(:request) do
+          FakeRequest.new.tap do |request|
+            request.path_info = "/a/b/jsonp_send"
+            request.content_type = "application/x-www-form-urlencoded"
+            request.data = data
+          end
+        end
 
-      it "should respond with HTML MIME type" do
-        response.headers["Content-Type"].should match("text/html")
-      end
+        it "should respond with HTTP 500" do
+          response.status.should eql(500)
+        end
 
-      it "should return error message in the body" do
-        response # Run the handler.
-        request.chunks.last.should match(/Payload expected!/)
+        it "should respond with HTML MIME type" do
+          response.headers["Content-Type"].should match("text/html")
+        end
+
+        it "should return error message in the body" do
+          response # Run the handler.
+          request.chunks.last.should match(/Payload expected!/)
+        end
       end
     end
   end
