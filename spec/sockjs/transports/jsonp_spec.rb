@@ -127,24 +127,22 @@ describe SockJS::Transports::JSONPSend do
       transport.handle(request)
     end
 
-    context "with data" do
+    context "with valid data" do
       context "with application/x-www-form-urlencoded" do
-        context "with valid data" do
-          let(:request) do
-            @request ||= FakeRequest.new.tap do |request|
-              request.path_info = "/a/b/jsonp_send"
-              request.content_type = "application/x-www-form-urlencoded"
-              request.data = "d=sth"
-            end
+        let(:request) do
+          @request ||= FakeRequest.new.tap do |request|
+            request.path_info = "/a/b/jsonp_send"
+            request.content_type = "application/x-www-form-urlencoded"
+            request.data = "d=sth"
           end
+        end
 
-          context "with a valid session" do
-            # TODO
-          end
+        context "with a valid session" do
+          # TODO
+        end
 
-          context "without a valid session" do
-            # TODO
-          end
+        context "without a valid session" do
+          # TODO
         end
       end
 
