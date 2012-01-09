@@ -166,7 +166,7 @@ describe SockJS::Transports::JSONPSend do
       end
     end
 
-    [nil, "", "d="].each do |data|
+    [nil, "", "d=", "f=test"].each do |data|
       context "without data = #{data.inspect}" do
         let(:request) do
           FakeRequest.new.tap do |request|
