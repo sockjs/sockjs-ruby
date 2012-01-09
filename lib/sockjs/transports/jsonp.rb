@@ -57,7 +57,7 @@ module SockJS
 
       # Handler.
       def handle(request)
-        if raw_form_data = request.data.read
+        if raw_form_data = request.data.read && raw_form_data != "" || (raw_form_data != "d=" && request.content_type == "application/x-www-form-urlencoded")
           match = request.path_info.match(self.class.prefix)
           session_id = match[1]
           session = self.connection.sessions[session_id]
@@ -66,18 +66,9 @@ module SockJS
             if request.content_type == "application/x-www-form-urlencoded"
               data = URI.decode_www_form(raw_form_data)
 
-              if data.nil? || data.first.nil? || data.first.last.nil?
-                return respond(request, 500) do |response|
-                  response.set_content_type(:html)
-                  response.write("Payload expected!")
-                end
-              end
-
               # It always has to be d=something.
               if data.first.first == "d"
                 data = data.first.last
-              else
-                data = ""
               end
             else
               data = raw_form_data
