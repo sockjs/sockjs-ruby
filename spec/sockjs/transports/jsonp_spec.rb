@@ -172,11 +172,23 @@ describe SockJS::Transports::JSONPSend do
           let(:request) do
             FakeRequest.new.tap do |request|
               request.path_info = "/a/b/jsonp_send"
-              request.data = "data"
+              request.data = '"data"'
             end
           end
 
-          # TODO
+          it "should respond with HTTP 200" do
+            response.status.should eql(200)
+          end
+
+          it "should set session ID" do
+            cookie = response.headers["Set-Cookie"]
+            cookie.should match("JSESSIONID=#{request.session_id}; path=/")
+          end
+
+          it "should write 'ok' to the body stream" do
+            response # Run the handler.
+            request.chunks.last.should eql("ok")
+          end
         end
 
         context "without a valid session" do
