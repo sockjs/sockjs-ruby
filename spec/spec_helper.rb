@@ -87,12 +87,13 @@ class FakeSession < SockJS::Session
   end
 end
 
-class SockJS::Transport
-  def session_class
-    FakeSession
-  end
-end
-
 RSpec.configure do |config|
   config.extend(TransportSpecMacros)
+  config.before do
+    class SockJS::Transport
+      def session_class
+        FakeSession
+      end
+    end
+  end
 end
