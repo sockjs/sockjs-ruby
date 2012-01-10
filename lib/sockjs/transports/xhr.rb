@@ -11,7 +11,7 @@ module SockJS
 
       # Handler.
       def handle(request)
-        respond(request, 200) do |response, session|
+        respond(request, 200, session: :create) do |response, session|
           if session
             body = session.process_buffer
 

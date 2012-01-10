@@ -6,6 +6,12 @@ require "spec_helper"
 require "sockjs"
 require "sockjs/transports/xhr"
 
+class SockJS::Transports::XHRPost
+  def session_class
+    FakeSession
+  end
+end
+
 describe SockJS::Transports::XHRPost do
   it_should_match_path  "server/session/xhr"
   it_should_have_method "POST"
@@ -48,11 +54,6 @@ describe SockJS::Transports::XHRPost do
         session.stub!(:process_buffer).and_return("msg")
 
         response
-      end
-
-      it "should process the buffer" do
-        response # Run the handler.
-        request.chunks.last.should match(/Session is not open\!/)
       end
     end
 
