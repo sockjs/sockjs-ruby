@@ -19,7 +19,9 @@ describe SockJS::Transports::XHRPost do
     end
 
     let(:request) do
-      FakeRequest.new
+      FakeRequest.new.tap do |request|
+        request.path_info = "/a/_/xhr"
+      end
     end
 
     let(:response) do
@@ -27,15 +29,38 @@ describe SockJS::Transports::XHRPost do
     end
 
     context "with a session" do
-      let(:transport) do
-        described_class.new(Object.new, Hash.new)
+      let(:request) do
+        FakeRequest.new.tap do |request|
+          request.path_info = "/a/b/xhr"
+        end
       end
 
-      # TODO
+      it "should respond with HTTP 200" do
+        response.status.should eql(200)
+      end
+
+      it "should respond with plain text MIME type" do
+        response.headers["Content-Type"].should match("text/plain")
+      end
+
+      it "should run user's code" do
+        session = transport.connection.sessions["b"]
+        session.stub!(:process_buffer)
+
+        response
+      end
+
+      it "should process the buffer" do
+        response # Run the handler.
+        request.chunks.last.should match(/Session is not open\!/)
+      end
     end
 
     context "without a session" do
-      it "should create one and send an opening frame"
+      it "should create one and send an opening frame" do
+        response # Run the handler.
+        request.chunks.last.should eql("o")
+      end
 
       it "should respond with HTTP 200" do
         response.status.should eql(200)
