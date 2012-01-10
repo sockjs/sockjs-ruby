@@ -45,7 +45,7 @@ describe SockJS::Transports::XHRPost do
 
       it "should run user's code" do
         session = transport.connection.sessions["b"]
-        session.stub!(:process_buffer)
+        session.stub!(:process_buffer).and_return("msg")
 
         response
       end
