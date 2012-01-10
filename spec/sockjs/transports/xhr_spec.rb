@@ -10,7 +10,54 @@ describe SockJS::Transports::XHRPost do
   it_should_match_path  "server/session/xhr"
   it_should_have_method "POST"
   transport_handler_eql "a/b/xhr", "POST"
+
+  describe "#handle(request)" do
+    let(:transport) do
+      connection = SockJS::Connection.new {}
+      connection.sessions["b"] = FakeSession.new(self, Hash.new)
+      described_class.new(connection, Hash.new)
+    end
+
+    let(:request) do
+      FakeRequest.new
+    end
+
+    let(:response) do
+      transport.handle(request)
+    end
+
+    context "with a session" do
+      let(:transport) do
+        described_class.new(Object.new, Hash.new)
+      end
+
+      # TODO
+    end
+
+    context "without a session" do
+      it "should create one and send an opening frame"
+
+      it "should respond with HTTP 200" do
+        response.status.should eql(200)
+      end
+
+      it "should respond with javascript MIME type" do
+        response.headers["Content-Type"].should match("application/javascript")
+      end
+
+      it "should set access control" do
+        response.headers["Access-Control-Allow-Origin"].should eql(request.origin)
+        response.headers["Access-Control-Allow-Credentials"].should eql("true")
+      end
+
+      it "should set session ID" do
+        cookie = response.headers["Set-Cookie"]
+        cookie.should match("JSESSIONID=#{request.session_id}; path=/")
+      end
+    end
+  end
 end
+
 
 
 
