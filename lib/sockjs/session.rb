@@ -46,7 +46,7 @@ module SockJS
     def process_buffer
       self.reset_timer
 
-      response do
+      create_response do
         self.check_status
 
         # The error is supposed to be cached for 5s
@@ -60,7 +60,7 @@ module SockJS
       end
     end
 
-    def response(&block)
+    def create_response(&block)
       block.call
 
       @received_messages.clear

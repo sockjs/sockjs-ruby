@@ -73,7 +73,7 @@ module SockJS
       when 2
         if session = self.get_session(request.path_info)
           session.buffer = Buffer.new(:open)
-        elsif options[:session] == :create
+        elsif session.nil? && options[:session] == :create
           session = self.create_session(request.path_info)
           session.buffer = Buffer.new
         end

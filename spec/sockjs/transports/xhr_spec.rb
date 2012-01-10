@@ -14,7 +14,8 @@ describe SockJS::Transports::XHRPost do
   describe "#handle(request)" do
     let(:transport) do
       connection = SockJS::Connection.new {}
-      connection.sessions["b"] = FakeSession.new(self, Hash.new)
+      session = FakeSession.new(self, Hash.new, :open)
+      connection.sessions["b"] = session
       described_class.new(connection, Hash.new)
     end
 

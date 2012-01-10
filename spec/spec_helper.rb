@@ -77,6 +77,11 @@ require "sockjs"
 require "sockjs/session"
 
 class FakeSession < SockJS::Session
+  def initialize(connection, _, status = :created)
+    super(connection, Hash.new)
+    @status = status
+  end
+
   def set_timer
   end
 
