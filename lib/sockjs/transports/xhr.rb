@@ -12,7 +12,7 @@ module SockJS
       # Handler.
       def handle(request)
         respond(request, 200, session: :create) do |response, session|
-          if session
+          unless session.newly_created?
             body = session.process_buffer
 
             unless body.respond_to?(:bytesize)
@@ -22,10 +22,6 @@ module SockJS
             response.set_content_type(:plain)
             response.write(body)
           else
-            # TODO: refactor this.
-            match = request.path_info.match(self.class.prefix)
-            session = self.connection.create_session(match[1], self)
-
             response.set_content_type(:javascript)
             response.set_access_control(request.origin)
             response.set_session_id(request.session_id)

@@ -20,7 +20,8 @@ describe SockJS::Transports::XHRPost do
 
     let(:request) do
       FakeRequest.new.tap do |request|
-        request.path_info = "/a/_/xhr"
+        random = Array.new(7) { rand(256) }.pack("C*").unpack("H*").first
+        request.path_info = "/a/#{random}/xhr"
       end
     end
 
@@ -43,7 +44,7 @@ describe SockJS::Transports::XHRPost do
         response.headers["Content-Type"].should match("text/plain")
       end
 
-      it "should run user's code" do
+      it "should run user code" do
         session = transport.connection.sessions["b"]
         session.stub!(:process_buffer).and_return("msg")
 
