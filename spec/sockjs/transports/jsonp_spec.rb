@@ -6,12 +6,6 @@ require "spec_helper"
 require "sockjs"
 require "sockjs/transports/jsonp"
 
-class SockJS::Transports::JSONP
-  def session_class
-    FakeSession
-  end
-end
-
 describe SockJS::Transports::JSONP do
   it_should_match_path  "server/session/jsonp"
   it_should_have_method "GET"

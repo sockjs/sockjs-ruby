@@ -6,12 +6,6 @@ require "spec_helper"
 require "sockjs"
 require "sockjs/transports/iframe"
 
-class SockJS::Transports::IFrame
-  def session_class
-    FakeSession
-  end
-end
-
 describe SockJS::Transports::IFrame do
   it_should_match_path  "iframe.html"
   it_should_match_path  "iframe1.html"
