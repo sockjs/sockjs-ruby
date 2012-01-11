@@ -157,6 +157,7 @@ describe SockJS::Transports::XHRSendPost do
       let(:request) do
         FakeRequest.new.tap do |request|
           request.path_info = "/a/b/xhr_send"
+          request.data = '"message"'
         end
       end
 
