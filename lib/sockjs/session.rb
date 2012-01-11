@@ -19,7 +19,13 @@ module SockJS
     end
 
     def finish
-      @response.finish(@buffer.to_frame)
+      # This is pretty hacky, but it gives us the choice
+      # to "redefine" this method from transport classes.
+      if @transport.respond_to?(:session_finish)
+        @transport.session_finish
+      else
+        @response.finish(@buffer.to_frame)
+      end
     end
 
     # All incoming data is treated as incoming messages,
