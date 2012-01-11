@@ -83,6 +83,7 @@ module SockJS
           block.call(response, session) # TODO: maybe it's better to do everything throught session, it knows response already anyway ... but sometimes we don't need   session, for instance in the welcome screen or iframe.
         else
           puts "~ Session can't be retrieved."
+          block.call(response)
         end
       else
         raise ArgumentError.new("Block in response takes either 1 or 2 arguments!")

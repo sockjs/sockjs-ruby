@@ -31,16 +31,15 @@ module SockJS
 
     def initialize(*args, &block)
       @message = args.last
-      @status = args.first if args.length > 2
+      @status = args.first if args.length >= 2
       @block = block
     end
 
     def to_response(adapter, request)
-      adapter.respond(@status) do |response|
+      adapter.respond(request, @status) do |response|
         response.set_content_type(:plain)
         @block.call(response) if @block
         response.write(@message) if @message
-        response.finish
       end
     end
   end

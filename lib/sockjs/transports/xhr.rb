@@ -72,10 +72,7 @@ module SockJS
             response.set_access_control(request.origin)
             response.set_session_id(request.session_id)
           else
-            respond(request, 404) do |response|
-              response.set_content_type(:plain)
-              response.write("Session is not open!")
-            end
+            raise SockJS::HttpError.new(404, "Session is not open!")
           end
         end
 

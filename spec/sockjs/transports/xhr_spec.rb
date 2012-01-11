@@ -145,7 +145,7 @@ describe SockJS::Transports::XHRSendPost do
     let(:request) do
       FakeRequest.new.tap do |request|
         random = Array.new(7) { rand(256) }.pack("C*").unpack("H*").first
-        request.path_info = "/a/#{random}/xhr"
+        request.path_info = "/a/#{random}/xhr_send"
       end
     end
 
@@ -156,7 +156,7 @@ describe SockJS::Transports::XHRSendPost do
     context "with a session" do
       let(:request) do
         FakeRequest.new.tap do |request|
-          request.path_info = "/a/b/xhr"
+          request.path_info = "/a/b/xhr_send"
         end
       end
 
@@ -164,7 +164,18 @@ describe SockJS::Transports::XHRSendPost do
     end
 
     context "without a session" do
-      # TODO
+      it "should respond with HTTP 404" do
+        response.status.should eql(404)
+      end
+
+      it "should respond with plain text MIME type" do
+        response.headers["Content-Type"].should match("text/plain")
+      end
+
+      it "should return error message in the body" do
+        response # Run the handler.
+        request.chunks.last.should match(/Session is not open\!/)
+      end
     end
   end
 end
