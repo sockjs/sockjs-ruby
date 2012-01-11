@@ -33,30 +33,31 @@ module SockJS
   class HttpError < StandardError
     attr_reader :status, :message
 
+    # TODO: Refactor to (status, message, &block)
     def initialize(*args, &block)
       @message = args.last
-      @status = args.first if args.length >= 2
+      @status = (args.length >= 2) ? args.first : 500
       @block = block
     end
 
     def to_response(adapter, request)
-      adapter.respond(request, @status) do |response|
+      adapter.respond(request, self.status) do |response|
         response.set_content_type(:plain)
         @block.call(response) if @block
-        response.write(@message) if @message
+        response.write(self.message) if self.message
       end
     end
   end
 
   class InvalidJSON < HttpError
-    def initialize(*)
-      @message = "Broken JSON encoding."
+    def message
+      "Broken JSON encoding."
     end
   end
 
   class EmptyPayload < HttpError
-    def initialize(*)
-      @message = "Payload expected."
+    def message
+      "Payload expected."
     end
   end
 
