@@ -27,14 +27,21 @@ module SockJS
   end
 
   class HttpError < StandardError
-    attr_reader :message
+    attr_reader :status, :message
 
-    def initialize(message)
-      @message = message
+    def initialize(*args, &block)
+      @message = args.last
+      @status = args.first if args.length > 2
+      @block = block
     end
 
     def to_response(adapter, request)
-      adapter.write_response(request, 500, {"Content-Type" => "text/plain"}, self.message)
+      adapter.respond(@status) do |response|
+        response.set_content_type(:plain)
+        @block.call(response) if @block
+        response.write(@message) if @message
+        response.finish
+      end
     end
   end
 
