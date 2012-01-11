@@ -212,6 +212,41 @@ describe SockJS::Transports::XHRSendOptions do
   it_should_match_path  "server/session/xhr_send"
   it_should_have_method "OPTIONS"
   transport_handler_eql "a/b/xhr_send", "OPTIONS"
+
+  describe "#handle(request)" do
+    let(:transport) do
+      described_class.new(Object.new, Hash.new)
+    end
+
+    let(:request) do
+      FakeRequest.new
+    end
+
+    let(:response) do
+      transport.handle(request)
+    end
+
+    it "should respond with HTTP 204" do
+      response.status.should eql(204)
+    end
+
+    it "should set access control" do
+      response.headers["Access-Control-Allow-Origin"].should eql(request.origin)
+      response.headers["Access-Control-Allow-Credentials"].should eql("true")
+    end
+
+    it "should set cache control to be valid for the next year" do
+      time = Time.now + 31536000
+
+      response.headers["Cache-Control"].should eql("public, max-age=31536000")
+      response.headers["Expires"].should eql(time.gmtime.to_s)
+      response.headers["Access-Control-Max-Age"].should eql("1000001")
+    end
+
+    it "should set Allow header to OPTIONS, POST" do
+      response.headers["Allow"].should eql("OPTIONS, POST")
+    end
+  end
 end
 
 
