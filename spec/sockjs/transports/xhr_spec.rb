@@ -133,6 +133,40 @@ describe SockJS::Transports::XHRSendPost do
   it_should_match_path  "server/session/xhr_send"
   it_should_have_method "POST"
   transport_handler_eql "a/b/xhr_send", "POST"
+
+  describe "#handle(request)" do
+    let(:transport) do
+      connection = SockJS::Connection.new {}
+      session = FakeSession.new(self, Hash.new, :open)
+      connection.sessions["b"] = session
+      described_class.new(connection, Hash.new)
+    end
+
+    let(:request) do
+      FakeRequest.new.tap do |request|
+        random = Array.new(7) { rand(256) }.pack("C*").unpack("H*").first
+        request.path_info = "/a/#{random}/xhr"
+      end
+    end
+
+    let(:response) do
+      transport.handle(request)
+    end
+
+    context "with a session" do
+      let(:request) do
+        FakeRequest.new.tap do |request|
+          request.path_info = "/a/b/xhr"
+        end
+      end
+
+      # TODO
+    end
+
+    context "without a session" do
+      # TODO
+    end
+  end
 end
 
 
