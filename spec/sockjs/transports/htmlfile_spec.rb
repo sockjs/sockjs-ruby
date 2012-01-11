@@ -52,7 +52,7 @@ describe SockJS::Transports::HTMLFile do
 
       it "should return HTML wrapper in the body" do
         response # Run the handler.
-        request.chunks.last.should match(/document.domain = document.domain/)
+        response.chunks.last.should match(/document.domain = document.domain/)
       end
 
       it "should have at least 1024 bytes"
@@ -70,7 +70,7 @@ describe SockJS::Transports::HTMLFile do
 
       it "should return error message in the body" do
         response # Run the handler.
-        request.chunks.last.should match(/"callback" parameter required/)
+        response.chunks.last.should match(/"callback" parameter required/)
       end
     end
   end

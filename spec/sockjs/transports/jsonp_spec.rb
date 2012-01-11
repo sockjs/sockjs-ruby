@@ -86,7 +86,7 @@ describe SockJS::Transports::JSONP do
 
       it "should return error message in the body" do
         response # Run the handler.
-        request.chunks.last.should match(/"callback" parameter required/)
+        response.chunks.last.should match(/"callback" parameter required/)
       end
     end
   end
@@ -144,7 +144,7 @@ describe SockJS::Transports::JSONPSend do
 
           it "should write 'ok' to the body stream" do
             response # Run the handler.
-            request.chunks.last.should eql("ok")
+            response.chunks.last.should eql("ok")
           end
         end
 
@@ -167,7 +167,7 @@ describe SockJS::Transports::JSONPSend do
 
           it "should return error message in the body" do
             response # Run the handler.
-            request.chunks.last.should match(/Session is not open\!/)
+            response.chunks.last.should match(/Session is not open\!/)
           end
         end
       end
@@ -192,7 +192,7 @@ describe SockJS::Transports::JSONPSend do
 
           it "should write 'ok' to the body stream" do
             response # Run the handler.
-            request.chunks.last.should eql("ok")
+            response.chunks.last.should eql("ok")
           end
         end
 
@@ -214,7 +214,7 @@ describe SockJS::Transports::JSONPSend do
 
           it "should return error message in the body" do
             response # Run the handler.
-            request.chunks.last.should match(/Session is not open\!/)
+            response.chunks.last.should match(/Session is not open\!/)
           end
         end
       end
@@ -240,7 +240,7 @@ describe SockJS::Transports::JSONPSend do
 
         it "should return error message in the body" do
           response # Run the handler.
-          request.chunks.last.should match(/Payload expected./)
+          response.chunks.last.should match(/Payload expected./)
         end
       end
     end

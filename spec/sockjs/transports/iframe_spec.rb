@@ -65,12 +65,12 @@ describe SockJS::Transports::IFrame do
 
       it "should return HTML wrapper in the body" do
         response # Run the handler.
-        request.chunks.last.should match(/document.domain = document.domain/)
+        response.chunks.last.should match(/document.domain = document.domain/)
       end
 
       it "should set sockjs_url" do
         response # Run the handler.
-        request.chunks.last.should match(transport.options[:sockjs_url])
+        response.chunks.last.should match(transport.options[:sockjs_url])
       end
     end
   end

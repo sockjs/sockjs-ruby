@@ -52,7 +52,7 @@ describe SockJS::Transports::ChunkingTestOptions do
 
     it "should have an empty body" do
       response # Run the handler.
-      request.chunks.should be_empty
+      response.chunks.should be_empty
     end
   end
 end
@@ -100,13 +100,13 @@ describe SockJS::Transports::ChunkingTestPost do
     it "should write chunks to the body" do
       response # Run the handler.
 
-      request.chunks[0].should eql("h\n")
-      request.chunks[1].should eql(" " * 2048 + "h\n")
-      request.chunks[2].should eql("h\n")
-      request.chunks[3].should eql("h\n")
-      request.chunks[4].should eql("h\n")
-      request.chunks[5].should eql("h\n")
-      request.chunks[6].should eql("h\n")
+      response.chunks[0].should eql("h\n")
+      response.chunks[1].should eql(" " * 2048 + "h\n")
+      response.chunks[2].should eql("h\n")
+      response.chunks[3].should eql("h\n")
+      response.chunks[4].should eql("h\n")
+      response.chunks[5].should eql("h\n")
+      response.chunks[6].should eql("h\n")
     end
   end
 end

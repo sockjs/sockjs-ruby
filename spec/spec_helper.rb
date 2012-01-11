@@ -40,6 +40,10 @@ class FakeRequest
   attr_writer :data
   attr_accessor :path_info, :callback, :if_none_match, :content_type
 
+  def initialize(env = Hash.new)
+    self.env.merge!(env)
+  end
+
   def env
     @env ||= {
       "async.callback" => Proc.new do |status, headers, body|
@@ -77,9 +81,13 @@ require "sockjs"
 require "sockjs/session"
 
 class FakeSession < SockJS::Session
-  def initialize(connection, _, status = :created)
-    super(connection, Hash.new)
+  def initialize(connection, callbacks = Hash.new, status = :created)
+    super(connection, callbacks)
     @status = status
+  end
+
+  def buffer
+    @buffer ||= SockJS::Buffer.new
   end
 
   def set_timer
@@ -89,6 +97,14 @@ class FakeSession < SockJS::Session
   end
 
   def reset_close_timer
+  end
+end
+
+require "sockjs/servers/thin"
+
+class SockJS::Thin::Response
+  def chunks
+    @request.chunks
   end
 end
 

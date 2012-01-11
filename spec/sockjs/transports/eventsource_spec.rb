@@ -47,7 +47,7 @@ describe SockJS::Transports::EventSource do
       response # Run the handler.
 
       pending 'We do split("\r\n"), remember?' do
-        request.chunks[0].should eql("")
+        response.chunks[0].should eql("")
       end
     end
   end

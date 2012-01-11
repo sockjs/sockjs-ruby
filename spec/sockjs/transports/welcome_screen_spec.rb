@@ -34,7 +34,7 @@ describe SockJS::Transports::WelcomeScreen do
 
     it "should return greeting in the body" do
       response # Run the handler.
-      request.chunks.last.should eql("Welcome to SockJS!\n")
+      response.chunks.last.should eql("Welcome to SockJS!\n")
     end
   end
 end

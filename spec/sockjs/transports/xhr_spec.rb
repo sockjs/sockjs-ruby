@@ -56,7 +56,7 @@ describe SockJS::Transports::XHRPost do
     context "without a session" do
       it "should create one and send an opening frame" do
         response # Run the handler.
-        request.chunks.last.should eql("o")
+        response.chunks.last.should eql("o")
       end
 
       it "should respond with HTTP 200" do
@@ -198,7 +198,7 @@ describe SockJS::Transports::XHRSendPost do
 
       it "should return error message in the body" do
         response # Run the handler.
-        request.chunks.last.should match(/Session is not open\!/)
+        response.chunks.last.should match(/Session is not open\!/)
       end
     end
   end
