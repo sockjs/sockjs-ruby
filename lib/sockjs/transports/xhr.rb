@@ -39,7 +39,7 @@ module SockJS
 
       # Handler.
       def handle(request)
-        respond(request, 204) do |response, session|
+        respond(request, 204) do |response|
           response.set_allow_options_post
           response.set_cache_control
           response.set_access_control(request.origin)
