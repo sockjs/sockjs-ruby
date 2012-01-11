@@ -258,6 +258,34 @@ describe SockJS::Transports::XHRStreamingPost do
   it_should_match_path  "server/session/xhr_streaming"
   it_should_have_method "POST"
   transport_handler_eql "a/b/xhr_streaming", "POST"
+
+  describe "#handle(request)" do
+    let(:transport) do
+      connection = SockJS::Connection.new {}
+      transport  = described_class.new(connection, Hash.new)
+
+      def transport.try_timer_if_valid(*)
+      end
+
+      transport
+    end
+
+    let(:request) do
+      FakeRequest.new.tap do |request|
+        request.path_info = "/a/b/xhr_streaming"
+      end
+    end
+
+    let(:response) do
+      transport.handle(request)
+    end
+
+    it "should respond with HTTP 200" do
+      response.status.should eql(200)
+    end
+
+    # TODO
+  end
 end
 
 
