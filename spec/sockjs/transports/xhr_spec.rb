@@ -284,7 +284,19 @@ describe SockJS::Transports::XHRStreamingPost do
       response.status.should eql(200)
     end
 
-    # TODO
+    it "should respond with javascript MIME type" do
+      response.headers["Content-Type"].should match("application/javascript")
+    end
+
+    it "should set access control" do
+      response.headers["Access-Control-Allow-Origin"].should eql(request.origin)
+      response.headers["Access-Control-Allow-Credentials"].should eql("true")
+    end
+
+    it "should set session ID" do
+      cookie = response.headers["Set-Cookie"]
+      cookie.should match("JSESSIONID=#{request.session_id}; path=/")
+    end
   end
 end
 
