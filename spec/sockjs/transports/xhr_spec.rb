@@ -160,7 +160,31 @@ describe SockJS::Transports::XHRSendPost do
         end
       end
 
-      # TODO
+      it "should respond with HTTP 204" do
+        response.status.should eql(204)
+      end
+
+      it "should respond with plain text MIME type" do
+        response.headers["Content-Type"].should match("text/plain")
+      end
+
+      it "should set session ID" do
+        cookie = response.headers["Set-Cookie"]
+        cookie.should match("JSESSIONID=#{request.session_id}; path=/")
+      end
+
+      it "should set access control" do
+        response.headers["Access-Control-Allow-Origin"].should eql(request.origin)
+        response.headers["Access-Control-Allow-Credentials"].should eql("true")
+      end
+
+      it "should call session.receive_message(data)" do
+        # TODO: Come up with a better way how to test it.
+        session = transport.connection.sessions["b"]
+        session.stub!(:receive_message)
+
+        response
+      end
     end
 
     context "without a session" do
