@@ -110,12 +110,6 @@ module SockJS
           self.try_timer_if_valid(request, response, preamble)
         end
       end
-
-      def send(*messages)
-        messages.each do |message|
-          @response.write(message)
-        end
-      end
     end
 
     class XHRStreamingOptions < XHROptions
