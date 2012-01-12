@@ -37,6 +37,26 @@ describe SockJS::Transports::WebSocket do
     transport.handle(request)
   end
 
+  describe "#handle(request)" do
+    it "should respond with 404 and an error message if the transport is disabled" do
+      options   = {disabled_transports: [described_class]}
+      transport = transport(options)
+      response  = response(transport, request)
+
+      transport.should be_disabled
+
+      response.status.should eql(404)
+      response.chunks.last.should eql("WebSockets Are Disabled")
+    end
+
+    it "should respond with 400 and an error message if HTTP_UPGRADE isn't WebSocket" do
+      request  = request("HTTP_UPGRADE" => "something")
+      response = response(transport, request)
+
+      response.status.should eql(400)
+      response.chunks.last.should eql('Can "Upgrade" only to "WebSocket".')
+    end
+  end
 
   describe "#handle_open(request)" do
     it "should send the opening frame"
