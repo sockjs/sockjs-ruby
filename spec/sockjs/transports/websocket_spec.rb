@@ -37,6 +37,31 @@ describe SockJS::Transports::WebSocket do
     transport.handle(request)
   end
 
+
+  describe "#handle_open(request)" do
+    it "should send the opening frame"
+    it "should open a new session"
+  end
+
+  describe "#handle_message(request, event)" do
+    let(:app) do
+      Proc.new do |connection|
+        connection.subscribe do |session, message|
+          session.send(message.upcase)
+        end
+      end
+    end
+
+    it "should receive the message"
+    it "should run user code"
+    it "should send messages"
+  end
+
+  describe "#handle_close(request, event)" do
+    it "should send the closing frame"
+    it "should open a new session"
+  end
+
   describe "#format_frame(payload)" do
     it "should raise an error if payload is nil" do
       -> { transport.format_frame(nil) }.should raise_error(TypeError)
