@@ -56,6 +56,21 @@ describe SockJS::Transports::WebSocket do
       response.status.should eql(400)
       response.chunks.last.should eql('Can "Upgrade" only to "WebSocket".')
     end
+
+    it "should respond with 400 and an error message if HTTP_CONNECTION isn't Upgrade" do
+      request  = request("HTTP_CONNECTION" => "something")
+      response = response(transport, request)
+
+      response.status.should eql(400)
+      response.chunks.last.should eql('"Connection" must be "Upgrade".')
+    end
+
+    # The following three statements are meant to be documentation rather than specs itselves.
+    it "should call #handle_open(request) when the connection is being open" do end
+
+    it "should call #handle_message(request, event) on a new message" do end
+
+    it "should call #handle_close(request, event) when the connection is being closed" do end
   end
 
   describe "#handle_open(request)" do
