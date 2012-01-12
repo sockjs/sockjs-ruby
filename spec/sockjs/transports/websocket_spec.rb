@@ -36,4 +36,14 @@ describe SockJS::Transports::WebSocket do
   def response(transport = transport, request = request)
     transport.handle(request)
   end
+
+  describe "#format_frame(payload)" do
+    it "should raise an error if payload is nil" do
+      -> { transport.format_frame(nil) }.should raise_error(TypeError)
+    end
+
+    it "should return the payload without adding \\n" do
+      transport.format_frame("o").should eql("o")
+    end
+  end
 end
