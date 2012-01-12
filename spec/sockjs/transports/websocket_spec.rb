@@ -10,4 +10,30 @@ describe SockJS::Transports::WebSocket do
   it_should_match_path  "server/session/websocket"
   it_should_have_method "GET"
   transport_handler_eql "a/b/websocket", "GET"
+
+  # TODO: This should be a mixin.
+  def transport(options = Hash.new)
+    connection = SockJS::Connection.new {}
+    connection.session_open {}
+    # TODO: In fact the first argument should always be the transport,
+    # we should replace 'self' by the following code in all the specs.
+    described_class.new(connection, options).tap do |transport|
+      # TODO: Use Connection#create_session instead of
+      # instantiating FakeSession manually.
+      connection.create_session("b", transport, FakeSession)
+    end
+  end
+
+  def request(opts = Hash.new)
+    env = {
+      "HTTP_CONNECTION" => "Upgrade",
+      "HTTP_UPGRADE" => "WebSocket"}
+    FakeRequest.new(env.merge(opts)).tap do |request|
+      request.path_info = "/a/b/websocket"
+    end
+  end
+
+  def response(transport = transport, request = request)
+    transport.handle(request)
+  end
 end
