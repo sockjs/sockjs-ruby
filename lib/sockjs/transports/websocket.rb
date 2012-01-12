@@ -1,5 +1,6 @@
 # encoding: utf-8
 
+require "faye/websocket"
 require "forwardable"
 require "sockjs/transport"
 
@@ -16,71 +17,72 @@ module SockJS
         SockJS::Session
       end
 
-      def invalid_request_or_disabled_websocket?(request)
-        if self.disabled?
-          status, body = 404, "WebSockets Are Disabled"
-        elsif request.env["HTTP_UPGRADE"] != "WebSocket"
-          status, body = 400, 'Can "Upgrade" only to "WebSocket".'
-        elsif request.env["HTTP_CONNECTION"] != "Upgrade"
-          status, body = 400, '"Connection" must be "Upgrade".'
-        else
-          return false
-        end
+      def_delegator :@ws, :send
 
-        respond(request, status) do |response|
-          response.write(body)
+      def check_invalid_request_or_disabled_websocket(request)
+        if self.disabled?
+          raise HttpError.new(404, "WebSockets Are Disabled")
+        elsif request.env["HTTP_UPGRADE"] != "WebSocket"
+          raise HttpError.new(400, 'Can "Upgrade" only to "WebSocket".')
+        elsif request.env["HTTP_CONNECTION"] != "Upgrade"
+          raise HttpError.new(400, '"Connection" must be "Upgrade".')
         end
       end
 
       # Handlers.
       def handle(request)
-        unless invalid_request_or_disabled_websocket?(request)
-          puts "~ Upgrading to WebSockets ..."
+        check_invalid_request_or_disabled_websocket(request)
 
-          @ws = Faye::WebSocket.new(request.env)
+        puts "~ Upgrading to WebSockets ..."
 
-          def @ws.send(msg); super msg; puts " WS#send ~ #{msg.inspect}"; end
+        @ws = Faye::WebSocket.new(request.env)
 
-          # Whops, this is obviously wrong ...
-          handler = ::SockJS::Transports::WebSocket.new(@connection, @options)
-          handler.handle_open(request)
+        def @ws.send(msg); puts " WS#send ~ #{msg.inspect}"; super msg; end
 
-          @ws.onmessage = lambda do |event|
-            debug "~ WS data received: #{event.data.inspect}"
-            handler.handle_message(request, event)
-          end
+        self.handle_open(request)
 
-          @ws.onclose = lambda do |event|
-            debug "~ Closing WebSocket connection (#{event.code}, #{event.reason})"
-            handler.handle_close(request)
-          end
-
-          # Thin async response
-          ::SockJS::Thin::DUMMY_RESPONSE
+        @ws.onmessage = lambda do |event|
+          debug "~ WS data received: #{event.data.inspect}"
+          self.handle_message(request, event)
         end
+
+        @ws.onclose = lambda do |event|
+          debug "~ Closing WebSocket connection (#{event.code}, #{event.reason})"
+          self.handle_close(request, event)
+        end
+      rescue SockJS::HttpError => error
+        error.to_response(self, request)
       end
 
       def handle_open(request)
         puts "~ Opening WS connection."
         match = request.path_info.match(self.class.prefix)
-        session = self.connection.create_session(match[1], self)
+        session = self.create_session(request.path_info)
         session.open!
         session.check_status
 
-        messages = session.process_buffer.chomp
-        @ws.send(messages.chomp) unless messages == "a[]"
-        # OK, this is a huge mess! Let's rework sessions,
-        # so session#send can work instantly without this
-        # senseless crap ... because obviously in case
-        # of websockets, we don't need to buffer
-        # the messages and wait for sending the response.
+        # Send the opening frame.
+        self.send(session.process_buffer)
       end
 
-      def_delegator :@ws, :send
+      def handle_message(request, event)
+        puts "~ WS message received: #{event.data.inspect}"
+        session = self.get_session(request.path_info)
+        session.receive_message(event.data)
 
-      # In this adapter we send everything straight away,
-      # hence there's no need for #finish.
-      def finish
+        # Send encoded messages in an array frame.
+        self.send(session.process_buffer)
+      rescue SockJS::InvalidJSON
+        session.close
+      end
+
+      def handle_close(request, event)
+        puts "~ Closing WS connection."
+        session = self.get_session(request.path_info)
+        session.close
+
+        # Send the closing frame.
+        self.send(session.process_buffer)
       end
 
       def format_frame(payload)
@@ -89,26 +91,9 @@ module SockJS
         payload
       end
 
-      def handle_close(request)
-        puts "~ Closing WS connection."
-        match = request.path_info.match(self.class.prefix)
-        session = self.connection.sessions[match[1]]
-        session.close
-
-        messages = session.process_buffer.chomp
-        @ws.send(messages)
-      end
-
-      def handle_message(request, event)
-        puts "~ WS message received: #{event.data.inspect}"
-        match = request.path_info.match(self.class.prefix)
-        session = self.connection.sessions[match[1]]
-        session.receive_message(event.data)
-        messages = session.process_buffer.chomp
-        p [:mess, messages]
-        @ws.send(messages)
-      rescue SockJS::InvalidJSON
-        session.close
+      # In this adapter we send everything straight away,
+      # hence there's no need for #finish. See session.rb.
+      def session_finish
       end
     end
   end
