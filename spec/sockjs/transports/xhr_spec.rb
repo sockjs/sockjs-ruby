@@ -308,4 +308,22 @@ describe SockJS::Transports::XHRStreamingOptions do
   it_should_match_path  "server/session/xhr_streaming"
   it_should_have_method "OPTIONS"
   transport_handler_eql "a/b/xhr_streaming", "OPTIONS"
+
+  describe "#handle(request)" do
+    let(:transport) do
+      described_class.new(Object.new, Hash.new)
+    end
+
+    let(:request) do
+      FakeRequest.new
+    end
+
+    let(:response) do
+      transport.handle(request)
+    end
+
+    it "should respond with HTTP 204" do
+      response.status.should eql(204)
+    end
+  end
 end
