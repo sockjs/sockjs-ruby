@@ -106,4 +106,10 @@ describe SockJS::Transports::WebSocket do
       transport.format_frame("o").should eql("o")
     end
   end
+
+  describe "#session_finish" do
+    it "should be defined, but it should do nothing" do
+      transport.should respond_to(:session_finish)
+    end
+  end
 end
