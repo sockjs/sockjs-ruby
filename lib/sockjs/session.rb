@@ -103,7 +103,6 @@ module SockJS
       self.reset_close_timer
     end
 
-    # TODO: specs
     def newly_created?
       @status == :created
     end

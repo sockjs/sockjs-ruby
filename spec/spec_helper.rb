@@ -80,7 +80,7 @@ end
 require "sockjs"
 require "sockjs/session"
 
-class FakeSession < SockJS::Session
+module ResetSessionMixin
   def initialize(connection, callbacks = Hash.new, status = :created)
     super(connection, callbacks)
     @status = status
@@ -98,6 +98,10 @@ class FakeSession < SockJS::Session
 
   def reset_close_timer
   end
+end
+
+class FakeSession < SockJS::Session
+  include ResetSessionMixin
 end
 
 require "sockjs/servers/thin"
