@@ -24,6 +24,10 @@ module SockJS
       if @transport.respond_to?(:session_finish)
         @transport.session_finish
       else
+        if @response.nil?
+          raise "You have to assign something to session.response!"
+        end
+
         @response.finish(@buffer.to_frame)
       end
     end
