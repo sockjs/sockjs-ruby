@@ -6,15 +6,15 @@ require "base64"
 require File.expand_path("../lib/sockjs/version", __FILE__)
 
 Gem::Specification.new do |s|
-  s.name = "sockjs"
-  s.version = SockJS::VERSION
-  s.authors = ["Jakub Stastny"]
+  s.name     = "sockjs"
+  s.version  = SockJS::VERSION
+  s.authors  = ["botanicus"]
+  s.email    = "jakub@rabbitmq.com"
   s.homepage = "https://github.com/sockjs/sockjs-ruby"
-  s.summary = "Ruby server for SockJS"
+  s.summary  = "Ruby server for SockJS"
   s.description = <<-DESC
-    SockJS is WebSocket emulation library. It means that you use the WebSocket API, only instead of WebSocket class you instantiate SockJS class.
+    SockJS is a WebSocket emulation library. It means that you use the WebSocket API, only instead of WebSocket class you instantiate SockJS class. In absence of WebSocket, some of the fallback transports will be used.
   DESC
-  s.email = "jakub@rabbitmq.com"
 
   # Ruby version
   s.required_ruby_version = ::Gem::Requirement.new("~> 1.9")
