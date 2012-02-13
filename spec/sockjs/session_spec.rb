@@ -68,12 +68,42 @@ describe Session do
   end
 
   describe "#closing?" do
+    before do
+      @subject = subject
+
+      @subject.open!
+
+      @subject.check_status
+
+      def @subject.reset_close_timer
+      end
+    end
+
     it "should return false after a new session is created" do
-      subject.should_not be_closing
+      @subject.should_not be_closing
+    end
+
+    it "should return true after session.close is called" do
+      p @subject.buffer
+      # @subject.open!
+      # @subject.check_status
+      @subject.close
+      @subject.should be_closing
     end
   end
 
-  describe "#closed?"
+  describe "#closed?" do
+    it "should return false after a new session is created" do
+      subject.should_not be_closed
+    end
+
+    it "should return true after session.close is called" do
+      # subject.open!
+      # subject.check_status
+      subject.close
+      subject.should be_closed
+    end
+  end
 end
 
 
