@@ -24,6 +24,9 @@ module SockJS
       if @transport.respond_to?(:session_finish)
         @transport.session_finish
       else
+        # TODO: this check should be done earlier:
+        # initialize(transport, response, callbacks)
+        # -> response can be nil only if transport.respond_to?(:session_finish)
         if @response.nil?
           raise "You have to assign something to session.response!"
         end
