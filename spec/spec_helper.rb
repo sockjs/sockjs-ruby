@@ -79,6 +79,7 @@ end
 
 require "sockjs"
 require "sockjs/session"
+require "sockjs/buffer"
 
 module ResetSessionMixin
   def initialize(connection, callbacks = Hash.new, status = :created)
