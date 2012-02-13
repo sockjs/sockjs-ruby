@@ -98,6 +98,7 @@ module SockJS
     end
 
     def close(status = 3000, message = "Go away!")
+      # Hint: session.buffer = Buffer.new(:open) or so
       if self.status == :created
         raise "You can't change from #{self.status} to closing!"
       end
@@ -108,6 +109,10 @@ module SockJS
       self.finish
 
       self.reset_close_timer
+
+      # Hint: session.buffer = Buffer.new(:open) or so
+    rescue SockJS::StateMachineError => error
+      raise error
     end
 
     def newly_created?
