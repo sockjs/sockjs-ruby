@@ -98,6 +98,7 @@ module ResetSessionMixin
   end
 
   def reset_close_timer
+    mark_to_be_garbage_collected
   end
 end
 
