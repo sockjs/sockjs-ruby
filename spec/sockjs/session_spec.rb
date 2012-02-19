@@ -52,6 +52,26 @@ describe Session do
       @subject.open!
       @subject.should be_opening
     end
+
+    it "should call session.set_timer" do
+      @subject = subject
+      @subject.should_receive(:set_timer)
+      @subject.open!
+    end
+
+    it "should open the buffer" do
+      @subject = subject
+      @subject.open!
+      @subject.buffer.to_frame.should eql("o")
+    end
+
+    it "should call the session.finish method" do
+      @subject = subject.set_status_for_tests(:open)
+      transport = @subject.instance_variable_get(:@transport)
+      transport.should_receive(:session_finish)
+
+      @subject.close
+    end
   end
 
   describe "#close(status, message)" do

@@ -92,6 +92,7 @@ module SockJS
       end
     end
 
+    # TODO: what with the args?
     def open!(*args)
       @status = :opening
       self.set_timer
