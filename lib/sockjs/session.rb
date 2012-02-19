@@ -93,7 +93,7 @@ module SockJS
     end
 
     def open!(*args)
-      self.status = :opening
+      @status = :opening
       self.set_timer
 
       self.buffer.open # @buffer.status to :opening
@@ -102,11 +102,11 @@ module SockJS
 
     def close(status = 3000, message = "Go away!")
       # Hint: session.buffer = Buffer.new(:open) or so
-      if self.status == :created
-        raise "You can't change from #{self.status} to closing!"
+      if @status == :created
+        raise "You can't change from #{@status} to closing!"
       end
 
-      self.status = :closing
+      @status = :closing
 
       self.buffer.close(status, message)
       self.finish

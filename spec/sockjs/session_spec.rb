@@ -49,10 +49,19 @@ describe Session do
   describe "#open!(*args)"
 
   describe "#close(status, message)" do
-    it "should fail if the user is trying to close a newly created instance"
-    it "should set status to closing"
+    it "should fail if the user is trying to close a newly created instance" do
+      -> { subject.close }.should raise_error(RuntimeError)
+    end
+
+    it "should set status to closing" do
+      @subject = subject.set_status_for_tests(:open)
+      def @subject.reset_close_timer; end
+      @subject.close
+      @subject.should be_closing
+    end
     it "should set frame to the close frame"
     # self.buffer.close(status, message)
+    # TODO: opt args
 
     it "should call the session.finish method"
     # @transport.session_finish
