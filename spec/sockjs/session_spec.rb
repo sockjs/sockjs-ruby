@@ -28,17 +28,23 @@ describe Session do
     described_class.new(transport, open: Array.new)
   end
 
-  describe "#initialize(transport, callback)"
+  describe "#initialize(transport, callback)" do
+    # TODO
+  end
 
-  describe "#send(data, *args)"
+  describe "#send(data, *args)" do
+    # TODO
+  end
 
   describe "#finish" do
     it "should raise an error if there's no response assigned"
+
+    # TODO
   end
 
-  describe "#receive_message"
-
-  describe "#process_messages" # ?
+  describe "#receive_message" do
+    # TODO
+  end
 
   describe "#process_buffer" do
     it "should reset the timer"
