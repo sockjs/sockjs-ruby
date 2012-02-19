@@ -9,6 +9,11 @@ require "sockjs/transports/xhr"
 
 class Session < SockJS::Session
   include ResetSessionMixin
+
+  def set_status_for_tests(status)
+    @buffer = SockJS::Buffer.new(status)
+    @status = status
+  end
 end
 
 describe Session do
@@ -71,10 +76,6 @@ describe Session do
     before do
       @subject = subject
 
-      @subject.open!
-
-      @subject.check_status
-
       def @subject.reset_close_timer
       end
     end
@@ -84,9 +85,8 @@ describe Session do
     end
 
     it "should return true after session.close is called" do
-      p @subject.buffer
-      # @subject.open!
-      # @subject.check_status
+      @subject.set_status_for_tests(:open)
+
       @subject.close
       @subject.should be_closing
     end
@@ -98,8 +98,8 @@ describe Session do
     end
 
     it "should return true after session.close is called" do
-      # subject.open!
-      # subject.check_status
+      @subject = subject.set_status_for_tests(:open)
+
       subject.close
       subject.should be_closed
     end

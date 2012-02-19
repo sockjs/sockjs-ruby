@@ -83,6 +83,9 @@ module SockJS
     end
 
     def check_status
+      # Shouldn't we set @buffer.status to :open?
+      # Ah, apparently we can't, there's no API for it,
+      # only by creating a new Buffer instance.
       if @status == :opening
         @status = :open
         self.execute_callback(:open, self)
@@ -93,7 +96,7 @@ module SockJS
       self.status = :opening
       self.set_timer
 
-      self.buffer.open
+      self.buffer.open # @buffer.status to :opening
       self.finish
     end
 
