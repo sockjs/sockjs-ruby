@@ -42,7 +42,11 @@ describe Session do
 
   describe "#process_buffer" # ?
 
-  describe "#create_response" # ?
+  describe "#create_response(&block)" do
+    it "should execute the block"
+    it "should clear received messages"
+    it "should return a frame"
+  end
 
   describe "#check_status" do
     before(:each) do
