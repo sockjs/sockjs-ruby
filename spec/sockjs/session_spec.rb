@@ -43,9 +43,19 @@ describe Session do
   describe "#process_buffer" # ?
 
   describe "#create_response(&block)" do
-    it "should execute the block"
-    it "should clear received messages"
-    it "should return a frame"
+    it "should execute the block" do
+      lambda {
+        subject.create_response do
+          raise "Test"
+        end
+      }.should raise_error("Test")
+    end
+
+    it "should return a frame" do
+      sub = subject.set_status_for_tests(:open)
+      ret = sub.create_response {}
+      ret.should eql("a[]")
+    end
   end
 
   describe "#check_status" do
