@@ -43,7 +43,8 @@ describe Session do
   end
 
   describe "#receive_message" do
-    # TODO
+    it "should change status from :opening to :open"
+    it "should succeed if the message is a valid JSON-like string"
   end
 
   describe "#process_buffer" do
