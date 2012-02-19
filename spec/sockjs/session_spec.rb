@@ -45,9 +45,39 @@ describe Session do
   describe "#create_response" # ?
 
   describe "#check_status" do
-    it "should execute the open callback"
-    it "should change status fro opening to open"
-    it "should do nothing if status isn't opening"
+    before(:each) do
+      @subject = subject.set_status_for_tests(:opening)
+
+      def @subject.callback_run
+        @callback_run
+      end
+
+      def @subject.callback_run=(status)
+        @callback_run = status
+      end
+
+      @subject.callbacks[:open] << Proc.new do |session|
+        session.callback_run = true
+      end
+    end
+
+    it "should execute the open callback" do
+      @subject.check_status
+      @subject.callback_run.should be_true
+    end
+
+    it "should change status fro opening to open" do
+      @subject.check_status
+      @subject.should be_open
+    end
+
+    it "should do nothing if status isn't opening" do
+      @subject.set_status_for_tests(:closed)
+
+      @subject.check_status
+      @subject.should_not be_open
+      @subject.callback_run.should be_false
+    end
   end
 
   describe "#open!(*args)" do
