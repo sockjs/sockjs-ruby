@@ -29,11 +29,11 @@ describe Session do
   end
 
   describe "#initialize(transport, callback)" do
-    # TODO
+    it "should take two arguments"
   end
 
   describe "#send(data, *args)" do
-    # TODO
+    it "should add given message to the buffer"
   end
 
   describe "#finish" do
