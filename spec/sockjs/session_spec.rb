@@ -44,7 +44,11 @@ describe Session do
 
   describe "#create_response" # ?
 
-  describe "#check_status" # ?
+  describe "#check_status" do
+    it "should execute the open callback"
+    it "should change status fro opening to open"
+    it "should do nothing if status isn't opening"
+  end
 
   describe "#open!(*args)" do
     it "should change status to opening" do
