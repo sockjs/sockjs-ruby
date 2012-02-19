@@ -49,6 +49,12 @@ describe Session do
   describe "#open!(*args)"
 
   describe "#close(status, message)" do
+    it "should take either status and message or just a status or no argument at all" do
+      -> { subject.close }.should_not raise_error(ArgumentError)
+      -> { subject.close(3000) }.should_not raise_error(ArgumentError)
+      -> { subject.close(3000, "test") }.should_not raise_error(ArgumentError)
+    end
+
     it "should fail if the user is trying to close a newly created instance" do
       -> { subject.close }.should raise_error(RuntimeError)
     end
@@ -59,12 +65,32 @@ describe Session do
       @subject.close
       @subject.should be_closing
     end
-    it "should set frame to the close frame"
-    # self.buffer.close(status, message)
-    # TODO: opt args
 
-    it "should call the session.finish method"
-    # @transport.session_finish
+    it "should set frame to the close frame" do
+      @subject = subject.set_status_for_tests(:open)
+      @subject.close
+      @subject.buffer.to_frame.should eql("c[3000,\"Go away!\"]")
+    end
+
+    it "should set pass the exit status to the buffer" do
+      @subject = subject.set_status_for_tests(:open)
+      @subject.close
+      @subject.buffer.to_frame.should match(/c\[3000,/)
+    end
+
+    it "should set pass the exit message to the buffer" do
+      @subject = subject.set_status_for_tests(:open)
+      @subject.close
+      @subject.buffer.to_frame.should match(/"Go away!"/)
+    end
+
+    it "should call the session.finish method" do
+      @subject = subject.set_status_for_tests(:open)
+      transport = @subject.instance_variable_get(:@transport)
+      transport.should_receive(:session_finish)
+
+      @subject.close
+    end
   end
 
   describe "#newly_created?" do
