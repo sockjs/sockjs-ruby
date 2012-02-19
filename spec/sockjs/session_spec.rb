@@ -37,9 +37,14 @@ describe Session do
   end
 
   describe "#finish" do
-    it "should raise an error if there's no response assigned"
+    describe "transport responds to #session_finish" do
+      it "should call transport.session_finish"
+    end
 
-    # TODO
+    describe "transport doesn't respond to #session_finish" do
+      it "should raise an error if there's no response assigned"
+      it "should finish the response with the current buffer content"
+    end
   end
 
   describe "#receive_message" do
