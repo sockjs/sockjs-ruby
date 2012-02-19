@@ -122,6 +122,10 @@ module SockJS
       @status == :created
     end
 
+    def opening?
+      @status == :opening
+    end
+
     def open?
       @status == :open
     end

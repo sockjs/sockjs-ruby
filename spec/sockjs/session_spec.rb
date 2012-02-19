@@ -46,7 +46,13 @@ describe Session do
 
   describe "#check_status" # ?
 
-  describe "#open!(*args)"
+  describe "#open!(*args)" do
+    it "should change status to opening" do
+      @subject = subject
+      @subject.open!
+      @subject.should be_opening
+    end
+  end
 
   describe "#close(status, message)" do
     it "should take either status and message or just a status or no argument at all" do
@@ -101,6 +107,17 @@ describe Session do
     it "should return false after a session is open" do
       subject.open!
       subject.should_not be_newly_created
+    end
+  end
+
+  describe "#opening?" do
+    it "should return false after a new session is created" do
+      subject.should_not be_opening
+    end
+
+    it "should return true after a session is open" do
+      subject.open!
+      subject.should be_opening
     end
   end
 
