@@ -13,6 +13,7 @@ class Session < SockJS::Session
   def set_status_for_tests(status)
     @buffer = SockJS::Buffer.new(status)
     @status = status
+    self
   end
 end
 
@@ -99,9 +100,10 @@ describe Session do
 
     it "should return true after session.close is called" do
       @subject = subject.set_status_for_tests(:open)
+      @subject.should_not be_closed
 
-      subject.close
-      subject.should be_closed
+      @subject.close
+      @subject.should be_closed
     end
   end
 end
