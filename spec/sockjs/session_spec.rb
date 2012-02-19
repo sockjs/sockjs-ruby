@@ -48,7 +48,15 @@ describe Session do
 
   describe "#open!(*args)"
 
-  describe "#close(status, message)"
+  describe "#close(status, message)" do
+    it "should fail if the user is trying to close a newly created instance"
+    it "should set status to closing"
+    it "should set frame to the close frame"
+    # self.buffer.close(status, message)
+
+    it "should call the session.finish method"
+    # @transport.session_finish
+  end
 
   describe "#newly_created?" do
     it "should return true after a new session is created" do
