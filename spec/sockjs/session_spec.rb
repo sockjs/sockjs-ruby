@@ -40,7 +40,13 @@ describe Session do
 
   describe "#process_messages" # ?
 
-  describe "#process_buffer" # ?
+  describe "#process_buffer" do
+    it "should reset the timer"
+    it "should cache an error"
+    it "should change status from :opening to :open"
+    it "should execute :buffer callback for each received message"
+    it "should return a frame"
+  end
 
   describe "#create_response(&block)" do
     it "should execute the block" do
@@ -55,6 +61,14 @@ describe Session do
       sub = subject.set_status_for_tests(:open)
       ret = sub.create_response {}
       ret.should eql("a[]")
+    end
+
+    it "should return a closing frame if SockJS::CloseError occured" do
+      sub = subject.set_status_for_tests(:open)
+      ret = sub.create_response do
+        raise SockJS::CloseError.new(3000, "test")
+      end
+      ret.should eql("c[3000,\"test\"]")
     end
   end
 
