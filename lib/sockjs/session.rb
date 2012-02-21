@@ -52,10 +52,10 @@ module SockJS
       process_messages(*parse_json(data))
     end
 
-    protected :process_messages
     def process_messages(*messages)
       @received_messages.push(*messages)
     end
+    protected :process_messages
 
     def process_buffer
       self.reset_timer
