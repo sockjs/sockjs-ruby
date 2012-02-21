@@ -16,6 +16,8 @@ module SockJS
   end
 
   class Buffer
+    attr_reader :messages
+
     PERMITTED_STATUS_NAMES ||= begin
       [:newly_created, :open, :opening, :closing, :closed]
     end

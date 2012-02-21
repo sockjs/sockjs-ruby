@@ -35,7 +35,16 @@ describe Session do
   end
 
   describe "#send(data, *args)" do
-    it "should add given message to the buffer"
+    it "should add given message to the buffer" do
+      @subject = subject
+      @subject.send("test")
+      @subject.buffer.messages.should include("test")
+    end
+
+    it "should pass optional arguments to transport.format_frame" do
+      @subject = subject
+      @subject.send("test", test: true)
+    end
   end
 
   describe "#finish" do
