@@ -35,14 +35,17 @@ describe Session do
   end
 
   describe "#send(data, *args)" do
-    it "should add given message to the buffer" do
+    before(:each) do
       @subject = subject
+      @subject.buffer = SockJS::Buffer.new(:open)
+    end
+
+    it "should add given message to the buffer" do
       @subject.send("test")
-      @subject.buffer.messages.should include("test")
+      @subject.buffer.messages.should include("test\n")
     end
 
     it "should pass optional arguments to transport.format_frame" do
-      @subject = subject
       @subject.send("test", test: true)
     end
   end
