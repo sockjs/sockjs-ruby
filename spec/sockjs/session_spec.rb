@@ -29,7 +29,9 @@ describe Session do
   end
 
   describe "#initialize(transport, callback)" do
-    it "should take two arguments"
+    it "should take two arguments" do
+      -> { described_class.new(1, 2) }.should_not raise_error(ArgumentError)
+    end
   end
 
   describe "#send(data, *args)" do
