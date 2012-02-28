@@ -18,7 +18,7 @@ SockJS 0.1 Protocol Tests:
     - test_closeSession_another_connection: Fail if there's more than one open connection to given session. At the moment there's no infrastructure for this in place, we don't keep the status. See transport.coffee of sockjs-node.
 
   - WebsocketHttpErrors:
-    - test_invalidMethod
+    - test_invalidMethod: This is some shit Rack does. We're responding with [405, {}, []], there's no doubt about it, but the client gets "empty reply from server".
   - WebsocketHixie76:
     - test_transport
     - test_close
