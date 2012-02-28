@@ -39,17 +39,17 @@ module SockJS
 
         @ws = Faye::WebSocket.new(request.env)
 
-        def @ws.send(msg); puts " WS#send ~ #{msg.inspect}"; super msg; end
+        def @ws.send(msg); puts "~> WS#send #{msg.inspect}"; super msg; end
 
         self.handle_open(request)
 
         @ws.onmessage = lambda do |event|
-          debug "~ WS data received: #{event.data.inspect}"
+          debug "<~ WS data received: #{event.data.inspect}"
           self.handle_message(request, event)
         end
 
         @ws.onclose = lambda do |event|
-          debug "~ Closing WebSocket connection (#{event.code}, #{event.reason})"
+          debug "~ Closing WebSocket connection (code: #{event.code}, reason: #{event.reason.inspect})"
           self.handle_close(request, event)
         end
       rescue SockJS::HttpError => error
@@ -68,12 +68,13 @@ module SockJS
       end
 
       def handle_message(request, event)
-        puts "~ WS message received: #{event.data.inspect}"
+        puts "<~ WS message received: #{event.data.inspect}"
         session = self.get_session(request.path_info)
         session.receive_message(event.data)
 
         # Send encoded messages in an array frame.
         messages = session.process_buffer
+        puts "~ Messages to be sent: #{messages.inspect}"
         @ws.send(messages)
       rescue SockJS::InvalidJSON
         session.close
