@@ -4,8 +4,8 @@ require "sockjs/protocol"
 
 module SockJS
   class BufferNotOpenError < StandardError
-    def initialize(*)
-      super("Buffer isn't open!")
+    def initialize(status)
+      super("Buffer is #{status}, not open!")
     end
   end
 
@@ -79,7 +79,7 @@ module SockJS
 
     # Add message to the list of messages.
     def <<(message)
-      raise BufferNotOpenError.new unless self.open?
+      raise BufferNotOpenError.new(@status) unless self.open?
       @messages << message
     end
 
