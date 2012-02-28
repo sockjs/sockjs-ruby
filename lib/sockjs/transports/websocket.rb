@@ -84,10 +84,17 @@ module SockJS
       def handle_close(request, event)
         puts "~ Closing WS connection."
         session = self.get_session(request.path_info)
-        session.close
 
-        # Send the closing frame.
-        @ws.send(session.process_buffer)
+        if session
+          session.close
+
+          # Send the closing frame.
+          @ws.send(session.process_buffer)
+        else
+          puts "~ Session can't be retrieved, something went pretty damn wrong."
+
+          @ws.send('c[3000,"Go away!"]') # ONLY a temporary fallback for the time being!
+        end
       end
 
       def format_frame(payload)
