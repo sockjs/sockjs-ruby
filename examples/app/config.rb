@@ -68,14 +68,14 @@ options = {sockjs_url: "http://cdn.sockjs.org/sockjs-0.1.min.js"}
 app = Rack::Builder.new do
   use Rack::SockJS, "/echo", options do |connection|
     connection.subscribe do |session, message|
-      debug "~ \033[0;31;40m[Echo]\033[0m message: #{message.inspect}, session: #{session.inspect}"
+      debug "~ \033[0;31;40m[Echo]\033[0m message: #{message.inspect}, session: #{session.object_id}"
       session.send(message)
     end
   end
 
   use Rack::SockJS, "/disabled_websocket_echo", options.merge(disabled_transports: [::SockJS::Transports::WebSocket]) do |connection|
     connection.subscribe do |session, message|
-      debug "~ \033[0;31;40m[Echo]\033[0m message: #{message.inspect}, session: #{session.inspect}"
+      debug "~ \033[0;31;40m[Echo]\033[0m message: #{message.inspect}, session: #{session.object_id}"
       session.send(message)
     end
   end
