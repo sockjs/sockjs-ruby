@@ -116,7 +116,7 @@ module SockJS
           raise SessionUnavailableError.new("Another connection still open")
         end
       else
-        puts "~ Session #{match[1].inspect} hasn't been created yet."
+        puts "~ Session #{match[1].inspect} doesn't exist."
         return nil
       end
     end
