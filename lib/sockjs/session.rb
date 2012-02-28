@@ -14,8 +14,10 @@ module SockJS
       @received_messages = Array.new
     end
 
+    # Pluggable, redefine in each transport ...
+    # TODO: Do we still need two session classes?
     def send(data, *args)
-      @buffer << @transport.format_frame(data, *args)
+      @transport.send(self, data, *args)
     end
 
     def finish

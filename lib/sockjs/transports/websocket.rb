@@ -17,7 +17,9 @@ module SockJS
         SockJS::Session
       end
 
-      def_delegator :@ws, :send
+      def send(_, data, *)
+        @ws.send(self.format_frame(data))
+      end
 
       def check_invalid_request_or_disabled_websocket(request)
         if self.disabled?
@@ -62,7 +64,7 @@ module SockJS
         session.check_status
 
         # Send the opening frame.
-        self.send(session.process_buffer)
+        @ws.send(session.process_buffer)
       end
 
       def handle_message(request, event)
@@ -71,7 +73,8 @@ module SockJS
         session.receive_message(event.data)
 
         # Send encoded messages in an array frame.
-        self.send(session.process_buffer)
+        messages = session.process_buffer
+        @ws.send(messages)
       rescue SockJS::InvalidJSON
         session.close
       end
@@ -82,7 +85,7 @@ module SockJS
         session.close
 
         # Send the closing frame.
-        self.send(session.process_buffer)
+        @ws.send(session.process_buffer)
       end
 
       def format_frame(payload)

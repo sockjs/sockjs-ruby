@@ -96,6 +96,10 @@ module SockJS
         SockJS::Session
       end
 
+      def send(session, data, *args)
+        session.buffer << self.format_frame(data, *args)
+      end
+
       # Handler.
       def handle(request)
         response(request, 200) do |response, session|
