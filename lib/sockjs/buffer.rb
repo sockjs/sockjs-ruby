@@ -70,7 +70,7 @@ module SockJS
       # delivered and then the closing frame will be send.
       # However with primitive transports such as long
       # polling, only the closing frame will be send.
-      if self.opening? or self.open?
+      if self.opening? or self.open? or self.closing?
         @status = :closing
         @frame  = Protocol.closing_frame(status, message)
       else
