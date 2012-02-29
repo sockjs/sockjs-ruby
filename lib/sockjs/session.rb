@@ -113,7 +113,7 @@ module SockJS
 
     def close(status = 3000, message = "Go away!")
       # Hint: session.buffer = Buffer.new(:open) or so
-      if @status == :created
+      if self.newly_created?
         raise "You can't change from #{@status} to closing!"
       end
 
