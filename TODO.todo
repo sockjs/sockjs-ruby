@@ -23,9 +23,9 @@ SockJS 0.1 Protocol Tests:
     ✓ test_transport
     ✓ test_close
     ✓ test_empty_frame
-    - test_reuseSessionId: Hangs for ages, then ConnectionClosedException.
+    - test_reuseSessionId: Hangs for ages, then ConnectionClosedException; this functionality is not supported yet.
     ✓ test_headersSanity
-    - test_broken_json: AssertionError: ConnectionClosedException not raised
+    ✓ test_broken_json
   - WebsocketHybi10 (none of the following method pass, everywhere we get the same error):
     - test_transport
     - test_close
