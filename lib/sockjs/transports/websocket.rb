@@ -90,6 +90,8 @@ module SockJS
           puts "~ Messages to be sent: #{messages.inspect}"
           @ws.send(messages)
         end
+      rescue SockJS::SessionUnavailableError
+        puts "~ Session is already closing"
       rescue SockJS::InvalidJSON
         session.close
       end
@@ -108,6 +110,8 @@ module SockJS
 
           @ws.send('c[3000,"Go away!"]') # ONLY a temporary fallback for the time being!
         end
+      rescue SockJS::SessionUnavailableError
+        puts "~ Session is already closing"
       end
 
       def format_frame(payload)
