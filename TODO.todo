@@ -1,37 +1,95 @@
 # alias t="./venv/bin/python sockjs-protocol-0.2.1.py $1"
 
-SockJS 0.1 Protocol Tests:
-  ✓ BaseUrlGreeting
-  ✓ IframePage
-  ✓ ChunkingTest
-  ✓ SessionURLs
-  - Protocol:
-    - test_simpleSession: Fail if there's more than one open connection to given session. At the moment there's no infrastructure for this in place, we don't keep the status. See transport.coffee of sockjs-node.
-    ✓ test_closeSession
-  ✓ XhrPolling:
-    ✓ test_transport: Fails only due to mess in text/plain vs. text/plain; charset=UTF-8 (check https://github.com/sockjs/sockjs-protocol/issues/21).
-  ✓ XhrStreaming
-  ✓ EventSource
-  ✓ HtmlFile
-  ✓ JsonPolling
-  - ProtocolQuirks:
-    - test_closeSession_another_connection: Fail if there's more than one open connection to given session. At the moment there's no infrastructure for this in place, we don't keep the status. See transport.coffee of sockjs-node.
+SockJS 0.2.1 Protocol Tests:
 
-  - WebsocketHttpErrors:
-    - test_invalidMethod: This is some shit Rack does. We're responding with [405, {}, []], there's no doubt about it, but the client gets "empty reply from server".
-  - WebsocketHixie76:
-    ✓ test_transport
-    ✓ test_close
-    ✓ test_empty_frame
-    - test_reuseSessionId: Hangs for ages, then ConnectionClosedException; this functionality is not supported yet.
-    ✓ test_headersSanity
-    ✓ test_broken_json
-  - WebsocketHybi10 (none of the following method pass, everywhere we get the same error):
-    ✓ test_transport
-    - test_close
-    ✓ test_headersSanity
-    ✓ test_broken_json
-    - test_firefox_602_connection_header
+  ✓ BaseUrlGreeting
+
+  ✓ IframePage
+
+  InfoTest:
+  - test_basic
+  - test_entropy
+  - test_options
+  - test_disabled_websocket
+
+  SessionURLs:
+  - test_anyValue
+  - verify
+  - test_invalidPaths
+  - test_ignoringServerId
+
+  Protocol:
+  - test_simpleSession: Fail if there's more than one open connection to given session. At the moment there's no infrastructure for this in place, we don't keep the status. See transport.coffee of sockjs-node.
+  - test_closeSession
+
+  WebsocketHttpErrors:
+  - test_invalidMethod: This is some shit Rack does. We're responding with [405, {}, []], there's no doubt about it, but the client gets "empty reply from server".
+
+  WebsocketHixie76:
+  ✓ test_transport
+  ✓ test_close
+  ✓ test_empty_frame
+  - test_reuseSessionId: Hangs for ages, then ConnectionClosedException; this functionality is not supported yet.
+  ✓ test_headersSanity
+  ✓ test_broken_json
+
+  WebsocketHybi10 (none of the following method pass, everywhere we get the same error):
+  ✓ test_transport
+  - test_close
+  ✓ test_headersSanity
+  ✓ test_broken_json
+  - test_firefox_602_connection_header
+
+  XhrPolling:
+  - test_options
+  - test_transport: Fails only (is it still the case?) due to mess in text/plain vs. text/plain; charset=UTF-8 (check https://github.com/sockjs/sockjs-protocol/issues/21).
+  ✓ test_invalid_session
+  - test_invalid_json
+  - test_content_types
+  - test_jsessionid
+
+  XhrStreaming:
+  - test_options
+  - test_transport
+  - test_response_limit
+
+  EventSource:
+  - test_transport
+  - test_response_limit
+
+  HtmlFile:
+  - test_transport
+  - test_no_callback
+  - test_response_limit
+
+  JsonPolling:
+  - test_transport
+  - test_close
+  - test_content_types
+  - test_invalid_json
+
+  RawWebsocket:
+  - test_transport
+  - test_close
+
+  JSONEncoding:
+  - test_xhr_server_encodes
+  - test_xhr_server_decodes
+
+  HandlingClose:
+  - test_close_frame
+  - test_close_request
+  - test_abort_xhr_streaming
+  - test_abort_xhr_polling
+
+  Http10:
+  - test_synchronous
+  - test_streaming
+
+  Http11:
+  - test_synchronous
+  - test_streaming
+
 
 Implementation:
   ✓ It might be a good idea to make it really agnostic and make Rack just an adapter. Use Node.js-like HttpResponse object.
