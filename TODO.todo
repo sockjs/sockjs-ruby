@@ -20,7 +20,7 @@ SockJS 0.1 Protocol Tests:
   - WebsocketHttpErrors:
     - test_invalidMethod: This is some shit Rack does. We're responding with [405, {}, []], there's no doubt about it, but the client gets "empty reply from server".
   - WebsocketHixie76:
-    - test_transport: AssertionError: 'a' != u'a["a"]'
+    - test_transport: Test succeeds, but the server crashes.
     - test_close: AssertionError: 'c[3000,"Go away!"]' != u'o'
     - test_empty_frame: Can't change from closing to closing! (SockJS::StateMachineError)
     - test_reuseSessionId: AssertionError: 'a' != u'a["a"]'

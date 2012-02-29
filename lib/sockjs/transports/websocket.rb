@@ -28,8 +28,8 @@ module SockJS
         SockJS::Session
       end
 
-      def send(_, data, *)
-        @ws.send(self.format_frame(data))
+      def send(_, frame)
+        @ws.send(frame)
       end
 
       def check_invalid_request_or_disabled_websocket(request)
