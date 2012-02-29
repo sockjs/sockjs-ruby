@@ -7,13 +7,13 @@ require "sockjs/transport"
 module SockJS
   module Transports
     module WSDebuggingMixin
-      def send(msg)
+      def send(*args)
         if $DEBUG
-          puts "~> WS#send #{msg.inspect} #{caller[0..2].map { |item| item.sub(Dir.pwd + "/lib/", "") }.inspect}"
+          puts "~> WS#send #{args.inspect} #{caller[0..2].map { |item| item.sub(Dir.pwd + "/lib/", "") }.inspect}"
         else
-          puts "~> WS#send #{msg.inspect}"
+          puts "~> WS#send #{args.inspect}"
         end
-        super msg
+        super(*args)
       end
     end
 

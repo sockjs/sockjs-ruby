@@ -27,10 +27,10 @@ SockJS 0.1 Protocol Tests:
     ✓ test_headersSanity
     ✓ test_broken_json
   - WebsocketHybi10 (none of the following method pass, everywhere we get the same error):
-    - test_transport
+    ✓ test_transport
     - test_close
-    - test_headersSanity
-    - test_broken_json
+    ✓ test_headersSanity
+    ✓ test_broken_json
     - test_firefox_602_connection_header
 
 Implementation:
