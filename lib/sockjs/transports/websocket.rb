@@ -93,7 +93,7 @@ module SockJS
       rescue SockJS::SessionUnavailableError
         puts "~ Session is already closing"
       rescue SockJS::InvalidJSON
-        session.close
+        @ws.close # Close the connection abruptly, no closing frame.
       end
 
       def handle_close(request, event)
