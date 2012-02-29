@@ -6,6 +6,17 @@ require "sockjs/transport"
 
 module SockJS
   module Transports
+    module WSDebuggingMixin
+      def send(msg)
+        if $DEBUG
+          puts "~> WS#send #{msg.inspect} #{caller[0]}"
+        else
+          puts "~> WS#send #{msg.inspect}"
+        end
+        super msg
+      end
+    end
+
     class WebSocket < Transport
       extend Forwardable
 
@@ -39,7 +50,7 @@ module SockJS
 
         @ws = Faye::WebSocket.new(request.env)
 
-        def @ws.send(msg); puts "~> WS#send #{msg.inspect}"; super msg; end
+        @ws.extend(WSDebuggingMixin)
 
         self.handle_open(request)
 

@@ -10,6 +10,8 @@ require "rack"
 require "thin"
 require "eventmachine"
 
+$DEBUG = true
+
 def next_argument(argument)
   if ARGV.include?(argument)
     ARGV[ARGV.index(argument) + 1]
