@@ -34,7 +34,11 @@ module SockJS
 
     # To get the data encoded as a SockJS frame.
     def to_frame
-      @frame || Protocol.array_frame(@messages)
+      if self.opening? or self.closing?
+        @frame
+      else
+        Protocol.array_frame(@messages)
+      end
     end
 
 

@@ -86,8 +86,10 @@ module SockJS
 
         # Send encoded messages in an array frame.
         messages = session.process_buffer
-        puts "~ Messages to be sent: #{messages.inspect}"
-        @ws.send(messages)
+        if messages.start_with?("a[") # a[] frames are sent immediatelly! FIXME!
+          puts "~ Messages to be sent: #{messages.inspect}"
+          @ws.send(messages)
+        end
       rescue SockJS::InvalidJSON
         session.close
       end
