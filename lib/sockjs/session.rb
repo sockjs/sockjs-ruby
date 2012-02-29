@@ -53,7 +53,8 @@ module SockJS
         data = "[#{data}]"
       end
 
-      process_messages(*parse_json(data))
+      messages = parse_json(data)
+      process_messages(*messages) unless messages.empty?
     end
 
     def process_messages(*messages)
@@ -146,7 +147,6 @@ module SockJS
 
     protected
     def parse_json(data)
-      raise EmptyPayload.new if data == "[]"
       JSON.parse(data)
     rescue JSON::ParserError => error
       raise SockJS::InvalidJSON.new(error.message)

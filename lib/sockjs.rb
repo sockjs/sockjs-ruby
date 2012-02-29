@@ -55,12 +55,6 @@ module SockJS
     end
   end
 
-  class EmptyPayload < HttpError
-    def message
-      "Payload expected."
-    end
-  end
-
   class Connection
     include CallbackMixin
 
