@@ -72,10 +72,11 @@ module SockJS
         match = request.path_info.match(self.class.prefix)
         session = self.create_session(request.path_info)
         session.buffer = Buffer.new # This is a hack for the bloody API. Rethinking and refactoring required!
-        session.open!
 
         # Send the opening frame.
-        @ws.send(session.process_buffer)
+        session.open!
+
+        session.process_buffer # Run the app (connection.session_open hook).
       end
 
       def handle_message(request, event)
@@ -115,9 +116,9 @@ module SockJS
         payload
       end
 
-      # In this adapter we send everything straight away,
-      # hence there's no need for #finish. See session.rb.
-      def session_finish
+      # TODO: Rename to request_finish or something like that.
+      def session_finish(frame)
+        @ws.send(frame)
       end
     end
   end

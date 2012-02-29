@@ -14,19 +14,23 @@ module SockJS
       @received_messages = Array.new
     end
 
+    def send_raw_data(frame)
+      @transport.send(self, data)
+    end
+
     # Pluggable, redefine in each transport ...
     # TODO: Do we still need two session classes?
     def send(payload, *args)
       frame = "a[#{payload.to_json}]" # FIXME: temporary solution, fix the API.
       data  = @transport.format_frame(frame, *args)
-      @transport.send(self, data)
+      self.send_raw_data(data)
     end
 
     def finish
       # This is pretty hacky, but it gives us the choice
       # to "redefine" this method from transport classes.
       if @transport.respond_to?(:session_finish)
-        @transport.session_finish
+        @transport.session_finish(@buffer.to_frame)
       else
         # TODO: this check should be done earlier:
         # initialize(transport, response, callbacks)
@@ -185,6 +189,11 @@ module SockJS
   class SessionWitchCachedMessages < Session
     def send(*messages)
       self.buffer.push(*messages)
+    end
+
+    def close(status = 3000, message = "Go away!")
+      super(status, message)
+      self.send_raw_data(self.buffer.to_frame)
     end
 
     def finish
