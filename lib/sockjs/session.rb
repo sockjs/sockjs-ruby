@@ -15,7 +15,7 @@ module SockJS
     end
 
     def send_raw_data(frame)
-      @transport.send(self, data)
+      @transport.send(self, frame)
     end
 
     # Pluggable, redefine in each transport ...
