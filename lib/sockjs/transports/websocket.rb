@@ -73,7 +73,6 @@ module SockJS
         session = self.create_session(request.path_info)
         session.buffer = Buffer.new # This is a hack for the bloody API. Rethinking and refactoring required!
         session.open!
-        session.check_status
 
         # Send the opening frame.
         @ws.send(session.process_buffer)
