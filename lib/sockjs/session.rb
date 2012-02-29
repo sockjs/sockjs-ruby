@@ -191,11 +191,6 @@ module SockJS
       self.buffer.push(*messages)
     end
 
-    def close(status = 3000, message = "Go away!")
-      super(status, message)
-      self.send_raw_data(self.buffer.to_frame)
-    end
-
     def finish
       self.buffer.to_frame
     end
