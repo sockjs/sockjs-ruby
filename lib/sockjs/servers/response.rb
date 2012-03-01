@@ -88,7 +88,8 @@ module SockJS
     end
 
     def set_allow_options_post
-      self.set_header("Allow", "OPTIONS, POST")
+      # self.set_header("Allow", "OPTIONS, POST")
+      self.set_header("Access-Control-Allow-Methods", "OPTIONS, POST")
     end
 
     def set_no_cache
