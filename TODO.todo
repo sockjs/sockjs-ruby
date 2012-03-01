@@ -6,21 +6,19 @@ SockJS 0.2.1 Protocol Tests:
 
   ✓ IframePage
 
-  InfoTest:
-  - test_basic
-  - test_entropy
-  - test_options
-  - test_disabled_websocket
+  InfoTest (not supported yet):
+  - test_basic: status AssertionError: 404 != 200
+  - test_entropy: fails with ValueError, but it's the same problem really.
+  - test_options: status AssertionError: 404 != 200
+  - test_disabled_websocket: status AssertionError: 404 != 200
 
   SessionURLs:
-  - test_anyValue
-  - verify
-  - test_invalidPaths
-  - test_ignoringServerId
+  - test_anyValue: AssertionError: '' != 'o\n'
+  - test_ignoringServerId: AssertionError: '' != 'o\n'
 
   Protocol:
   - test_simpleSession: Fail if there's more than one open connection to given session. At the moment there's no infrastructure for this in place, we don't keep the status. See transport.coffee of sockjs-node.
-  - test_closeSession
+  - test_closeSession: AssertionError: '' != 'o\n'
 
   WebsocketHttpErrors:
   - test_invalidMethod: This is some shit Rack does. We're responding with [405, {}, []], there's no doubt about it, but the client gets "empty reply from server".
@@ -33,62 +31,61 @@ SockJS 0.2.1 Protocol Tests:
   ✓ test_headersSanity
   ✓ test_broken_json
 
-  WebsocketHybi10 (none of the following method pass, everywhere we get the same error):
+  WebsocketHybi10:
   ✓ test_transport
-  - test_close
+  - test_close: It's sending ~> WS#send ["", :close, 1000] and we're getting Empty exception in the tests.
   ✓ test_headersSanity
   ✓ test_broken_json
-  - test_firefox_602_connection_header
+  - test_firefox_602_connection_header: status AssertionError: 200 != 101
 
   XhrPolling:
-  - test_options
-  - test_transport: Fails only (is it still the case?) due to mess in text/plain vs. text/plain; charset=UTF-8 (check https://github.com/sockjs/sockjs-protocol/issues/21).
+  - test_options: AssertionError: None != 'OPTIONS, POST'
+  - test_transport: AssertionError: '' != 'o\n'
   ✓ test_invalid_session
-  - test_invalid_json
-  - test_content_types
-  - test_jsessionid
+  - test_invalid_json: AssertionError: '' != 'o\n'
+  - test_content_types: AssertionError: '' != 'o\n'
+  - test_jsessionid: AssertionError: '' != 'o\n'
 
   XhrStreaming:
-  - test_options
-  - test_transport
-  - test_response_limit
+  - test_options: AssertionError: None != 'OPTIONS, POST'
+  - test_transport: Crashes the server (sockjs/transport.rb:104:in `get_session': wrong number of arguments (3 for 1))
+  - test_response_limit: Crashes the server (sockjs/transport.rb:104:in `get_session': wrong number of arguments (3 for 1))
 
   EventSource:
-  - test_transport
-  - test_response_limit
+  - test_transport: Crashes the server (sockjs/transport.rb:104:in `get_session': wrong number of arguments (3 for 1))
+  - test_response_limit: Crashes the server (sockjs/transport.rb:104:in `get_session': wrong number of arguments (3 for 1))
 
   HtmlFile:
-  - test_transport
-  - test_no_callback
-  - test_response_limit
+  - test_transport: Crashes the server (sockjs/transport.rb:104:in `get_session': wrong number of arguments (3 for 1))
+  - test_response_limit: Crashes the server (sockjs/transport.rb:104:in `get_session': wrong number of arguments (3 for 1))
 
   JsonPolling:
-  - test_transport
-  - test_close
-  - test_content_types
-  - test_invalid_json
+  - test_transport: Missing cookie.
+  - test_close: AssertionError: '' != 'x("o");\r\n'
+  - test_content_types: AssertionError: '' != 'x("o");\r\n'
+  - test_invalid_json: AssertionError: '' != 'x("o");\r\n'
 
   RawWebsocket:
-  - test_transport
-  - test_close
+  - test_transport: timed out
+  - test_close: timed out
 
   JSONEncoding:
-  - test_xhr_server_encodes
-  - test_xhr_server_decodes
+  - test_xhr_server_encodes: AssertionError: '' != 'o\n'
+  - test_xhr_server_decodes: AssertionError: '' != 'o\n'
 
   HandlingClose:
-  - test_close_frame
-  - test_close_request
-  - test_abort_xhr_streaming
-  - test_abort_xhr_polling
+  - test_close_frame: Crashes the server (sockjs/transport.rb:104:in `get_session': wrong number of arguments (3 for 1))
+  - test_close_request: Crashes the server (sockjs/transport.rb:104:in `get_session': wrong number of arguments (3 for 1))
+  - test_abort_xhr_streaming: Crashes the server (sockjs/transport.rb:104:in `get_session': wrong number of arguments (3 for 1))
+  - test_abort_xhr_polling: AssertionError: '' != 'o\n'
 
   Http10:
-  - test_synchronous
-  - test_streaming
+  - test_synchronous: AssertionError: 'chunked' is not False
+  - test_streaming: Crashes the server (sockjs/transport.rb:104:in `get_session': wrong number of arguments (3 for 1))
 
   Http11:
-  - test_synchronous
-  - test_streaming
+  - test_synchronous: "Your server doesn't support connection:Keep-Alive"
+  - test_streaming: Crashes the server (sockjs/transport.rb:104:in `get_session': wrong number of arguments (3 for 1))
 
 
 Implementation:
