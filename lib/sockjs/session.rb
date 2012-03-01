@@ -192,7 +192,8 @@ module SockJS
     end
 
     def finish
-      self.buffer.to_frame
+      data = @transport.format_frame(@buffer.to_frame)
+      @response.finish(data)
     end
   end
 end
