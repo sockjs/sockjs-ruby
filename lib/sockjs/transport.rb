@@ -80,7 +80,7 @@ module SockJS
 
         if session
           session.response = response
-          block.call(response, session) # TODO: maybe it's better to do everything throught session, it knows response already anyway ... but sometimes we don't need   session, for instance in the welcome screen or iframe.
+          block.call(response, session) # TODO: maybe it's better to do everything through session, it knows response already anyway ... but sometimes we don't need session, for instance in the welcome screen or iframe.
         else
           puts "~ Session can't be retrieved."
           block.call(response)
@@ -107,16 +107,20 @@ module SockJS
       if session = self.connection.sessions[match[1]]
         if session.closing?
           session.close(3000, "Session is closing")
+          puts "~ get_session: session is closing"
           raise SessionUnavailableError.new("Session is closing")
         elsif (session.open? && session.response.nil?) || session.newly_created?
+          puts "~ get_session: session retrieved successfully"
           return session
         elsif session.open? && session.response
-          puts "~ Another connection still open"
+          puts "~ get_session: another connection still open"
           session.close(2010, "Another connection still open")
           raise SessionUnavailableError.new("Another connection still open")
+        else
+          raise "We should never get here!"
         end
       else
-        puts "~ Session #{match[1].inspect} doesn't exist."
+        puts "~ get_session: session #{match[1].inspect} doesn't exist."
         return nil
       end
     end
