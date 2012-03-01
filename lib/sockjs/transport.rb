@@ -109,7 +109,7 @@ module SockJS
           session.close(3000, "Session is closing")
           puts "~ get_session: session is closing"
           raise SessionUnavailableError.new("Session is closing")
-        elsif (session.open? && session.response.nil?) || session.newly_created?
+        elsif (session.open? && session.response.nil?) || session.newly_created? || session.opening?
           puts "~ get_session: session retrieved successfully"
           return session
         elsif session.open? && session.response
@@ -117,7 +117,7 @@ module SockJS
           session.close(2010, "Another connection still open")
           raise SessionUnavailableError.new("Another connection still open")
         else
-          raise "We should never get here!"
+          raise "We should never get here!\nsession.status: #{session.instance_variable_get(:@status)}, has session response: #{!! session.response}"
         end
       else
         puts "~ get_session: session #{match[1].inspect} doesn't exist."
