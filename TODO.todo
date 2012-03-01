@@ -48,16 +48,16 @@ SockJS 0.2.1 Protocol Tests:
 
   XhrStreaming:
   - test_options: AssertionError: None != 'OPTIONS, POST'
-  - test_transport: Crashes the server (sockjs/transport.rb:104:in `get_session': wrong number of arguments (3 for 1))
-  - test_response_limit: Crashes the server (sockjs/transport.rb:104:in `get_session': wrong number of arguments (3 for 1))
+  - test_transport: timed out
+  - test_response_limit: timed out
 
   EventSource:
-  - test_transport: Crashes the server (sockjs/transport.rb:104:in `get_session': wrong number of arguments (3 for 1))
-  - test_response_limit: Crashes the server (sockjs/transport.rb:104:in `get_session': wrong number of arguments (3 for 1))
+  - test_transport: Missing cookie.
+  - test_response_limit: timed out
 
   HtmlFile:
-  - test_transport: Crashes the server (sockjs/transport.rb:104:in `get_session': wrong number of arguments (3 for 1))
-  - test_response_limit: Crashes the server (sockjs/transport.rb:104:in `get_session': wrong number of arguments (3 for 1))
+  - test_transport: Missing cookie.
+  - test_response_limit: timed out
 
   JsonPolling:
   - test_transport: Missing cookie.
@@ -74,18 +74,18 @@ SockJS 0.2.1 Protocol Tests:
   - test_xhr_server_decodes: AssertionError: '' != 'o\n'
 
   HandlingClose:
-  - test_close_frame: Crashes the server (sockjs/transport.rb:104:in `get_session': wrong number of arguments (3 for 1))
-  - test_close_request: Crashes the server (sockjs/transport.rb:104:in `get_session': wrong number of arguments (3 for 1))
-  - test_abort_xhr_streaming: Crashes the server (sockjs/transport.rb:104:in `get_session': wrong number of arguments (3 for 1))
+  - test_close_frame: timed out
+  - test_close_request: timed out
+  - test_abort_xhr_streaming: timed out
   - test_abort_xhr_polling: AssertionError: '' != 'o\n'
 
   Http10:
   - test_synchronous: AssertionError: 'chunked' is not False
-  - test_streaming: Crashes the server (sockjs/transport.rb:104:in `get_session': wrong number of arguments (3 for 1))
+  - test_streaming: AssertionError: 'chunked' is not False
 
   Http11:
   - test_synchronous: "Your server doesn't support connection:Keep-Alive"
-  - test_streaming: Crashes the server (sockjs/transport.rb:104:in `get_session': wrong number of arguments (3 for 1))
+  - test_streaming: timed out
 
 
 Implementation:

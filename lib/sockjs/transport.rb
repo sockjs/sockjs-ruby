@@ -101,7 +101,7 @@ module SockJS
     #   b) It's open:
     #      i) There IS NOT any consumer -> OK. AND CONTINUE
     #      i) There IS a consumer -> Send c[2010,"Another con still open"] AND END
-    def get_session(path_info)
+    def get_session(path_info, *) # TODO: process optional arguments.
       match = path_info.match(self.class.prefix)
 
       if session = self.connection.sessions[match[1]]
@@ -130,7 +130,7 @@ module SockJS
     end
 
     def try_timer_if_valid(request, response, preamble = nil)
-      session = self.get_session(request, response, preamble)
+      session = self.get_session(request.path_info, response, preamble)
       self.init_timer(response, session, 0.1) if session
     end
 
