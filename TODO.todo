@@ -56,7 +56,7 @@ SockJS 0.2.1 Protocol Tests:
   - test_response_limit: timed out
 
   HtmlFile:
-  - test_transport: Missing cookie.
+  - test_transport: timed out
   - test_response_limit: timed out
 
   JsonPolling:

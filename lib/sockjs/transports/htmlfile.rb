@@ -28,6 +28,7 @@ module SockJS
           response(request, 200) do |response|
             response.set_content_type(:html)
             response.set_no_cache
+            response.set_session_id(request.session_id)
             response.write(body)
 
             self.try_timer_if_valid(request, response)
