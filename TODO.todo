@@ -36,7 +36,7 @@ SockJS 0.2.1 Protocol Tests:
   - test_close: It's sending ~> WS#send ["", :close, 1000] and we're getting Empty exception in the tests.
   ✓ test_headersSanity
   ✓ test_broken_json
-  - test_firefox_602_connection_header: status AssertionError: 200 != 101
+  ✓ test_firefox_602_connection_header
 
   XhrPolling:
   ✓ test_options
