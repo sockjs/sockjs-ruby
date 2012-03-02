@@ -43,6 +43,7 @@ module SockJS
           response.set_allow_options_post
           response.set_cache_control
           response.set_access_control(request.origin)
+          response.set_session_id(request.session_id)
         end
       end
     end
