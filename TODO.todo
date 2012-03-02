@@ -60,7 +60,7 @@ SockJS 0.2.1 Protocol Tests:
   - test_response_limit: timed out
 
   JsonPolling:
-  - test_transport: Missing cookie.
+  - test_transport: Server crashes with `write': Body isn't open (status: closed)
   - test_close: AssertionError: '' != 'x("o");\r\n'
   - test_content_types: AssertionError: '' != 'x("o");\r\n'
   - test_invalid_json: AssertionError: '' != 'x("o");\r\n'

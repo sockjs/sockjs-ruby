@@ -104,6 +104,7 @@ module SockJS
           session.receive_message(data)
 
           respond(request, 200) do |response|
+            response.set_content_type(:plain)
             response.set_session_id(request.session_id)
             response.write("ok")
           end
