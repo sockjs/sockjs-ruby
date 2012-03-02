@@ -114,6 +114,10 @@ module SockJS
       end
 
       def finish(data = nil)
+        if @status == :closed
+          raise "Body is already closed!"
+        end
+
         self.write(data) if data
         self.succeed
       end
