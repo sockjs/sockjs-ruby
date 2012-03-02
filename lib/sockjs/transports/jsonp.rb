@@ -11,15 +11,19 @@ module SockJS
       self.prefix  = /[^.]+\/([^.]+)\/jsonp$/
       self.method  = "GET"
 
+      attr_accessor :callback_function
+
       # Handler.
       def handle(request)
         if request.callback
           match = request.path_info.match(self.class.prefix)
+          self.callback_function = request.callback
+
           if session = self.connection.sessions[match[1]]
             respond(request, 200) do |response, session|
               response.set_content_type(:plain)
 
-              body = self.format_frame(request.callback, session.process_buffer)
+              body = self.format_frame(session.process_buffer)
               response.write(body)
             end
           else
@@ -27,6 +31,7 @@ module SockJS
               response.set_content_type(:javascript)
               response.set_access_control(request.origin)
               response.set_no_cache
+              response.set_session_id(request.session_id)
               # response.write(body)
 
               session.open!(request.callback)
@@ -40,12 +45,12 @@ module SockJS
         end
       end
 
-      def format_frame(callback_function, payload)
+      def format_frame(payload)
         raise TypeError.new if payload.nil?
 
         # Yes, JSONed twice, there isn't a better way, we must pass
         # a string back, and the script, will be evaled() by the browser.
-        "#{callback_function}(#{payload.chomp.to_json});\r\n"
+        "#{self.callback_function}(#{payload.chomp.to_json});\r\n"
       end
     end
 
