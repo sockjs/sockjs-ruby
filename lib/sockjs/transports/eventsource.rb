@@ -13,6 +13,7 @@ module SockJS
       def handle(request)
         response(request, 200) do |response|
           response.set_content_type(:event_stream)
+          response.set_session_id(request.session_id)
           response.set_no_cache
 
           # Opera needs to hear two more initial new lines.

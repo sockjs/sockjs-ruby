@@ -39,7 +39,7 @@ SockJS 0.2.1 Protocol Tests:
   - test_firefox_602_connection_header: status AssertionError: 200 != 101
 
   XhrPolling:
-  - test_options: Missing cookie.
+  ✓ test_options
   - test_transport: AssertionError: '' != 'o\n'
   ✓ test_invalid_session
   - test_invalid_json: AssertionError: '' != 'o\n'
@@ -47,12 +47,12 @@ SockJS 0.2.1 Protocol Tests:
   - test_jsessionid: AssertionError: '' != 'o\n'
 
   XhrStreaming:
-  - test_options: Missing cookie.
+  ✓ test_options
   - test_transport: timed out
   - test_response_limit: timed out
 
   EventSource:
-  - test_transport: Missing cookie.
+  - test_transport: timed out
   - test_response_limit: timed out
 
   HtmlFile:
