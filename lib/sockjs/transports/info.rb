@@ -45,7 +45,13 @@ module SockJS
 
       # Handler.
       def handle(request)
-        # TODO: Continue here ...
+        response(request, 204) do |response|
+          response.set_allow_options_get
+          response.set_cache_control
+          response.set_access_control(request.origin)
+          response.set_session_id(request.session_id)
+          response.write_head
+        end
       end
     end
   end
