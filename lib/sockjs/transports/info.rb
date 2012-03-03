@@ -36,5 +36,17 @@ module SockJS
         return v[0] + (v[1] * 256 ) + (v[2] * 256 * 256) + (v[3] * 256 * 256 * 256)
       end
     end
+
+
+    class InfoOptions < Transport
+      # Settings.
+      self.prefix = "info"
+      self.method = "OPTIONS"
+
+      # Handler.
+      def handle(request)
+        # TODO: Continue here ...
+      end
+    end
   end
 end
