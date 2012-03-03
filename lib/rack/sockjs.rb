@@ -8,7 +8,7 @@ require "sockjs/transport"
 require "sockjs/servers/thin"
 
 # Transports.
-require "sockjs/transports/chunking_test"
+require "sockjs/transports/info"
 require "sockjs/transports/eventsource"
 require "sockjs/transports/htmlfile"
 require "sockjs/transports/iframe"
