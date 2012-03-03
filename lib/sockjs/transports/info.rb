@@ -16,16 +16,17 @@ module SockJS
           response.set_content_type(:json)
           response.set_access_control(request.origin)
           response.set_allow_options_post
+          response.set_no_cache
           response.write(self.info.to_json)
         end
       end
 
       def info
         {
-            # websocket: "@options.websocket",
-            # origins: "@options.origins",
-            # cookie_needed: "not not @options.jsessionid",
-            entropy: self.entropy
+          # websocket: "@options.websocket",
+          # origins: "@options.origins",
+          # cookie_needed: "not not @options.jsessionid",
+          entropy: self.entropy
         }
       end
 
