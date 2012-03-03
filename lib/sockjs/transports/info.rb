@@ -24,8 +24,8 @@ module SockJS
       def info
         {
           websocket: @options[:websocket],
-          # origins: "@options.origins",
-          # cookie_needed: "not not @options.jsessionid",
+          origins: ["*:*"], # As specified by the spec, currently ignored.
+          cookie_needed: @options[:cookie_needed],
           entropy: self.entropy
         }
       end

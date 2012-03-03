@@ -42,6 +42,7 @@ module SockJS
     def initialize(connection, options)
       @connection, @options = connection, options
       options[:websocket] = true unless options.has_key?(:websocket)
+      options[:cookie_needed] = true unless options.has_key?(:cookie_needed)
     end
 
     def session_class
