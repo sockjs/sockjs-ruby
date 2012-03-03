@@ -29,7 +29,7 @@ require "sockjs/transports/xhr"
 #  end
 #
 #  use SockJS, "/disabled_websocket_echo",
-#    disabled_transports: [SockJS::WebSocket] do |connection|
+#    websocket: false do |connection|
 #    # ...
 #  end
 #
@@ -51,7 +51,7 @@ module Rack
       end
 
       # Validate options.
-      if options[:sockjs_url].nil? && ! options[:disabled_transports].include?(::SockJS::Transports::IFrame)
+      if options[:sockjs_url].nil?
         raise RuntimeError.new("You have to provide sockjs_url in options, it's required for the iframe transport!")
       end
 

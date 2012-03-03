@@ -75,7 +75,7 @@ app = Rack::Builder.new do
     end
   end
 
-  use Rack::SockJS, "/disabled_websocket_echo", options.merge(disabled_transports: [::SockJS::Transports::WebSocket]) do |connection|
+  use Rack::SockJS, "/disabled_websocket_echo", options.merge(websocket: false) do |connection|
     connection.subscribe do |session, message|
       debug "~ \033[0;31;40m[Echo]\033[0m message: #{message.inspect}, session: #{session.object_id}"
       session.send(message)

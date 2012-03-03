@@ -41,11 +41,7 @@ module SockJS
     attr_reader :connection, :options
     def initialize(connection, options)
       @connection, @options = connection, options
-    end
-
-    def disabled?
-      disabled_transports = @options[:disabled_transports] || Array.new
-      return disabled_transports.include?(self.class)
+      options[:websocket] = true unless options.has_key?(:websocket)
     end
 
     def session_class

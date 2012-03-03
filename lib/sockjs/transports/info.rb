@@ -23,7 +23,7 @@ module SockJS
 
       def info
         {
-          # websocket: "@options.websocket",
+          websocket: @options[:websocket],
           # origins: "@options.origins",
           # cookie_needed: "not not @options.jsessionid",
           entropy: self.entropy
