@@ -107,7 +107,12 @@ module SockJS
       end
 
       def succeed
-        STDERR.puts("~ Closing the response.")
+        if $DEBUG
+          STDERR.puts("~ Closing the response #{caller.map { |item| item.sub(Dir.pwd + "/lib/", "") }.inspect}.")
+        else
+          STDERR.puts("~ Closing the response.")
+        end
+
         self.__write__(TAIL)
         @status = :closed
         super

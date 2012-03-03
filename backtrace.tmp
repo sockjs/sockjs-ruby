@@ -1,0 +1,41 @@
+~ GET "/echo/000/746ac9e2-1239-4f8a-87dd-4e63824b8551/jsonp" (/echo app)
+curl -X GET http://localhost:8080/echo/000/746ac9e2-1239-4f8a-87dd-4e63824b8551/jsonp
+~ Transport: SockJS::Transports::JSONP
+~ [-1, {}, []]
+~ get_session: session "746ac9e2-1239-4f8a-87dd-4e63824b8551" doesn't exist.
+~ Headers: {"Content-Type"=>"application/javascript; charset=UTF-8", "Access-Control-Allow-Origin"=>"*", "Access-Control-Allow-Credentials"=>"true", "Cache-Control"=>"no-store, no-cache, must-revalidate, max-age=0", "Set-Cookie"=>"JSESSIONID=dummy; path=/", "Transfer-Encoding"=>"chunked"}
+~ Opening the response.
+~ body#write "callback(\"o\");\r\n"
+~ Closing the response.
+~ Closing the response.
+
+~ POST "/echo/000/746ac9e2-1239-4f8a-87dd-4e63824b8551/jsonp_send" (/echo app)
+curl -X POST http://localhost:8080/echo/000/746ac9e2-1239-4f8a-87dd-4e63824b8551/jsonp_send
+~ Transport: SockJS::Transports::JSONPSend
+~ [-1, {}, []]
+~ Headers: {"Content-Type"=>"text/plain; charset=UTF-8", "Set-Cookie"=>"JSESSIONID=dummy; path=/", "Transfer-Encoding"=>"chunked"}
+~ Opening the response.
+~ body#write "ok"
+~ Closing the response.
+
+~ GET "/echo/000/746ac9e2-1239-4f8a-87dd-4e63824b8551/jsonp" (/echo app)
+curl -X GET http://localhost:8080/echo/000/746ac9e2-1239-4f8a-87dd-4e63824b8551/jsonp
+~ Transport: SockJS::Transports::JSONP
+~ [-1, {}, []]
+~ get_session: another connection still open
+
+/Users/botanicus/Dropbox/Projects/sockjs/ruby/lib/sockjs/servers/thin.rb:91:in `write': Body isn't open (status: closed) (RuntimeError)
+	from /Users/botanicus/Dropbox/Projects/sockjs/ruby/lib/sockjs/servers/thin.rb:56:in `block in write'
+	from /Users/botanicus/Dropbox/Projects/sockjs/ruby/lib/sockjs/servers/response.rb:58:in `call'
+	from /Users/botanicus/Dropbox/Projects/sockjs/ruby/lib/sockjs/servers/response.rb:58:in `write'
+	from /Users/botanicus/Dropbox/Projects/sockjs/ruby/lib/sockjs/servers/thin.rb:55:in `write'
+	from /Users/botanicus/Dropbox/Projects/sockjs/ruby/lib/sockjs/servers/response.rb:63:in `finish'
+	from /Users/botanicus/Dropbox/Projects/sockjs/ruby/lib/sockjs/servers/thin.rb:61:in `finish'
+	from /Users/botanicus/Dropbox/Projects/sockjs/ruby/lib/sockjs/session.rb:196:in `finish'
+	from /Users/botanicus/Dropbox/Projects/sockjs/ruby/lib/sockjs/session.rb:123:in `close'
+	from /Users/botanicus/Dropbox/Projects/sockjs/ruby/lib/sockjs/transport.rb:117:in `get_session'
+	from /Users/botanicus/Dropbox/Projects/sockjs/ruby/lib/sockjs/transport.rb:74:in `response'
+	from /Users/botanicus/Dropbox/Projects/sockjs/ruby/lib/sockjs/transport.rb:96:in `respond'
+	from /Users/botanicus/Dropbox/Projects/sockjs/ruby/lib/sockjs/transports/jsonp.rb:23:in `handle'
+	from /Users/botanicus/Dropbox/Projects/sockjs/ruby/lib/rack/sockjs.rb:88:in `block in process_request'
+5302

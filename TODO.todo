@@ -97,3 +97,4 @@ Implementation:
 
 Protocol:
 - Heartbeat
+- Check sockjs-node's CHANGELOG, there is some stuff we should do as well.

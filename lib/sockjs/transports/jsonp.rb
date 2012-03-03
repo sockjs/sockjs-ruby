@@ -33,8 +33,10 @@ module SockJS
               response.set_no_cache
               response.set_session_id(request.session_id)
               # response.write(body)
+              p [:body, response.body.instance_variable_get(:@status)]
 
               session.open!(request.callback)
+              p [:body, response.body.instance_variable_get(:@status)]
             end
           end
         else
