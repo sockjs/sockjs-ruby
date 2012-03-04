@@ -6,10 +6,10 @@ require "sockjs/servers/thin"
 
 module SockJS
   class SessionUnavailableError < StandardError
-    attr_reader :status
+    attr_reader :status, :session
 
-    def initialize(status, message)
-      @status, @message = status, message
+    def initialize(status, message, session)
+      @status, @message, @session = status, message, session
     end
   end
 
@@ -90,7 +90,7 @@ module SockJS
           end
         rescue SessionUnavailableError => error
           puts "~ SessionUnavailableError: #{error.message}"
-          session.close(error.status, error.message) # It fails here, because the session is closed already.
+          error.session.close(error.status, error.message) # It fails here, because the session is closed already.
 
           # TODO: What shall we do about it? We need to call session.close
           # so we can send the closing frame with a DIFFERENT message.
@@ -123,13 +123,13 @@ module SockJS
       if session = self.connection.sessions[match[1]]
         if session.closing?
           puts "~ get_session: session is closing"
-          raise SessionUnavailableError.new(3000, "Session is closing")
+          raise SessionUnavailableError.new(3000, "Session is closing", session)
         elsif (session.open? && session.response.nil?) || session.newly_created? || session.opening?
           puts "~ get_session: session retrieved successfully"
           return session
         elsif session.open? && session.response
           puts "~ get_session: another connection still open"
-          raise SessionUnavailableError.new(2010, "Another connection still open")
+          raise SessionUnavailableError.new(2010, "Another connection still open", session)
         else
           raise "We should never get here!\nsession.status: #{session.instance_variable_get(:@status)}, has session response: #{!! session.response}"
         end
