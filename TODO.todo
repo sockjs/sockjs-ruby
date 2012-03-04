@@ -17,7 +17,7 @@ SockJS 0.2.1 Protocol Tests:
   - test_closeSession: AssertionError: '' != 'o\n'
 
   WebsocketHttpErrors:
-  - test_invalidMethod: This is some shit Rack does. We're responding with [405, {}, []], there's no doubt about it, but the client gets "empty reply from server".
+  - test_invalidMethod: I do believe this is actually right and there's a problem on the Python side. Please note that it actually fails on "r = POST(base_url + '/0/0/websocket', headers=h)" line, not during verify405().
 
   WebsocketHixie76:
   ✓ test_transport
