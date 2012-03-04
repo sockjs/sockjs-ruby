@@ -1,5 +1,5 @@
 ~ GET "/echo/000/746ac9e2-1239-4f8a-87dd-4e63824b8551/jsonp" (/echo app)
-curl -X GET http://localhost:8080/echo/000/746ac9e2-1239-4f8a-87dd-4e63824b8551/jsonp
+curl -X GET http://localhost:8081/echo/000/746ac9e2-1239-4f8a-87dd-4e63824b8551/jsonp
 ~ Transport: SockJS::Transports::JSONP
 ~ [-1, {}, []]
 ~ get_session: session "746ac9e2-1239-4f8a-87dd-4e63824b8551" doesn't exist.
@@ -10,7 +10,7 @@ curl -X GET http://localhost:8080/echo/000/746ac9e2-1239-4f8a-87dd-4e63824b8551/
 ~ Closing the response.
 
 ~ POST "/echo/000/746ac9e2-1239-4f8a-87dd-4e63824b8551/jsonp_send" (/echo app)
-curl -X POST http://localhost:8080/echo/000/746ac9e2-1239-4f8a-87dd-4e63824b8551/jsonp_send
+curl -X POST http://localhost:8081/echo/000/746ac9e2-1239-4f8a-87dd-4e63824b8551/jsonp_send
 ~ Transport: SockJS::Transports::JSONPSend
 ~ [-1, {}, []]
 ~ Headers: {"Content-Type"=>"text/plain; charset=UTF-8", "Set-Cookie"=>"JSESSIONID=dummy; path=/", "Transfer-Encoding"=>"chunked"}
@@ -19,7 +19,7 @@ curl -X POST http://localhost:8080/echo/000/746ac9e2-1239-4f8a-87dd-4e63824b8551
 ~ Closing the response.
 
 ~ GET "/echo/000/746ac9e2-1239-4f8a-87dd-4e63824b8551/jsonp" (/echo app)
-curl -X GET http://localhost:8080/echo/000/746ac9e2-1239-4f8a-87dd-4e63824b8551/jsonp
+curl -X GET http://localhost:8081/echo/000/746ac9e2-1239-4f8a-87dd-4e63824b8551/jsonp
 ~ Transport: SockJS::Transports::JSONP
 ~ [-1, {}, []]
 ~ get_session: another connection still open
