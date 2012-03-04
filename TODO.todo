@@ -6,11 +6,7 @@ SockJS 0.2.1 Protocol Tests:
 
   ✓ IframePage
 
-  InfoTest (not supported yet):
-  - test_basic: status AssertionError: 404 != 200
-  - test_entropy: fails with ValueError, but it's the same problem really.
-  - test_options: status AssertionError: 404 != 200
-  - test_disabled_websocket: status AssertionError: 404 != 200
+  ✓ InfoTest
 
   SessionURLs:
   - test_anyValue: AssertionError: '' != 'o\n'
