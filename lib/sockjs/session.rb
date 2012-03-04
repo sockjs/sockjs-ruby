@@ -161,34 +161,44 @@ module SockJS
     end
 
     def set_timer
+      puts "~ Setting @disconnect_timer to #{@disconnect_delay}"
       @disconnect_timer = begin
         EM::Timer.new(@disconnect_delay) do
+          puts "~ @disconnect_timer fired"
           unless self.closed? or self.closing? or @response.body.closed? # The last part of the condition is pretty hacky.
-            puts "~ Closing the connection."
+            puts "~ @disconnect_timer: closing the connection."
             self.close
-            puts "~ Connection closed."
+            puts "~ @disconnect_timer: connection closed."
           end
         end
       end
     end
 
     def reset_timer
+      puts "~ Cancelling @disconnect_timer"
       @disconnect_timer.cancel
+
       self.set_timer
     end
 
     def reset_close_timer
+      puts "~ Cancelling @close_timer"
       @close_timer.cancel if @close_timer
 
+      puts "~ Setting @close_timer to #{@disconnect_delay}"
+
       @close_timer = EM::Timer.new(@disconnect_delay) do
+        puts "~ @close_timer fired"
         self.mark_to_be_garbage_collected
       end
     end
 
     def mark_to_be_garbage_collected
+      puts "~ Closing the session"
       @status = :closed
     end
   end
+
 
   class SessionWitchCachedMessages < Session
     def send(*messages)
