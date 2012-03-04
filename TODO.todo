@@ -9,34 +9,30 @@ SockJS 0.2.1 Protocol Tests:
   ✓ InfoTest
 
   SessionURLs:
-  - test_anyValue: AssertionError: '' != 'o\n'
-  - test_ignoringServerId: AssertionError: '' != 'o\n'
+  - test_anyValue: AssertionError: '' != 'o\n' (note: it doesn't fail in the first run).
+  - test_ignoringServerId: AssertionError: '' != 'a["a"]\n'
 
   Protocol:
-  - test_simpleSession: Fail if there's more than one open connection to given session. At the moment there's no infrastructure for this in place, we don't keep the status. See transport.coffee of sockjs-node.
-  - test_closeSession: AssertionError: '' != 'o\n'
+  - test_simpleSession: Fail if there's more than one open connection to given session. At the moment there's no infrastructure for this in place, we don't keep the status. See transport.coffee of sockjs-node. AssertionError: '' != 'a["a"]\n'
+  - test_closeSession: Crashes with thin.rb:91:in `write': Body isn't open (status: closed) (RuntimeError).
 
   WebsocketHttpErrors:
   - test_invalidMethod: I do believe this is actually right and there's a problem on the Python side. Please note that it actually fails on "r = POST(base_url + '/0/0/websocket', headers=h)" line, not during verify405(). Check WebsocketHttpErrors.test_invalidMethod.txt for more info.
 
   WebsocketHixie76:
-  - test_reuseSessionId: Hangs for ages, then ConnectionClosedException; this functionality is not supported yet.
+  - test_reuseSessionId: Exception `SockJS::SessionUnavailableError' at /Users/botanicus/Dropbox/Projects/sockjs/ruby/lib/sockjs/transport.rb:115 - Session is closing (before: Hangs for ages, then ConnectionClosedException; this functionality is not supported yet.)
   - test_haproxy: '\x00o\xff' != '\xca4\x00\xd8\xa5\x08G\x97,\xd5qZ\xba\xbfC{'
 
   WebsocketHybi10:
   - test_close: It's sending ~> WS#send ["", :close, 1000] and we're getting Empty exception in the tests. Some low-level wire debugging is necessary. Check faye-error.txt for more info.
-  - test_broken_json: AssertionError: ConnectionClosedException not raised & then it just hangs.
+  - test_broken_json: sockjs/session.rb:166 - undefined method `body' for nil (before: AssertionError: ConnectionClosedException not raised & then it just hangs.)
 
   XhrPolling:
-  ✓ test_options
-  - test_transport: AssertionError: '' != 'o\n'
-  ✓ test_invalid_session
-  - test_invalid_json: AssertionError: '' != 'o\n'
-  - test_content_types: AssertionError: '' != 'o\n'
-  - test_jsessionid: AssertionError: '' != 'o\n'
+  - test_transport: AssertionError: '' != 'a["x"]\n'
+  - test_invalid_json: AssertionError: 204 != 500
+  - test_content_types: AssertionError: '' != 'a["a","a","a","a","a","a","a","a"]\n'
 
   XhrStreaming:
-  ✓ test_options
   - test_transport: timed out
   - test_response_limit: timed out
 
@@ -49,24 +45,24 @@ SockJS 0.2.1 Protocol Tests:
   - test_response_limit: timed out
 
   JsonPolling:
-  - test_transport: Server crashes with `write': Body isn't open (status: closed)
-  - test_close: AssertionError: '' != 'x("o");\r\n'
-  - test_content_types: AssertionError: '' != 'x("o");\r\n'
-  - test_invalid_json: AssertionError: '' != 'x("o");\r\n'
+  - test_transport: AssertionError: '' != 'callback("a[\\"x\\"]");\r\n'
+  - test_close: Crashes with: thin.rb:91:in `write': Body isn't open (status: closed) (RuntimeError)
+  - test_content_types: AssertionError: '' != 'x("a[\\"abc\\",\\"%61bc\\"]");\r\n'
+  - test_invalid_json: AssertionError: 200 != 500
 
   RawWebsocket:
   - test_transport: timed out
   - test_close: timed out
 
   JSONEncoding:
-  - test_xhr_server_encodes: AssertionError: '' != 'o\n'
-  - test_xhr_server_decodes: AssertionError: '' != 'o\n'
+  - test_xhr_server_encodes: AssertionError: '' != '"\\u200c\\u200d\\u200e\\u200f\\u2028\\u2029\\u202a\\u202b\\u202c\\u202d\\u202e\\u202f\\u2060\\u2061\\u2062\\u2063\\u2064\\u2065\\u2066\\u2067\\u2068\\u2069\\u206a\\u206b\\u206c\\u206d\\u206e\\u206f\\ufff0\\ufff1\\ufff2\\ufff3\\ufff4\\ufff5\\ufff6\\ufff7\\ufff8\\ufff9\\ufffa\\ufffb\\ufffc\\ufffd\\ufffe\\uffff"'
+  - test_xhr_server_decodes: ValueError: No JSON object could be decoded
 
   HandlingClose:
   - test_close_frame: timed out
   - test_close_request: timed out
   - test_abort_xhr_streaming: timed out
-  - test_abort_xhr_polling: AssertionError: '' != 'o\n'
+  - test_abort_xhr_polling: AssertionError: '' != 'c[2010,"Another connection still open"]\n'
 
   Http10:
   - test_synchronous: AssertionError: 'chunked' is not False
