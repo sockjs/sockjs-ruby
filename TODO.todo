@@ -20,19 +20,12 @@ SockJS 0.2.1 Protocol Tests:
   - test_invalidMethod: I do believe this is actually right and there's a problem on the Python side. Please note that it actually fails on "r = POST(base_url + '/0/0/websocket', headers=h)" line, not during verify405(). Check WebsocketHttpErrors.test_invalidMethod.txt for more info.
 
   WebsocketHixie76:
-  ✓ test_transport
-  ✓ test_close
-  ✓ test_empty_frame
   - test_reuseSessionId: Hangs for ages, then ConnectionClosedException; this functionality is not supported yet.
-  ✓ test_headersSanity
-  ✓ test_broken_json
+  - test_haproxy: '\x00o\xff' != '\xca4\x00\xd8\xa5\x08G\x97,\xd5qZ\xba\xbfC{'
 
   WebsocketHybi10:
-  ✓ test_transport
   - test_close: It's sending ~> WS#send ["", :close, 1000] and we're getting Empty exception in the tests. Some low-level wire debugging is necessary. Check faye-error.txt for more info.
-  ✓ test_headersSanity
-  ✓ test_broken_json
-  ✓ test_firefox_602_connection_header
+  - test_broken_json: AssertionError: ConnectionClosedException not raised & then it just hangs.
 
   XhrPolling:
   ✓ test_options
@@ -93,4 +86,3 @@ Implementation:
 
 Protocol:
 - Heartbeat
-- Check sockjs-node's CHANGELOG, there is some stuff we should do as well.
