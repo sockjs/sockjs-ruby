@@ -48,7 +48,7 @@ module SockJS
       def check_invalid_request_or_disabled_websocket(request)
         if not @options[:websocket]
           raise HttpError.new(404, "WebSockets Are Disabled")
-        elsif request.env["HTTP_UPGRADE"] && request.env["HTTP_UPGRADE"].downcase != "websocket"
+        elsif request.env["HTTP_UPGRADE"].to_s.downcase != "websocket"
           raise HttpError.new(400, 'Can "Upgrade" only to "WebSocket".')
         elsif not ["Upgrade", "keep-alive, Upgrade"].include?(request.env["HTTP_CONNECTION"])
           raise HttpError.new(400, '"Connection" must be "Upgrade".')
