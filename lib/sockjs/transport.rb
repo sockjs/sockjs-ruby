@@ -68,19 +68,24 @@ module SockJS
       when 1
         block.call(response)
       when 2
-        if session = self.get_session(request.path_info)
-          session.buffer = Buffer.new(:open)
-        elsif session.nil? && options[:session] == :create
-          session = self.create_session(request.path_info)
-          session.buffer = Buffer.new
-        end
+        begin
+          if session = self.get_session(request.path_info)
+            session.buffer = Buffer.new(:open)
+          elsif session.nil? && options[:session] == :create
+            session = self.create_session(request.path_info)
+            session.buffer = Buffer.new
+          end
 
-        if session
-          session.response = response
-          block.call(response, session) # TODO: maybe it's better to do everything through session, it knows response already anyway ... but sometimes we don't need session, for instance in the welcome screen or iframe.
-        else
-          puts "~ Session can't be retrieved."
-          block.call(response)
+          if session
+            session.response = response
+            block.call(response, session) # TODO: maybe it's better to do everything through session, it knows response already anyway ... but sometimes we don't need session, for instance in the welcome screen or iframe.
+          else
+            puts "~ Session can't be retrieved."
+            block.call(response)
+          end
+        rescue SessionUnavailableError => error
+          p [:session_unavailable_error, error.message]
+          # TODO: what shall we do about it?
         end
       else
         raise ArgumentError.new("Block in response takes either 1 or 2 arguments!")
@@ -114,7 +119,7 @@ module SockJS
         elsif session.open? && session.response
           puts "~ get_session: another connection still open"
           # This is utter bollocks: session.response is closed already.
-          session.close(2010, "Another connection still open") # It fails here ...
+          # session.close(2010, "Another connection still open") # It fails here ...
           raise SessionUnavailableError.new("Another connection still open") # ... hence it never gets here.
         else
           raise "We should never get here!\nsession.status: #{session.instance_variable_get(:@status)}, has session response: #{!! session.response}"

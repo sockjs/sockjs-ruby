@@ -127,6 +127,10 @@ module SockJS
         self.succeed
       end
 
+      def closed?
+        @status == :closed
+      end
+
       protected
       def __write__(data)
         @body_callback.call(data)

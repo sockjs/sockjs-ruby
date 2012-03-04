@@ -39,7 +39,11 @@ module SockJS
           raise "You have to assign something to session.response!"
         end
 
-        @response.finish(@buffer.to_frame)
+        if @response.body.closed?
+          puts "~ Response closed already #{caller.inspect}"
+        else
+          @response.finish(@buffer.to_frame)
+        end
       end
     end
 
@@ -159,7 +163,7 @@ module SockJS
     def set_timer
       @disconnect_timer = begin
         EM::Timer.new(@disconnect_delay) do
-          unless self.closed? or self.closing?
+          unless self.closed? or self.closing? or @response.body.closed? # The last part of the condition is pretty hacky.
             puts "~ Closing the connection."
             self.close
             puts "~ Connection closed."
