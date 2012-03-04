@@ -90,7 +90,9 @@ module SockJS
     end
 
     def respond(*args, &block)
-      response(*args, &block).tap(&:finish)
+      response = response(*args, &block)
+      response.finish unless response.body.closed?
+      response
     end
 
     # There's a session:
