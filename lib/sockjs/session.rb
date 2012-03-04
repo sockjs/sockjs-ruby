@@ -182,8 +182,10 @@ module SockJS
     end
 
     def reset_close_timer
-      puts "~ Cancelling @close_timer"
-      @close_timer.cancel if @close_timer
+      if @close_timer
+        puts "~ Cancelling @close_timer"
+        @close_timer.cancel
+      end
 
       puts "~ Setting @close_timer to #{@disconnect_delay}"
 
