@@ -113,8 +113,9 @@ module SockJS
           return session
         elsif session.open? && session.response
           puts "~ get_session: another connection still open"
-          session.close(2010, "Another connection still open")
-          raise SessionUnavailableError.new("Another connection still open")
+          # This is utter bollocks: session.response is closed already.
+          session.close(2010, "Another connection still open") # It fails here ...
+          raise SessionUnavailableError.new("Another connection still open") # ... hence it never gets here.
         else
           raise "We should never get here!\nsession.status: #{session.instance_variable_get(:@status)}, has session response: #{!! session.response}"
         end
