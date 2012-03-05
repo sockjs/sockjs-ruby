@@ -105,7 +105,8 @@ module SockJS
         end
       rescue SockJS::SessionUnavailableError
         puts "~ Session is already closing"
-      rescue SockJS::InvalidJSON
+      rescue SockJS::InvalidJSON => error
+        # @ws.send(error.message) # TODO: frame it ... although ... is it required? The tests do pass, but it would be inconsistent if we'd send it for other transports and not for WS, huh?
         @ws.close # Close the connection abruptly, no closing frame.
       end
 
