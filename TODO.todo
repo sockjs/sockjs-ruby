@@ -64,12 +64,12 @@ SockJS 0.2.1 Protocol Tests:
   - test_abort_xhr_streaming: timed out
   - test_abort_xhr_polling: AssertionError: '' != 'c[2010,"Another connection still open"]\n'
 
-  Http10:
+  Http10 (HTTP 1.0 is not supported by decision ... the protocol doesn't say if it's MUST or SHOULD):
   - test_synchronous: AssertionError: 'chunked' is not False
   - test_streaming: AssertionError: 'chunked' is not False
 
   Http11:
-  - test_synchronous: [Errno 54] Connection reset by peer. Thin does support Keep-Alive since 0.7.0 https://groups.google.com/group/thin-ruby/browse_thread/thread/4eb696ea517fba2b?pli=1, so what's the problem? This should really work by default, according to the documentation. Only if we'd set --max-persistent-conns to 0, then Keep-Alive would be disabled, but we didn't do that AND it defaults to 512.
+  - test_synchronous: [Errno 54] Connection reset by peer. Thin does support Keep-Alive since 0.7.0 https://groups.google.com/group/thin-ruby/browse_thread/thread/4eb696ea517fba2b?pli=1, so what's the problem? This should really work by default, according to the documentation. Only if we'd set --max-persistent-conns to 0, then Keep-Alive would be disabled, but we didn't do that AND it defaults to 512. Screw it, let's ask on IRC.
   - test_streaming: timed out
 
 
