@@ -69,7 +69,7 @@ SockJS 0.2.1 Protocol Tests:
   - test_streaming: AssertionError: 'chunked' is not False
 
   Http11:
-  - test_synchronous: [Errno 54] Connection reset by peer. Does Thin support Keep-Alive?
+  - test_synchronous: [Errno 54] Connection reset by peer. Thin does support Keep-Alive since 0.7.0 https://groups.google.com/group/thin-ruby/browse_thread/thread/4eb696ea517fba2b?pli=1, so what's the problem?
   - test_streaming: timed out
 
 
