@@ -154,9 +154,13 @@ module SockJS
 
     protected
     def parse_json(data)
+      if data.empty?
+        raise SockJS::InvalidJSON.new("Payload expected.")
+      end
+
       JSON.parse(data)
     rescue JSON::ParserError => error
-      raise SockJS::InvalidJSON.new(error.message)
+      raise SockJS::InvalidJSON.new("Broken JSON encoding.")
     end
 
     def set_timer

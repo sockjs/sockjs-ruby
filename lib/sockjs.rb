@@ -50,8 +50,9 @@ module SockJS
   end
 
   class InvalidJSON < HttpError
-    def message
-      "Broken JSON encoding."
+    attr_reader :message
+    def initialize(message)
+      @message = message
     end
   end
 
