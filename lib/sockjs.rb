@@ -50,10 +50,6 @@ module SockJS
   end
 
   class InvalidJSON < HttpError
-    attr_reader :message
-    def initialize(message)
-      @message = message
-    end
   end
 
   class Connection
