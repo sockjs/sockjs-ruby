@@ -114,5 +114,11 @@ module SockJS
         raise "No such content type: #{symbol}"
       end
     end
+
+    def set_connection_keep_alive_if_requested
+      if @request.env["HTTP_CONNECTION"] && @request.env["HTTP_CONNECTION"].downcase == "keep-alive"
+        self.set_header("Connection", "Keep-Alive")
+      end
+    end
   end
 end

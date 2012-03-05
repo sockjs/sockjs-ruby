@@ -27,6 +27,8 @@ module SockJS
         @status, @headers = status, headers
 
         block.call(self) if block
+
+        set_connection_keep_alive_if_requested
       end
 
       def async?
