@@ -9,7 +9,7 @@ SockJS 0.2.1 Protocol Tests:
   ✓ InfoTest
 
   SessionURLs:
-  - test_anyValue: AssertionError: '' != 'o\n' (note: it doesn't fail in the first run).
+  - test_anyValue: AssertionError: '' != 'o\n' (note: it doesn't fail in the first run). Discuss with @majek
   - test_ignoringServerId: AssertionError: '' != 'a["a"]\n'
 
   Protocol:
@@ -81,4 +81,4 @@ Implementation:
 - If there's another request during the closing 5s, we are supposed to reply with another closing frame and reset the timer to wait for another 5s.
 
 Protocol:
-- Heartbeat
+- Heartbeat. Discuss with @majek.

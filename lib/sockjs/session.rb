@@ -115,15 +115,21 @@ module SockJS
       self.finish
     end
 
+    # Set the internal state to closing
+    def close_session(status = 3000, message = "Go away")
+      @status = :closing
+
+      self.buffer.close(status, message)
+    end
+
     def close(status = 3000, message = "Go away!")
       # Hint: session.buffer = Buffer.new(:open) or so
       if self.newly_created?
         raise "You can't change from #{@status} to closing!"
       end
 
-      @status = :closing
+      self.close_session(status, message)
 
-      self.buffer.close(status, message)
       self.finish
 
       self.reset_close_timer
@@ -165,9 +171,10 @@ module SockJS
       @disconnect_timer = begin
         EM::Timer.new(@disconnect_delay) do
           puts "~ @disconnect_timer fired"
-          unless self.closed? or self.closing? or @response.body.closed? # The last part of the condition is pretty hacky.
+          if self.opening? or self.open?
+            # OK, so we're here, closing the open response ... but its body is already closed, huh?
             puts "~ @disconnect_timer: closing the connection."
-            self.close
+            self.close_session
             puts "~ @disconnect_timer: connection closed."
           else
             puts "~ @disconnect_timer: doing nothing."
