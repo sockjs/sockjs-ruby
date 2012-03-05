@@ -169,6 +169,10 @@ module SockJS
             puts "~ @disconnect_timer: closing the connection."
             self.close
             puts "~ @disconnect_timer: connection closed."
+          else
+            puts "~ @disconnect_timer: doing nothing."
+            p [:status, @status]
+            p [:response_body_status, @response.body.instance_variable_get(:@status)]
           end
         end
       end
