@@ -54,13 +54,6 @@ module SockJS
       self.check_status
       self.reset_timer
 
-      # Weelll ... "string" is not a valid JSON.
-      # However SockJS already work with this,
-      # so let's make it compatible.
-      unless data.match(/^\[.*\]$/)
-        data = "[#{data}]"
-      end
-
       messages = parse_json(data)
       process_messages(*messages) unless messages.empty?
     end
