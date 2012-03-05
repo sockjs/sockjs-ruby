@@ -103,7 +103,7 @@ module SockJS
         session_id = match[1]
         session = self.connection.sessions[session_id]
         if session
-          session.receive_message(data)
+          session.receive_message(request, data)
 
           respond(request, 200) do |response|
             response.set_content_type(:plain)

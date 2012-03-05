@@ -95,7 +95,7 @@ module SockJS
       def handle_message(request, event)
         puts "<~ WS message received: #{event.data.inspect}"
         session = self.get_session(request.path_info)
-        session.receive_message(event.data)
+        session.receive_message(request, event.data)
 
         # Send encoded messages in an array frame.
         messages = session.process_buffer

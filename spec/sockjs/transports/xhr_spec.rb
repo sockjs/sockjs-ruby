@@ -179,7 +179,7 @@ describe SockJS::Transports::XHRSendPost do
         response.headers["Access-Control-Allow-Credentials"].should eql("true")
       end
 
-      it "should call session.receive_message(data)" do
+      it "should call session.receive_message(request, data)" do
         # TODO: Come up with a better way how to test it.
         session = transport.connection.sessions["b"]
         session.stub!(:receive_message)

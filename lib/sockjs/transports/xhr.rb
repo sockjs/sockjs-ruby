@@ -57,7 +57,7 @@ module SockJS
       def handle(request)
         respond(request, 204) do |response, session|
           if session
-            session.receive_message(request.data.read)
+            session.receive_message(request, request.data.read)
 
             # When we use HTTP 204 with Content-Type, Rack::Lint
             # will be bitching about it. That's understandable,

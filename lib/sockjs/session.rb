@@ -50,12 +50,16 @@ module SockJS
     # All incoming data is treated as incoming messages,
     # either single json-encoded messages or an array
     # of json-encoded messages, depending on transport.
-    def receive_message(data)
+    def receive_message(request, data)
       self.check_status
       self.reset_timer
 
       messages = parse_json(data)
       process_messages(*messages) unless messages.empty?
+    rescue SockJS::InvalidJSON => error
+      @transport.respond(request, error.status) do |response|
+        response.write(error.message)
+      end
     end
 
     def process_messages(*messages)
