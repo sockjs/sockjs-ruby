@@ -224,7 +224,6 @@ module SockJS
 
     def finish
       data = @transport.format_frame(@buffer.to_frame)
-      p [:data, data]
       @response.finish(data)
     end
   end

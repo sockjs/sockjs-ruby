@@ -67,8 +67,6 @@ module SockJS
 
     def response(request, status, options = Hash.new, &block)
       response = self.response_class.new(request, status)
-      p [:resp_body, response.body.instance_variable_get(:@status)]
-      # Here everything's fine, the sky is shining, the sun is singing and the birds are blue. Or is it the other way round?
 
       case block && block.arity
       when nil # no block
