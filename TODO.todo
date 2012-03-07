@@ -27,9 +27,7 @@ SockJS 0.2.1 Protocol Tests:
   - test_close: It's sending ~> WS#send ["", :close, 1000] and we're getting Empty exception in the tests. Some low-level wire debugging is necessary. Check faye-error.txt for more info.
   - test_broken_json: sockjs/session.rb:166 - undefined method `body' for nil (before: AssertionError: ConnectionClosedException not raised & then it just hangs.)
 
-  XhrPolling:
-  - test_transport: AssertionError: '' != 'a["x"]\n'
-  - test_invalid_json: SessionUnavailableError
+  ✓ XhrPolling
 
   XhrStreaming:
   - test_transport: timed out
