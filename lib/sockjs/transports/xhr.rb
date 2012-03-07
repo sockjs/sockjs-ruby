@@ -73,7 +73,11 @@ module SockJS
             response.set_access_control(request.origin)
             response.set_session_id(request.session_id)
           else
-            raise SockJS::HttpError.new(404, "Session is not open!")
+            # We have to use curly brackets, because of ... well
+            # because of bulldozer really http://pastie.org/3540401
+            raise SockJS::HttpError.new(404, "Session is not open!") { |response|
+              response.set_session_id(request.session_id)
+            }
           end
         end
 
