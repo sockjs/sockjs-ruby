@@ -45,23 +45,18 @@ SockJS 0.2.1 Protocol Tests:
   - test_content_types: AssertionError: '' != 'x("a[\\"abc\\",\\"%61bc\\"]");\r\n'
   - test_invalid_json: AssertionError: 200 != 500
 
-  RawWebsocket:
-  - test_transport: timed out
-  - test_close: timed out
+  - RawWebsocket: not supported yet (this is /websocket, NOT /*/*/websocket!)
 
   JSONEncoding:
   - test_xhr_server_encodes: AssertionError: '' != '"\\u200c\\u200d\\u200e\\u200f\\u2028\\u2029\\u202a\\u202b\\u202c\\u202d\\u202e\\u202f\\u2060\\u2061\\u2062\\u2063\\u2064\\u2065\\u2066\\u2067\\u2068\\u2069\\u206a\\u206b\\u206c\\u206d\\u206e\\u206f\\ufff0\\ufff1\\ufff2\\ufff3\\ufff4\\ufff5\\ufff6\\ufff7\\ufff8\\ufff9\\ufffa\\ufffb\\ufffc\\ufffd\\ufffe\\uffff"'
-  - test_xhr_server_decodes: ValueError: No JSON object could be decoded
 
   HandlingClose:
+  - test_abort_xhr_streaming: timed out
   - test_close_frame: timed out
   - test_close_request: timed out
-  - test_abort_xhr_streaming: timed out
-  - test_abort_xhr_polling: AssertionError: '' != 'c[2010,"Another connection still open"]\n'
+  - test_abort_xhr_polling: AssertionError: 'a[]\n' != 'c[2010,"Another connection still open"]\n'
 
-  Http10 (HTTP 1.0 is not supported by decision ... the protocol doesn't say if it's MUST or SHOULD):
-  - test_synchronous: AssertionError: 'chunked' is not False
-  - test_streaming: AssertionError: 'chunked' is not False
+  - Http10 (supporting HTTP 1.0 is not a priority, but it should be easy enough to do so).
 
   Http11:
   - test_synchronous: [Errno 54] Connection reset by peer. Thin does support Keep-Alive since 0.7.0 https://groups.google.com/group/thin-ruby/browse_thread/thread/4eb696ea517fba2b?pli=1, so what's the problem? This should really work by default, according to the documentation. Only if we'd set --max-persistent-conns to 0, then Keep-Alive would be disabled, but we didn't do that AND it defaults to 512. Screw it, let's ask on IRC.
