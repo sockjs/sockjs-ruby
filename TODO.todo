@@ -39,8 +39,7 @@ SockJS 0.2.1 Protocol Tests:
   - test_transport: timed out
   - test_response_limit: timed out
 
-  JsonPolling:
-  - test_close: Crashes with: thin.rb:91:in `write': Body isn't open (status: closed) (RuntimeError)
+  ✓ JsonPolling
 
   - RawWebsocket: not supported yet (this is /websocket, NOT /*/*/websocket!)
 
