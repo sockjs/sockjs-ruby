@@ -8,9 +8,7 @@ SockJS 0.2.1 Protocol Tests:
 
   ✓ InfoTest
 
-  SessionURLs:
-  - test_anyValue: AssertionError: '' != 'o\n' (note: it doesn't fail in the first run). Discuss with @majek
-  - test_ignoringServerId: AssertionError: '' != 'a["a"]\n'
+  ✓ SessionURLs
 
   Protocol:
   - test_simpleSession: Fail if there's more than one open connection to given session. At the moment there's no infrastructure for this in place, we don't keep the status. See transport.coffee of sockjs-node. AssertionError: '' != 'a["a"]\n'
