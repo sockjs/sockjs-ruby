@@ -86,9 +86,13 @@ module SockJS
             block.call(response, session) # TODO: maybe it's better to do everything through session, it knows response already anyway ... but sometimes we don't need session, for instance in the welcome screen or iframe.
           else
             puts "~ Session can't be retrieved."
-            block.call(response)
+
+            # This helps with identifying open connections.
+            block.call(response).tap do
+              session.response = nil
+            end
           end
-        rescue SessionUnavailableError => error
+        rescue SockJS::SessionUnavailableError => error
           puts "~ SessionUnavailableError: #{error.message}"
           error.session.close(error.status, error.message) # It fails here, because the session is closed already.
 
