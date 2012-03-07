@@ -24,7 +24,12 @@ module SockJS
               response.set_content_type(:plain)
 
               body = self.format_frame(session.process_buffer)
-              response.write(body)
+
+              # This is very stupid ... session.close in app already sent the frame.
+              # TODO: the same issue is surely in the other transports as well.
+              unless session.closing?
+                response.write(body)
+              end
             end
           else
             respond(request, 200, session: :create) do |response, session|
