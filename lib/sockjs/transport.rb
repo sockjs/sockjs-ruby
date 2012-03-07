@@ -67,6 +67,8 @@ module SockJS
 
     def response(request, status, options = Hash.new, &block)
       response = self.response_class.new(request, status)
+      p [:resp_body, response.body.instance_variable_get(:@status)]
+      # Here everything's fine, the sky is shining, the sun is singing and the birds are blue. Or is it the other way round?
 
       case block && block.arity
       when nil # no block
@@ -88,12 +90,11 @@ module SockJS
             puts "~ Session can't be retrieved."
 
             # This helps with identifying open connections.
-            block.call(response).tap do
-              session.response = nil
-            end
+            session.response = nil
           end
         rescue SockJS::SessionUnavailableError => error
           puts "~ SessionUnavailableError: #{error.message}"
+          # response.body is closed at this point. WTF?
           error.session.close(error.status, error.message) # It fails here, because the session is closed already.
 
           # TODO: What shall we do about it? We need to call session.close
@@ -102,6 +103,9 @@ module SockJS
           # Noooo, we don't need to call session.close, do we? We just need to send the bloody closing frame, huh?
 
           # Aaaaactually we DO, because we have to reset the bloody @close_timer!
+
+          # This helps with identifying open connections.
+          session.response = nil
         end
       else
         raise ArgumentError.new("Block in response takes either 1 or 2 arguments!")
@@ -126,6 +130,7 @@ module SockJS
 
       if session = self.connection.sessions[match[1]]
         if session.closing?
+          # response.body is closed, why?
           puts "~ get_session: session is closing"
           raise SessionUnavailableError.new(session)
         elsif session.open? || session.newly_created? || session.opening?
