@@ -8,7 +8,7 @@ module SockJS
   class SessionUnavailableError < StandardError
     attr_reader :status, :session
 
-    def initialize(session, status = session.last_frame_status, message = session.last_frame_message)
+    def initialize(session, status = nil, message = nil)
       @session, @status, @message = session, status, message
     end
   end
