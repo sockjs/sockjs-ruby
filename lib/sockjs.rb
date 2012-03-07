@@ -63,8 +63,14 @@ module SockJS
     end
 
     def sessions
+      puts "~ Refreshing sessions"
+
       if @sessions
         @sessions.delete_if do |_, session|
+          if session.closed?
+            puts "~ Removing closed session #{_}"
+          end
+
           session.closed?
         end
       else
