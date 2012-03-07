@@ -40,10 +40,7 @@ SockJS 0.2.1 Protocol Tests:
   - test_response_limit: timed out
 
   JsonPolling:
-  - test_transport: AssertionError: '' != 'callback("a[\\"x\\"]");\r\n'
   - test_close: Crashes with: thin.rb:91:in `write': Body isn't open (status: closed) (RuntimeError)
-  - test_content_types: AssertionError: '' != 'x("a[\\"abc\\",\\"%61bc\\"]");\r\n'
-  - test_invalid_json: AssertionError: 200 != 500
 
   - RawWebsocket: not supported yet (this is /websocket, NOT /*/*/websocket!)
 

@@ -131,7 +131,7 @@ module SockJS
         elsif session.open? || session.newly_created? || session.opening?
           puts "~ get_session: session retrieved successfully"
           return session
-        # FIXME
+        # TODO: Should be alright now, check 6aeeaf1fd69c
         # elsif session.response # THIS is an utter piece of sssshhh ... of course there's a response once we open it!
         #   puts "~ get_session: another connection still open"
         #   raise SessionUnavailableError.new(session, 2010, "Another connection still open")
