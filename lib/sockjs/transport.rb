@@ -85,6 +85,7 @@ module SockJS
 
           if session
             session.response = response
+
             block.call(response, session) # TODO: maybe it's better to do everything through session, it knows response already anyway ... but sometimes we don't need session, for instance in the welcome screen or iframe.
           else
             puts "~ Session can't be retrieved."
@@ -93,9 +94,12 @@ module SockJS
             session.response = nil
           end
         rescue SockJS::SessionUnavailableError => error
+          # We don't need to reset the buffer, it's convenient to keep it
+          # as we're serving the last frame, but we do need a new response.
+          error.session.response = response
+
           puts "~ SessionUnavailableError: #{error.message}"
-          # response.body is closed at this point. WTF?
-          error.session.close(error.status, error.message) # It fails here, because the session is closed already.
+          error.session.close(error.status, error.message) # The response.body.status is :created, as it should be. Closing now, as we're supposed to.
 
           # TODO: What shall we do about it? We need to call session.close
           # so we can send the closing frame with a DIFFERENT message.
@@ -105,7 +109,7 @@ module SockJS
           # Aaaaactually we DO, because we have to reset the bloody @close_timer!
 
           # This helps with identifying open connections.
-          session.response = nil
+          error.session.response = nil
         end
       else
         raise ArgumentError.new("Block in response takes either 1 or 2 arguments!")
