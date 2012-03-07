@@ -30,7 +30,6 @@ SockJS 0.2.1 Protocol Tests:
   XhrPolling:
   - test_transport: AssertionError: '' != 'a["x"]\n'
   - test_invalid_json: SessionUnavailableError
-  - test_content_types: AssertionError: '' != 'a["a","a","a","a","a","a","a","a"]\n'
 
   XhrStreaming:
   - test_transport: timed out
