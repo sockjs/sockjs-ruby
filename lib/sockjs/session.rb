@@ -5,6 +5,7 @@ module SockJS
     include CallbackMixin
 
     attr_accessor :buffer, :response
+    attr_reader :last_frame_status, :last_frame_message
 
     def initialize(transport, callbacks)
       @transport = transport
@@ -115,6 +116,9 @@ module SockJS
     # Set the internal state to closing
     def close_session(status = 3000, message = "Go away")
       @status = :closing
+
+      # We have to cache status and message, so we can resend the closing frame.
+      @last_frame_status, @last_frame_message = status, message
 
       self.buffer.close(status, message)
     end

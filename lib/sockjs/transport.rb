@@ -8,8 +8,8 @@ module SockJS
   class SessionUnavailableError < StandardError
     attr_reader :status, :session
 
-    def initialize(status, message, session)
-      @status, @message, @session = status, message, session
+    def initialize(session, status = session.last_frame_status, message = session.last_frame_message)
+      @session, @status, @message = session, status, message
     end
   end
 
@@ -123,14 +123,14 @@ module SockJS
       if session = self.connection.sessions[match[1]]
         if session.closing?
           puts "~ get_session: session is closing"
-          raise SessionUnavailableError.new(3000, "Session is closing", session)
+          raise SessionUnavailableError.new(session)
         elsif session.open? || session.newly_created? || session.opening?
           puts "~ get_session: session retrieved successfully"
           return session
         # FIXME
         # elsif session.response # THIS is an utter piece of sssshhh ... of course there's a response once we open it!
         #   puts "~ get_session: another connection still open"
-        #   raise SessionUnavailableError.new(2010, "Another connection still open", session)
+        #   raise SessionUnavailableError.new(session, 2010, "Another connection still open")
         else
           raise "We should never get here!\nsession.status: #{session.instance_variable_get(:@status)}, has session response: #{!! session.response}"
         end
