@@ -171,7 +171,7 @@ module SockJS
       puts "~ Setting @disconnect_timer to #{@disconnect_delay}"
       @disconnect_timer = begin
         EM::Timer.new(@disconnect_delay) do
-          puts "~ @disconnect_timer fired"
+          puts "~ #{@disconnect_delay} has passed, firing @disconnect_timer"
           if self.opening? or self.open?
             # OK, so we're here, closing the open response ... but its body is already closed, huh?
             puts "~ @disconnect_timer: closing the connection."
