@@ -87,11 +87,11 @@ module SockJS
             session.response = response
 
             block.call(response, session) # TODO: maybe it's better to do everything through session, it knows response already anyway ... but sometimes we don't need session, for instance in the welcome screen or iframe.
-          else
-            puts "~ Session can't be retrieved."
 
             # This helps with identifying open connections.
             session.response = nil
+          else
+            puts "~ Session can't be retrieved."
           end
         rescue SockJS::SessionUnavailableError => error
           # We don't need to reset the buffer, it's convenient to keep it
