@@ -12,14 +12,14 @@ module SockJS
     def self.array_frame(array)
       validate Array, array
 
-      "#{ARRAY_FRAME}#{array.to_json}"
+      "#{ARRAY_FRAME}#{self.escape(array.to_json)}"
     end
 
     def self.closing_frame(status, message)
       validate Integer, status
       validate String, message
 
-      "#{CLOSING_FRAME}[#{status},#{message.inspect}]"
+      "#{CLOSING_FRAME}[#{status},#{self.escape(message.inspect)}]"
     end
 
 
@@ -45,7 +45,22 @@ module SockJS
     # handling UCS-2 (ie: 16 bit character size), it should be able to deal
     # with Unicode surrogates 0xD800-0xDFFF:
     # http://en.wikipedia.org/wiki/Mapping_of_Unicode_characters#Surrogates
-    def self.escape
+    def self.escape(string)
+      string.dup.tap do |string|
+        time = Time.timer do
+          (255..65536).each do |int|
+            begin
+              character = int.chr(Encoding::UTF_8)
+              char_rexp = Regexp.new(character, "u")
+              escaped   = '\u%04x' % (int)
+              string.gsub!(char_rexp, escaped)
+            rescue RegexpError => error
+            end
+          end
+        end
+
+        puts "It took #{time} to escape the characters."
+      end
     end
 
     def self.validate(desired_class, object)
