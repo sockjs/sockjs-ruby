@@ -93,11 +93,14 @@ module SockJS
       end
 
       def handle_message(request, event)
+        message = event.data
+
         # Unlike other transports, the WS one is supposed to ignore empty messages.
-        unless event.data.empty?
-          puts "<~ WS message received: #{event.data.inspect}"
+        unless message.empty?
+          message = "[#{message}]" unless message.start_with?("[")
+          puts "<~ WS message received: #{message.inspect}"
           session = self.get_session(request.path_info)
-          session.receive_message(request, event.data)
+          session.receive_message(request, message)
 
           # Send encoded messages in an array frame.
           messages = session.process_buffer
