@@ -52,16 +52,25 @@ module SockJS
             begin
               character = int.chr(Encoding::UTF_8)
               char_rexp = Regexp.new(character, "u")
-              escaped   = '\u%04x' % (int)
-              string.gsub!(char_rexp, escaped)
+              string.gsub!(char_rexp) do |match|
+                '\u%04x' % (int)
+              end
             rescue RegexpError => error
             end
           end
         end
 
-        puts "It took #{time} to escape the characters."
+        puts "~ It took #{time} to escape the characters."
       end
     end
+
+    # TODO: optimisations
+    # We can: 1) expand it to a hash of {char => escaped}
+    # 2) Make it a looong regexp and escape only
+    #
+    # string = (255..65536).map { |i| i.chr(Encoding::UTF_8) }.join("|")
+    # regexp = Regexp.new("(#{string})", "u")
+    # input.dup.gsub!(regexp) { |match| }
 
     def self.validate(desired_class, object)
       unless object.is_a?(desired_class)
