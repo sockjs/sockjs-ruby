@@ -15,12 +15,14 @@ module SockJS
           response.set_content_type(:event_stream)
           response.set_session_id(request.session_id)
           response.set_no_cache
+          response.write_head
 
           # Opera needs to hear two more initial new lines.
           response.write("\r\n")
 
           if session.newly_created?
-            response.write(self.format_frame(session.open!))
+            # response.write(self.format_frame(session.open!))
+            response.write("data: o\r\n\r\n")
           end
 
           session.init_timer(response)
@@ -35,8 +37,12 @@ module SockJS
         # ["data: ", escape_selected(payload, "\r\n\x00"), "\r\n\r\n"].join
       end
 
-      def escape_selected(*args)
-        args.join
+      def send(session, data, *args)
+        session.buffer.messages.clear << data[9..-8] # Alright, this is a hardcore hack.
+      end
+
+      def session_finish(frame)
+        frame
       end
     end
   end
