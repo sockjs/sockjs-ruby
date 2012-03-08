@@ -13,25 +13,31 @@ Bugs:
 - WebsocketHybi10.test_close: Empty.
 - WebsocketHybi10.test_broken_json: Empty.
 
-- XhrStreaming.test_transport: timed out
-- XhrStreaming.test_response_limit: timed out
-
 - EventSource.test_transport: timed out
-- EventSource.test_response_limit: timed out
 
 - HtmlFile.test_transport: timed out
-- HtmlFile.test_response_limit: timed out
 
 - Http11.test_streaming: timed out
 
-- HandlingClose.test_abort_xhr_streaming: timed out
 - HandlingClose.test_close_frame: timed out
-- HandlingClose.test_close_request: timed out
-- HandlingClose.test_abort_xhr_polling: AssertionError: 'a[]\n' != 'c[2010,"Another connection still open"]\n'
-
-- Protocol.test_closeSession: AssertionError: 'a[]\n' != 'c[2010,"Another connection still open"]\n'
 
 Not implemented:
-- Protocol.test_simpleSession: Fail if there's more than one open connection to given session. At the moment there's no infrastructure for this in place, we don't keep the status. See transport.coffee of sockjs-node. AssertionError: '' != 'a["a"]\n'
-- RawWebsocket: not supported yet (this is /websocket, NOT /*/*/websocket!)
-- Heartbeat (curl -X POST http://localhost:8081/echo/a/b/xhr -vv should return o frame, the next curl -X POST http://localhost:8081/echo/a/b/xhr -vv should hang and return a message if there's any or heartbeat after the timeout).
+
+  GC by closing request:
+  - XhrStreaming.test_response_limit
+  - EventSource.test_response_limit
+  - HtmlFile.test_response_limit
+
+  Keep info about connections:
+  - Protocol.test_closeSession: AssertionError: 'a[]\n' != 'c[2010,"Another connection still open"]\n'
+  - Protocol.test_simpleSession: Fail if there's more than one open connection to given session. At the moment there's no infrastructure for this in place, we don't keep the status. See transport.coffee of sockjs-node. AssertionError: '' != 'a["a"]\n'
+
+  - HandlingClose.test_abort_xhr_streaming: timed out
+  - HandlingClose.test_close_request: timed out
+  - HandlingClose.test_abort_xhr_polling: AssertionError: 'a[]\n' != 'c[2010,"Another connection still open"]\n'
+
+  RawWebsocket:
+  - Not supported yet (this is /websocket, NOT /*/*/websocket!)
+
+  Heartbeat:
+  - (curl -X POST http://localhost:8081/echo/a/b/xhr -vv should return o frame, the next curl -X POST http://localhost:8081/echo/a/b/xhr -vv should hang and return a message if there's any or heartbeat after the timeout).
