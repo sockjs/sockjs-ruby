@@ -24,8 +24,9 @@ SockJS 0.2.1 Protocol Tests:
   - test_invalidMethod: I do believe this is actually right and there's a problem on the Python side. Please note that it actually fails on "r = POST(base_url + '/0/0/websocket', headers=h)" line, not during verify405(). Check WebsocketHttpErrors.test_invalidMethod.txt for more info. Discuss with @majek.
 
   WebsocketHixie76:
-  - test_reuseSessionId: Exception `SockJS::SessionUnavailableError' at /Users/botanicus/Dropbox/Projects/sockjs/ruby/lib/sockjs/transport.rb:115 - Session is closing (before: Hangs for ages, then ConnectionClosedException; this functionality is not supported yet.)
-  - test_haproxy: '\x00o\xff' != '\xca4\x00\xd8\xa5\x08G\x97,\xd5qZ\xba\xbfC{'
+  - test_broken_json: WebSocketException: Invalid frame type
+  - test_reuseSessionId: Hangs for ages, then ConnectionClosedException; this functionality is not supported yet.
+  - test_haproxy: '\x00o\xff' != '\xca4\x00\xd8\xa5\x08G\x97,\xd5qZ\xba\xbfC{'. Discuss with @majek.
 
   WebsocketHybi10:
   - test_close: Empty.
