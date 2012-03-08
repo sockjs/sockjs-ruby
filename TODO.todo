@@ -1,61 +1,37 @@
-# alias t="./venv/bin/python sockjs-protocol-0.2.1.py $1"
+Majek:
+- WebsocketHixie76.test_haproxy: '\x00o\xff' != '\xca4\x00\xd8\xa5\x08G\x97,\xd5qZ\xba\xbfC{'.
+- WebsocketHttpErrors.test_invalidMethod: I do believe this is actually right and there's a problem on the Python side. Please note that it actually fails on "r = POST(base_url + '/0/0/websocket', headers=h)" line, not during verify405(). Check WebsocketHttpErrors.test_invalidMethod.txt for more info.
 
-SockJS 0.2.1 Protocol Tests:
+Thin IRC:
+- Http11.test_synchronous: [Errno 54] Connection reset by peer. Thin does support Keep-Alive since 0.7.0 https://groups.google.com/group/thin-ruby/browse_thread/thread/4eb696ea517fba2b?pli=1, so what's the problem? This should really work by default, according to the documentation. Only if we'd set --max-persistent-conns to 0, then Keep-Alive would be disabled, but we didn't do that AND it defaults to 512.
+- Http10 (supporting HTTP 1.0 is not a priority, but it should be easy enough to do so if Thin gives us the choice to respond in 1.0 which might be tricky. See https://github.com/rack/rack/blob/master/lib/rack/chunked.rb#L44-53).
 
-  ✓ BaseUrlGreeting
+Bugs:
+- WebsocketHixie76.test_broken_json: WebSocketException: Invalid frame type
+- WebsocketHixie76.test_reuseSessionId: Hangs for ages, then ConnectionClosedException; this functionality is not supported yet.
 
-  ✓ IframePage
+- WebsocketHybi10.test_close: Empty.
+- WebsocketHybi10.test_broken_json: Empty.
 
-  ✓ InfoTest
+- XhrStreaming.test_transport: timed out
+- XhrStreaming.test_response_limit: timed out
 
-  ✓ SessionURLs
+- EventSource.test_transport: timed out
+- EventSource.test_response_limit: timed out
 
-  ✓ XhrPolling
+- HtmlFile.test_transport: timed out
+- HtmlFile.test_response_limit: timed out
 
-  ✓ JsonPolling
+- Http11.test_streaming: timed out
 
-  ✓ JSONEncoding
+- HandlingClose.test_abort_xhr_streaming: timed out
+- HandlingClose.test_close_frame: timed out
+- HandlingClose.test_close_request: timed out
+- HandlingClose.test_abort_xhr_polling: AssertionError: 'a[]\n' != 'c[2010,"Another connection still open"]\n'
 
-  Protocol:
-  - test_simpleSession: Fail if there's more than one open connection to given session. At the moment there's no infrastructure for this in place, we don't keep the status. See transport.coffee of sockjs-node. AssertionError: '' != 'a["a"]\n'
-  - test_closeSession: AssertionError: 'a[]\n' != 'c[2010,"Another connection still open"]\n'
-
-  WebsocketHttpErrors:
-  - test_invalidMethod: I do believe this is actually right and there's a problem on the Python side. Please note that it actually fails on "r = POST(base_url + '/0/0/websocket', headers=h)" line, not during verify405(). Check WebsocketHttpErrors.test_invalidMethod.txt for more info. Discuss with @majek.
-
-  WebsocketHixie76:
-  - test_broken_json: WebSocketException: Invalid frame type
-  - test_reuseSessionId: Hangs for ages, then ConnectionClosedException; this functionality is not supported yet.
-  - test_haproxy: '\x00o\xff' != '\xca4\x00\xd8\xa5\x08G\x97,\xd5qZ\xba\xbfC{'. Discuss with @majek.
-
-  WebsocketHybi10:
-  - test_close: Empty.
-  - test_broken_json: Empty.
-
-  XhrStreaming:
-  - test_transport: timed out
-  - test_response_limit: timed out
-
-  EventSource:
-  - test_transport: timed out
-  - test_response_limit: timed out
-
-  HtmlFile:
-  - test_transport: timed out
-  - test_response_limit: timed out
-
-  HandlingClose:
-  - test_abort_xhr_streaming: timed out
-  - test_close_frame: timed out
-  - test_close_request: timed out
-  - test_abort_xhr_polling: AssertionError: 'a[]\n' != 'c[2010,"Another connection still open"]\n'
-
-  Http11:
-  - test_synchronous: [Errno 54] Connection reset by peer. Thin does support Keep-Alive since 0.7.0 https://groups.google.com/group/thin-ruby/browse_thread/thread/4eb696ea517fba2b?pli=1, so what's the problem? This should really work by default, according to the documentation. Only if we'd set --max-persistent-conns to 0, then Keep-Alive would be disabled, but we didn't do that AND it defaults to 512. Screw it, let's ask on IRC.
-  - test_streaming: timed out
-
+- Protocol.test_closeSession: AssertionError: 'a[]\n' != 'c[2010,"Another connection still open"]\n'
 
 Not implemented:
-- Http10 (supporting HTTP 1.0 is not a priority, but it should be easy enough to do so if Thin gives us the choice to respond in 1.0 which might be tricky. See https://github.com/rack/rack/blob/master/lib/rack/chunked.rb#L44-53).
+- Protocol.test_simpleSession: Fail if there's more than one open connection to given session. At the moment there's no infrastructure for this in place, we don't keep the status. See transport.coffee of sockjs-node. AssertionError: '' != 'a["a"]\n'
 - RawWebsocket: not supported yet (this is /websocket, NOT /*/*/websocket!)
 - Heartbeat (curl -X POST http://localhost:8081/echo/a/b/xhr -vv should return o frame, the next curl -X POST http://localhost:8081/echo/a/b/xhr -vv should hang and return a message if there's any or heartbeat after the timeout).
