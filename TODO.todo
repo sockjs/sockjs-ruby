@@ -43,8 +43,7 @@ SockJS 0.2.1 Protocol Tests:
 
   - RawWebsocket: not supported yet (this is /websocket, NOT /*/*/websocket!)
 
-  JSONEncoding:
-  - test_xhr_server_decodes: timed out
+  ✓ JSONEncoding
 
   HandlingClose:
   - test_abort_xhr_streaming: timed out

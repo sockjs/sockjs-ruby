@@ -20,7 +20,10 @@ module SockJS
             end
 
             response.set_content_type(:plain)
-            response.write(format_frame(body))
+
+            unless session.closing?
+              response.write(format_frame(body))
+            end
           else
             response.set_content_type(:javascript)
             response.set_access_control(request.origin)

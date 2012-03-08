@@ -90,7 +90,7 @@ module SockJS
 
       def write(chunk)
         unless @status == :open
-          raise "Body isn't open (status: #{@status})"
+          raise "Body isn't open (status: #{@status}, trying to write #{chunk.inspect})"
         end
 
         unless chunk.respond_to?(:bytesize)
