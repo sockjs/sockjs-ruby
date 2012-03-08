@@ -118,12 +118,13 @@ module SockJS
           response.set_session_id(request.session_id)
           response.write_head
 
+          # IE requires 2KB prefix:
+          # http://blogs.msdn.com/b/ieinternals/archive/2010/04/06/comet-streaming-in-internet-explorer-with-xmlhttprequest-and-xdomainrequest.aspx
+          preamble = "h" * 2048 + "\n"
+          response.write(preamble)
+
           if session.newly_created?
-            # IE requires 2KB prefix:
-            # http://blogs.msdn.com/b/ieinternals/archive/2010/04/06/comet-streaming-in-internet-explorer-with-xmlhttprequest-and-xdomainrequest.aspx
-            preamble = "h" * 2048 + "\n"
-            response.write(preamble)
-            response.write(self.format_frame(session.open!)) # This finish the fucking response
+            response.write(self.format_frame(session.open!))
           end
 
           session.init_timer(response)
