@@ -13,10 +13,6 @@ Bugs:
 - WebsocketHybi10.test_close: Empty.
 - WebsocketHybi10.test_broken_json: Empty.
 
-- EventSource.test_transport: timed out
-
-- HtmlFile.test_transport: timed out
-
 - Http11.test_streaming: timed out
 
 - HandlingClose.test_close_frame: timed out

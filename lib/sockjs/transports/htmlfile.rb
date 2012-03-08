@@ -25,11 +25,16 @@ module SockJS
           html = data.gsub("{{ callback }}", request.callback)
           body = html + (" " * (1024 - html.bytesize)) + "\r\n\r\n"
 
-          response(request, 200) do |response|
+          response(request, 200, session: :create) do |response, session|
             response.set_content_type(:html)
             response.set_no_cache
             response.set_session_id(request.session_id)
+
             response.write(body)
+
+            if session.newly_created?
+              response.write(self.format_frame("o"))
+            end
 
             session.init_timer(response)
           end
