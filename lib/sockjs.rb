@@ -4,6 +4,10 @@ require "eventmachine"
 require "forwardable"
 require "sockjs/version"
 
+def Time.timer(&block)
+  - (Time.now.tap { yield } - Time.now)
+end
+
 module SockJS
   module CallbackMixin
     attr_accessor :status
