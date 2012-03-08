@@ -89,6 +89,8 @@ module SockJS
             # This helps with identifying open connections.
             session.response = nil
           else
+            block.call(response, nil)
+
             puts "~ Session can't be retrieved."
           end
         rescue SockJS::SessionUnavailableError => error
