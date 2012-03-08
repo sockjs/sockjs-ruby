@@ -164,19 +164,40 @@ module SockJS
     def init_timer(response, interval = 0.1)
       self.set_timer
 
+      # Run the app at least once.
+      frame_before = @buffer.to_frame
+      data = self.run_user_app(response)
+
+      if data && data[0] == "c" # TODO: Do this by raising an exception or something, this is a mess :o
+        response.finish
+      else
+        init_periodic_timer(response, interval)
+      end
+    end
+
+    def run_user_app(response)
+      data = self.process_buffer(false)
+      if data != "a[]"
+        response_data = @transport.format_frame(data)
+        puts "~ Responding with #{response_data.inspect}"
+        response.write(response_data)
+        return data
+      else
+        return nil
+      end
+    end
+
+    def init_periodic_timer(response, interval)
       @periodic_timer = EM::PeriodicTimer.new(interval) do
         @periodic_timer.cancel if @disconnect_timer_canceled
         puts "~ Tick"
+
         unless @received_messages.empty?
-          data = self.process_buffer(false)
-          if data != "a[]"
-            response_data = @transport.format_frame(data)
-            puts "~ Responding with #{response_data.inspect}"
-            response.write(response_data)
-            if data[0] == "c" # TODO: Do this by raising an exception or something, this is a mess :o
-              @periodic_timer.cancel
-              response.finish
-            end
+          data = run_user_app(response)
+
+          if data && data[0] == "c" # TODO: Do this by raising an exception or something, this is a mess :o
+            @periodic_timer.cancel
+            response.finish
           end
         end
       end
