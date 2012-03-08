@@ -110,7 +110,7 @@ module SockJS
 
       # Handler.
       def handle(request)
-        response(request, 200) do |response, session|
+        response(request, 200, session: :create) do |response, session|
           response.set_content_type(:javascript)
           response.set_access_control(request.origin)
           response.set_session_id(request.session_id)
@@ -119,7 +119,7 @@ module SockJS
           # IE requires 2KB prefix:
           # http://blogs.msdn.com/b/ieinternals/archive/2010/04/06/comet-streaming-in-internet-explorer-with-xmlhttprequest-and-xdomainrequest.aspx
           preamble = "h" * 2048 + "\n"
-          self.try_timer_if_valid(request, response, preamble)
+          session.init_timer
         end
       end
     end

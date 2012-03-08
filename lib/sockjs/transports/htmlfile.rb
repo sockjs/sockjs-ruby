@@ -31,7 +31,7 @@ module SockJS
             response.set_session_id(request.session_id)
             response.write(body)
 
-            self.try_timer_if_valid(request, response)
+            session.init_timer
           end
         else
           respond(request, 500) do |response|

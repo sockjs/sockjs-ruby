@@ -67,8 +67,8 @@ module SockJS
     end
     protected :process_messages
 
-    def process_buffer
-      self.reset_timer
+    def process_buffer(reset_timer = true)
+      self.reset_timer if reset_timer
 
       create_response do
         self.check_status
@@ -161,6 +161,25 @@ module SockJS
       @status == :closed
     end
 
+    def init_timer(interval = 0.1)
+      self.set_timer
+
+      @periodic_timer = EM::PeriodicTimer.new(interval) do
+        @periodic_timer.cancel if @disconnect_timer_canceled
+        puts "~ Tick"
+        data = self.process_buffer(false)
+        if data != "a[]"
+          response_data = format_frame(data.chomp!)
+          puts "~ Responding with #{response_data.inspect}"
+          self.response.write(response_data)
+          if data[0] == "c" # TODO: Do this by raising an exception or something, this is a mess :o
+            @periodic_timer.cancel
+            self.response.finish
+          end
+        end
+      end
+    end
+
     protected
     def parse_json(data)
       if data.empty?
@@ -177,6 +196,8 @@ module SockJS
       @disconnect_timer = begin
         EM::Timer.new(@disconnect_delay) do
           puts "~ #{@disconnect_delay} has passed, firing @disconnect_timer"
+          @disconnect_timer_canceled = true
+
           if self.opening? or self.open?
             # OK, so we're here, closing the open response ... but its body is already closed, huh?
             puts "~ @disconnect_timer: closing the connection."
@@ -191,7 +212,7 @@ module SockJS
 
     def reset_timer
       puts "~ Cancelling @disconnect_timer"
-      @disconnect_timer.cancel
+      @disconnect_timer.cancel if @disconnect_timer
 
       self.set_timer
     end
@@ -206,6 +227,7 @@ module SockJS
 
       @close_timer = EM::Timer.new(@disconnect_delay) do
         puts "~ @close_timer fired"
+        @periodic_timer.cancel if @periodic_timer
         self.mark_to_be_garbage_collected
       end
     end

@@ -129,7 +129,7 @@ module SockJS
     #   b) It's open:
     #      i) There IS NOT any consumer -> OK. AND CONTINUE
     #      i) There IS a consumer -> Send c[2010,"Another con still open"] AND END
-    def get_session(path_info, *) # TODO: process optional arguments.
+    def get_session(path_info)
       match = path_info.match(self.class.prefix)
 
       if session = self.connection.sessions[match[1]]
@@ -159,25 +159,6 @@ module SockJS
       match = path_info.match(self.class.prefix)
 
       return self.connection.create_session(match[1], self)
-    end
-
-    def try_timer_if_valid(request, response, preamble = nil)
-      session = self.get_session(request.path_info, response, preamble)
-      self.init_timer(response, session, 0.1) if session
-    end
-
-    def init_timer(response, session, interval)
-      timer = EM::PeriodicTimer.new(interval) do
-        if data = session.process_buffer
-          response_data = format_frame(data.chomp!)
-          puts "~ Responding with #{response_data.inspect}"
-          response.write(response_data) unless data == "a[]\n" # FIXME
-          if data[0] == "c" # closing frame. TODO: Do this by raising an exception or something, this is a mess :o Actually ... do we need here some 5s timeout as well?
-            timer.cancel
-            response.finish
-          end
-        end
-      end
     end
   end
 end
