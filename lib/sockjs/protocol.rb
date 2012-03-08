@@ -9,6 +9,8 @@ module SockJS
     ARRAY_FRAME     ||= "a"
     HEARTBEAT_FRAME ||= "h"
 
+    CHARS_TO_BE_ESCAPED ||= /[\x00-\x1f\u200c-\u200f\u2028-\u202f\u2060-\u206f\ufff0-\uffff]/
+
     def self.array_frame(array)
       validate Array, array
 
@@ -46,21 +48,8 @@ module SockJS
     # with Unicode surrogates 0xD800-0xDFFF:
     # http://en.wikipedia.org/wiki/Mapping_of_Unicode_characters#Surrogates
     def self.escape(string)
-      string.dup.tap do |string|
-        time = Time.timer do
-          (255..65536).each do |int|
-            begin
-              character = int.chr(Encoding::UTF_8)
-              char_rexp = Regexp.new(character, "u")
-              string.gsub!(char_rexp) do |match|
-                '\u%04x' % (int)
-              end
-            rescue RegexpError => error
-            end
-          end
-        end
-
-        puts "~ It took #{time} to escape the characters."
+      string.gsub(CHARS_TO_BE_ESCAPED) do |match|
+        '\u%04x' % (match.ord)
       end
     end
 
