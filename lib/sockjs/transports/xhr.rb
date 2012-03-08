@@ -105,7 +105,9 @@ module SockJS
       end
 
       def send(session, data, *args)
-        session.buffer << self.format_frame(data, *args)
+        # session.buffer << self.format_frame(data, *args) # It's already formated as a frame.
+        # session.response.write(data) # No fucking session.response for fuck's sake.
+        session.buffer.messages.clear << data[3..-4] # Alright, this is a hardcore hack.
       end
 
       # Handler.
@@ -116,11 +118,20 @@ module SockJS
           response.set_session_id(request.session_id)
           response.write_head
 
-          # IE requires 2KB prefix:
-          # http://blogs.msdn.com/b/ieinternals/archive/2010/04/06/comet-streaming-in-internet-explorer-with-xmlhttprequest-and-xdomainrequest.aspx
-          preamble = "h" * 2048 + "\n"
-          session.init_timer
+          if session.newly_created?
+            # IE requires 2KB prefix:
+            # http://blogs.msdn.com/b/ieinternals/archive/2010/04/06/comet-streaming-in-internet-explorer-with-xmlhttprequest-and-xdomainrequest.aspx
+            preamble = "h" * 2048 + "\n"
+            response.write(preamble)
+            response.write(self.format_frame(session.open!)) # This finish the fucking response
+          end
+
+          session.init_timer(response)
         end
+      end
+
+      def session_finish(frame)
+        frame
       end
     end
 

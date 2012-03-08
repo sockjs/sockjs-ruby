@@ -161,20 +161,22 @@ module SockJS
       @status == :closed
     end
 
-    def init_timer(interval = 0.1)
+    def init_timer(response, interval = 0.1)
       self.set_timer
 
       @periodic_timer = EM::PeriodicTimer.new(interval) do
         @periodic_timer.cancel if @disconnect_timer_canceled
         puts "~ Tick"
-        data = self.process_buffer(false)
-        if data != "a[]"
-          response_data = format_frame(data.chomp!)
-          puts "~ Responding with #{response_data.inspect}"
-          self.response.write(response_data)
-          if data[0] == "c" # TODO: Do this by raising an exception or something, this is a mess :o
-            @periodic_timer.cancel
-            self.response.finish
+        unless @received_messages.empty?
+          data = self.process_buffer(false)
+          if data != "a[]"
+            response_data = @transport.format_frame(data)
+            puts "~ Responding with #{response_data.inspect}"
+            response.write(response_data)
+            if data[0] == "c" # TODO: Do this by raising an exception or something, this is a mess :o
+              @periodic_timer.cancel
+              response.finish
+            end
           end
         end
       end

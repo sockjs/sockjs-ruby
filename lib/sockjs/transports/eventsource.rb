@@ -19,7 +19,7 @@ module SockJS
           # Opera needs to hear two more initial new lines.
           response.write("\r\n")
 
-          session.init_timer
+          session.init_timer(response)
         end
       end
 
