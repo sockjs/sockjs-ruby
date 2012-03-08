@@ -93,15 +93,18 @@ module SockJS
       end
 
       def handle_message(request, event)
-        puts "<~ WS message received: #{event.data.inspect}"
-        session = self.get_session(request.path_info)
-        session.receive_message(request, event.data)
+        # Unlike other transports, the WS one is supposed to ignore empty messages.
+        unless event.data.empty?
+          puts "<~ WS message received: #{event.data.inspect}"
+          session = self.get_session(request.path_info)
+          session.receive_message(request, event.data)
 
-        # Send encoded messages in an array frame.
-        messages = session.process_buffer
-        if messages.start_with?("a[") # a[] frames are sent immediatelly! FIXME!
-          puts "~ Messages to be sent: #{messages.inspect}"
-          @ws.send(messages)
+          # Send encoded messages in an array frame.
+          messages = session.process_buffer
+          if messages.start_with?("a[") # a[] frames are sent immediatelly! FIXME!
+            puts "~ Messages to be sent: #{messages.inspect}"
+            @ws.send(messages)
+          end
         end
       rescue SockJS::SessionUnavailableError
         puts "~ Session is already closing"
