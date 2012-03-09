@@ -21,8 +21,7 @@ module SockJS
           response.write("\r\n")
 
           if session.newly_created?
-            # response.write(self.format_frame(session.open!))
-            response.write("data: o\r\n\r\n")
+            session.open!
           end
 
           session.init_timer(response)
@@ -37,12 +36,12 @@ module SockJS
         # ["data: ", escape_selected(payload, "\r\n\x00"), "\r\n\r\n"].join
       end
 
-      def send(session, data, *args)
-        session.buffer.messages.clear << data[9..-8] # Alright, this is a hardcore hack.
-      end
+      # def send_data(session, data, *args)
+      #   session.buffer.messages.clear << data[9..-8] # Alright, this is a hardcore hack.
+      # end
 
-      def session_finish(frame)
-        frame
+      def send_data(response, frame)
+        response.write(self.format_frame(frame)); nil
       end
     end
   end

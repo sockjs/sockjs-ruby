@@ -33,7 +33,7 @@ module SockJS
             response.write(body)
 
             if session.newly_created?
-              response.write(self.format_frame("o"))
+              session.open!
             end
 
             session.init_timer(response)

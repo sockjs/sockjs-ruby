@@ -14,8 +14,12 @@ module SockJS
       @received_messages = Array.new
     end
 
-    def send_raw_data(frame)
-      @transport.send(self, frame)
+    def send_data(frame)
+      if @response.nil?
+        raise TypeError.new("@response must not be nil!")
+      end
+
+      @transport.send_data(@response, frame)
     end
 
     # Pluggable, redefine in each transport ...
@@ -23,18 +27,18 @@ module SockJS
     def send(payload, *args)
       frame = "a[#{payload.to_json}]" # FIXME: temporary solution, fix the API.
       data  = @transport.format_frame(frame, *args)
-      self.send_raw_data(data)
+      self.send_data(data)
     end
 
     def finish
       # This is pretty hacky, but it gives us the choice
       # to "redefine" this method from transport classes.
-      if @transport.respond_to?(:session_finish)
-        @transport.session_finish(@buffer.to_frame)
+      if @transport.respond_to?(:send_data)
+        @transport.send_data(@response, @buffer.to_frame)
       else
         # TODO: this check should be done earlier:
         # initialize(transport, response, callbacks)
-        # -> response can be nil only if transport.respond_to?(:session_finish)
+        # -> response can be nil only if transport.respond_to?(:send_data)
         if @response.nil?
           raise "You have to assign something to session.response!"
         end
@@ -165,7 +169,6 @@ module SockJS
       self.set_timer
 
       # Run the app at least once.
-      frame_before = @buffer.to_frame
       data = self.run_user_app(response)
 
       if data && data[0] == "c" # TODO: Do this by raising an exception or something, this is a mess :o

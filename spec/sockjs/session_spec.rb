@@ -22,7 +22,7 @@ describe Session do
     connection = SockJS::Connection.new {}
     transport  = SockJS::Transports::XHRPost.new(connection, Hash.new)
 
-    def transport.session_finish
+    def transport.send
     end
 
     described_class.new(transport, open: Array.new)
@@ -51,11 +51,11 @@ describe Session do
   end
 
   describe "#finish" do
-    describe "transport responds to #session_finish" do
-      it "should call transport.session_finish"
+    describe "transport responds to #send" do
+      it "should call transport.send"
     end
 
-    describe "transport doesn't respond to #session_finish" do
+    describe "transport doesn't respond to #send" do
       it "should raise an error if there's no response assigned"
       it "should finish the response with the current buffer content"
     end
@@ -156,7 +156,7 @@ describe Session do
     it "should call the session.finish method" do
       @subject = subject.set_status_for_tests(:open)
       transport = @subject.instance_variable_get(:@transport)
-      transport.should_receive(:session_finish)
+      transport.should_receive(:send)
 
       @subject.close
     end
@@ -201,7 +201,7 @@ describe Session do
     it "should call the session.finish method" do
       @subject = subject.set_status_for_tests(:open)
       transport = @subject.instance_variable_get(:@transport)
-      transport.should_receive(:session_finish)
+      transport.should_receive(:send)
 
       @subject.close
     end

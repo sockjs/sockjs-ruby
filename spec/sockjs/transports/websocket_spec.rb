@@ -107,9 +107,9 @@ describe SockJS::Transports::WebSocket do
     end
   end
 
-  describe "#session_finish" do
+  describe "#send" do
     it "should be defined, but it should do nothing" do
-      transport.should respond_to(:session_finish)
+      transport.should respond_to(:send)
     end
   end
 end

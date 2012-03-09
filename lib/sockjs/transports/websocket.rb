@@ -7,7 +7,7 @@ require "sockjs/transport"
 module SockJS
   module Transports
     module WSDebuggingMixin
-      def send(*args)
+      def send_data(*args)
         if args.length == 1
           data = args.first
         else
@@ -41,7 +41,7 @@ module SockJS
         SockJS::Session
       end
 
-      def send(_, frame)
+      def send_data(_, frame)
         @ws.send(frame)
       end
 
@@ -141,7 +141,7 @@ module SockJS
       end
 
       # TODO: Rename to request_finish or something like that.
-      def session_finish(frame)
+      def send_data(response, frame)
         @ws.send(frame)
       end
     end

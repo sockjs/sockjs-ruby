@@ -104,11 +104,11 @@ module SockJS
         SockJS::Session
       end
 
-      def send(session, data, *args)
-        # session.buffer << self.format_frame(data, *args) # It's already formated as a frame.
-        # session.response.write(data) # No fucking session.response for fuck's sake.
-        session.buffer.messages.clear << data[3..-4] # Alright, this is a hardcore hack.
-      end
+      # def send_data(session, data, *args)
+      #   # session.buffer << self.format_frame(data, *args) # It's already formated as a frame.
+      #   # session.response.write(data) # No fucking session.response for fuck's sake.
+      #   session.buffer.messages.clear << data[3..-4] # Alright, this is a hardcore hack.
+      # end
 
       # Handler.
       def handle(request)
@@ -124,15 +124,16 @@ module SockJS
           response.write(preamble)
 
           if session.newly_created?
-            response.write(self.format_frame(session.open!))
+            session.open!
           end
 
           session.init_timer(response)
         end
       end
 
-      def session_finish(frame)
-        frame
+      def send_data(response, frame)
+        p [:send_data, frame]
+        response.write(self.format_frame(frame)); nil
       end
     end
 
