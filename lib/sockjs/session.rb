@@ -67,6 +67,9 @@ module SockJS
     end
     protected :process_messages
 
+    def after_app_run
+    end
+
     def process_buffer(reset_timer = true)
       self.reset_timer if reset_timer
 
@@ -81,6 +84,8 @@ module SockJS
         @received_messages.each do |message|
           self.execute_callback(:buffer, self, message)
         end
+
+        self.after_app_run
       end
     end
 
@@ -278,6 +283,8 @@ module SockJS
 
       @response.finish
     end
+
+    alias_method :after_app_run, :finish
 
     def with_response_and_transport(response, transport, &block)
       super(response, transport, &block)
