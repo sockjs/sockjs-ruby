@@ -132,7 +132,6 @@ module SockJS
       end
 
       def send_data(response, frame)
-        p [:send_data, frame]
         response.write(self.format_frame(frame)); nil
       end
     end
