@@ -97,10 +97,14 @@ module SockJS
         rescue SockJS::SessionUnavailableError => error
           # We don't need to reset the buffer, it's convenient to keep it
           # as we're serving the last frame, but we do need a new response.
-          error.session.response = response
 
-          puts "~ SessionUnavailableError: #{error.message}"
-          error.session.close(error.status, error.message) # The response.body.status is :created, as it should be. Closing now, as we're supposed to.
+
+          error.session.with_response_and_transport(response, self) do
+            error.session.close(nil, nil) # Use the last closing message which is cached in the buffer.
+          end
+
+
+
 
           # TODO: What shall we do about it? We need to call session.close
           # so we can send the closing frame with a DIFFERENT message.
@@ -110,7 +114,6 @@ module SockJS
           # Aaaaactually we DO, because we have to reset the bloody @close_timer!
 
           # This helps with identifying open connections.
-          error.session.response = nil
         end
       else
         raise ArgumentError.new("Block in response takes either 1 or 2 arguments!")

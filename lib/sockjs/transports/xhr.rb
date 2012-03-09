@@ -13,17 +13,8 @@ module SockJS
       def handle(request)
         respond(request, 200, session: :create) do |response, session|
           unless session.newly_created?
-            body = session.process_buffer
-
-            unless body.respond_to?(:bytesize)
-              raise TypeError, "Block has to return a string or a string-like object responding to #bytesize, but instead an object of #{body.class} class has been returned (object: #{body.inspect})."
-            end
-
             response.set_content_type(:plain)
-
-            unless session.closing?
-              response.write(format_frame(body))
-            end
+            session.process_buffer
           else
             response.set_content_type(:javascript)
             response.set_access_control(request.origin)

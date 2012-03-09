@@ -20,8 +20,11 @@ module SockJS
 
       data = @transport.format_frame(frame)
       @response.write(data)
-      self.buffer.clear
-      return nil
+
+      # So we can resend closing frame.
+      unless self.closing?
+        self.buffer.clear
+      end
     end
 
     def send(*messages)
@@ -88,7 +91,7 @@ module SockJS
 
       if @buffer.contains_data?
         @buffer.to_frame.tap do
-          @buffer.clear
+          @buffer.clear unless self.closing?
         end
       else
         nil
@@ -120,12 +123,7 @@ module SockJS
     def close_session(status = 3000, message = "Go away")
       @status = :closing
 
-      if self.buffer.closing?
-        # This would be if we're resending closing frame on a closing session.
-        # For such sessions we don't reset the buffer.
-      else
-        self.buffer.close(status, message)
-      end
+      self.buffer.close(status, message)
     end
 
     def close(status = 3000, message = "Go away!")
@@ -134,7 +132,9 @@ module SockJS
         raise "You can't change from #{@status} to closing!"
       end
 
-      self.close_session(status, message)
+      unless self.closing?
+        self.close_session(status, message)
+      end
 
       if @periodic_timer
         @periodic_timer.cancel
