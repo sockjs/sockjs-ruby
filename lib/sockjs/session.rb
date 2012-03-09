@@ -22,12 +22,10 @@ module SockJS
       @transport.send_data(@response, frame)
     end
 
-    # Pluggable, redefine in each transport ...
-    # TODO: Do we still need two session classes?
-    def send(payload, *args)
-      frame = "a[#{payload.to_json}]" # FIXME: temporary solution, fix the API.
-      data  = @transport.format_frame(frame, *args)
-      self.send_data(data)
+    def send(*messages)
+      self.buffer.push(*messages)
+      self.send_data(self.buffer.to_frame)
+      self.buffer.messages.clear
     end
 
     def finish
