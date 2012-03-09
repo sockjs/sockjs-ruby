@@ -34,8 +34,10 @@ module SockJS
 
     # To get the data encoded as a SockJS frame.
     def to_frame
-      if self.opening? or self.closing?
+      if @messages.empty? && (self.opening? or self.closing?)
         @frame
+      elsif (self.opening? or self.closing?) && ! @messages.empty?
+        raise "You can't both change the state and try to send messages! Basic transports could do only one of them!"
       else
         Protocol.array_frame(@messages)
       end
