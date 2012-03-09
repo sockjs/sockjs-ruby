@@ -140,7 +140,6 @@ module SockJS
         payload
       end
 
-      # TODO: Rename to request_finish or something like that.
       def send_data(response, frame)
         @ws.send(frame)
       end

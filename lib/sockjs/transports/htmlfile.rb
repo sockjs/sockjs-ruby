@@ -10,6 +10,10 @@ module SockJS
       self.prefix  = /[^.]+\/([^.]+)\/htmlfile$/
       self.method  = "GET"
 
+      def session_class
+        SockJS::Session
+      end
+
       # Handler.
       def handle(request)
         if request.callback
@@ -36,7 +40,7 @@ module SockJS
               session.open!
             end
 
-            session.init_timer(response)
+            session.wait(response)
           end
         else
           respond(request, 500) do |response|
@@ -47,7 +51,7 @@ module SockJS
       end
 
       def format_frame(payload)
-        raise TypeError.new if payload.nil?
+        raise TypeError.new("Payload must not be nil!") if payload.nil?
 
         "<script>\np(#{payload.to_json});\n</script>\r\n"
       end

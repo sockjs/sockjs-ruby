@@ -58,10 +58,8 @@ module SockJS
 
       # Handler.
       def handle(request)
-        respond(request, 204) do |response, session|
+        respond(request, 204, data: request.data.read) do |response, session|
           if session
-            session.receive_message(request, request.data.read)
-
             # When we use HTTP 204 with Content-Type, Rack::Lint
             # will be bitching about it. That's understandable,
             # as Lint is suppose to make sure that given response
@@ -104,12 +102,6 @@ module SockJS
         SockJS::Session
       end
 
-      # def send_data(session, data, *args)
-      #   # session.buffer << self.format_frame(data, *args) # It's already formated as a frame.
-      #   # session.response.write(data) # No fucking session.response for fuck's sake.
-      #   session.buffer.messages.clear << data[3..-4] # Alright, this is a hardcore hack.
-      # end
-
       # Handler.
       def handle(request)
         response(request, 200, session: :create) do |response, session|
@@ -127,12 +119,8 @@ module SockJS
             session.open!
           end
 
-          session.init_timer(response)
+          session.wait(response)
         end
-      end
-
-      def send_data(response, frame)
-        response.write(self.format_frame(frame)); nil
       end
     end
 

@@ -9,6 +9,10 @@ module SockJS
       self.prefix  = /[^.]+\/([^.]+)\/eventsource$/
       self.method  = "GET"
 
+      def session_class
+        SockJS::Session
+      end
+
       # Handler.
       def handle(request)
         response(request, 200, session: :create) do |response, session|
@@ -24,24 +28,14 @@ module SockJS
             session.open!
           end
 
-          session.init_timer(response)
+          session.wait(response)
         end
       end
 
       def format_frame(payload)
-        raise TypeError.new if payload.nil?
+        raise TypeError.new("Payload must not be nil!") if payload.nil?
 
-        # Beware of leading whitespace
         ["data: ", payload, "\r\n\r\n"].join
-        # ["data: ", escape_selected(payload, "\r\n\x00"), "\r\n\r\n"].join
-      end
-
-      # def send_data(session, data, *args)
-      #   session.buffer.messages.clear << data[9..-8] # Alright, this is a hardcore hack.
-      # end
-
-      def send_data(response, frame)
-        response.write(self.format_frame(frame)); nil
       end
     end
   end

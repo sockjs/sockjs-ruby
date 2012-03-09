@@ -95,6 +95,16 @@ module SockJS
       end
     end
 
+    def clear
+      @messages.clear
+      @frame = nil
+      self
+    end
+
+    def contains_data?
+      (! @messages.empty?) || @frame
+    end
+
 
     # === Status reporting methods. === #
 

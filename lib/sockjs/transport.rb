@@ -60,7 +60,7 @@ module SockJS
     end
 
     def format_frame(payload)
-      raise TypeError.new if payload.nil?
+      raise TypeError.new("Payload must not be nil!") if payload.nil?
 
       "#{payload}\n"
     end
@@ -82,16 +82,17 @@ module SockJS
           end
 
           if session
-            session.response = response
-
-            block.call(response, session) # TODO: maybe it's better to do everything through session, it knows response already anyway ... but sometimes we don't need session, for instance in the welcome screen or iframe.
-
-            # This helps with identifying open connections.
-            session.response = nil
+            if options[:data]
+              session.receive_message(request, options[:data])
+            else
+              session.with_response_and_transport(response, self) do
+                block.call(response, session)
+              end
+            end
           else
-            block.call(response, nil)
-
             puts "~ Session can't be retrieved."
+
+            block.call(response, nil)
           end
         rescue SockJS::SessionUnavailableError => error
           # We don't need to reset the buffer, it's convenient to keep it

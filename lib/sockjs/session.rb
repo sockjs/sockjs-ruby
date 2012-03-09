@@ -6,8 +6,7 @@ module SockJS
 
     attr_accessor :buffer, :response
 
-    def initialize(transport, callbacks)
-      @transport = transport
+    def initialize(callbacks)
       @callbacks = callbacks
       @disconnect_delay = 5 # TODO: make this configurable.
       @status = :created
@@ -19,34 +18,30 @@ module SockJS
         raise TypeError.new("@response must not be nil!")
       end
 
-      @transport.send_data(@response, frame)
+      data = @transport.format_frame(frame)
+      @response.write(data)
+      self.buffer.clear
+      return nil
     end
 
     def send(*messages)
       self.buffer.push(*messages)
       self.send_data(self.buffer.to_frame)
-      self.buffer.messages.clear
     end
 
     def finish
-      # This is pretty hacky, but it gives us the choice
-      # to "redefine" this method from transport classes.
-      if @transport.respond_to?(:send_data)
-        @transport.send_data(@response, @buffer.to_frame)
-      else
-        # TODO: this check should be done earlier:
-        # initialize(transport, response, callbacks)
-        # -> response can be nil only if transport.respond_to?(:send_data)
-        if @response.nil?
-          raise "You have to assign something to session.response!"
-        end
+      self.send_data(@buffer.to_frame)
+    end
 
-        if @response.body.closed?
-          puts "~ Response closed already #{caller.inspect}"
-        else
-          @response.finish(@buffer.to_frame)
-        end
-      end
+    def with_response_and_transport(response, transport, &block)
+      puts "~ with_response: assigning response and #{transport.class} ..."
+      @response, @transport = response, transport
+      block.call
+    end
+
+    def close_response
+      @response = nil; @transport = nil
+      puts "~ close_response: clearing response and transport."
     end
 
     # All incoming data is treated as incoming messages,
@@ -90,7 +85,14 @@ module SockJS
       block.call
 
       @received_messages.clear
-      @buffer.to_frame
+
+      if @buffer.contains_data?
+        @buffer.to_frame.tap do
+          @buffer.clear
+        end
+      else
+        nil
+      end
     rescue SockJS::CloseError => error
       Protocol.closing_frame(error.status, error.message)
     end
@@ -134,13 +136,26 @@ module SockJS
 
       self.close_session(status, message)
 
+      if @periodic_timer
+        @periodic_timer.cancel
+        @periodic_timer = nil
+      end
+
       self.finish
+
+      @response.write("") unless @response.body.closed? # Http11.test_streaming
+
+      self.close_response
 
       self.reset_close_timer
 
       # Hint: session.buffer = Buffer.new(:open) or so
     rescue SockJS::StateMachineError => error
       raise error
+    end
+
+    def waiting? # TODO: What about WS?
+      !! @periodic_timer
     end
 
     def newly_created?
@@ -163,29 +178,24 @@ module SockJS
       @status == :closed
     end
 
-    def init_timer(response, interval = 0.1)
+    def wait(response, interval = 0.1)
       self.set_timer
+
+      if self.waiting?
+        self.close(2010, "Another connection still open")
+      end
 
       # Run the app at least once.
       data = self.run_user_app(response)
 
-      if data && data[0] == "c" # TODO: Do this by raising an exception or something, this is a mess :o
-        response.finish
-      else
+      unless @buffer.closing?
         init_periodic_timer(response, interval)
       end
     end
 
     def run_user_app(response)
-      data = self.process_buffer(false)
-      if data != "a[]"
-        response_data = @transport.format_frame(data)
-        puts "~ Responding with #{response_data.inspect}"
-        response.write(response_data)
-        return data
-      else
-        return nil
-      end
+      frame = self.process_buffer(false)
+      self.send_data(frame) if frame
     end
 
     def init_periodic_timer(response, interval)
@@ -194,12 +204,7 @@ module SockJS
         puts "~ Tick"
 
         unless @received_messages.empty?
-          data = run_user_app(response)
-
-          if data && data[0] == "c" # TODO: Do this by raising an exception or something, this is a mess :o
-            @periodic_timer.cancel
-            response.finish
-          end
+          run_user_app(response)
         end
       end
     end
@@ -268,9 +273,15 @@ module SockJS
       self.buffer.push(*messages)
     end
 
-    def finish
-      data = @transport.format_frame(@buffer.to_frame)
-      @response.finish(data)
+    def send_data(frame)
+      super(frame)
+
+      @response.finish
+    end
+
+    def with_response_and_transport(response, transport, &block)
+      super(response, transport, &block)
+      self.close_response
     end
   end
 end
