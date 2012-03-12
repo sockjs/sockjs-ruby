@@ -1,5 +1,4 @@
 Majek:
-- WebsocketHixie76.test_haproxy: '\x00o\xff' != '\xca4\x00\xd8\xa5\x08G\x97,\xd5qZ\xba\xbfC{'.
 - WebsocketHttpErrors.test_invalidMethod: I do believe this is actually right and there's a problem on the Python side. Please note that it actually fails on "r = POST(base_url + '/0/0/websocket', headers=h)" line, not during verify405(). Check WebsocketHttpErrors.test_invalidMethod.txt for more info.
 - Protocol.test_simpleSession: AssertionError: 'a[]\n' != 'c[2010,"Another connection still open"]\n', but we did close the first connection.
 

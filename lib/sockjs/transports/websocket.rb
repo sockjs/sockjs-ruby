@@ -61,7 +61,9 @@ module SockJS
 
         @ws.extend(WSDebuggingMixin)
 
-        self.handle_open(request)
+        @ws.onopen do |event|
+          self.handle_open(request)
+        end
 
         @ws.onmessage = lambda do |event|
           debug "<~ WS data received: #{event.data.inspect}"
