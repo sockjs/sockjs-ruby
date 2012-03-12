@@ -1,8 +1,5 @@
 # encoding: utf-8
 
-require "rack"
-require "faye/websocket"
-
 require "sockjs"
 require "sockjs/transport"
 require "sockjs/servers/thin"
