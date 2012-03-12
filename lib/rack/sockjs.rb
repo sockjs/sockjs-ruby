@@ -88,7 +88,8 @@ module Rack
       elsif transport.nil? && ! transports.empty?
         # Unsupported method.
         debug "~ Method not supported!"
-        [405, {}, []]
+        methods = transports.map { |transport| transport.method }
+        [405, {"Allow" => methods.join(", ") }, []]
       else
         body = <<-HTML
           <!DOCTYPE html>
