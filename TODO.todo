@@ -1,6 +1,7 @@
 Majek:
 - WebsocketHixie76.test_haproxy: '\x00o\xff' != '\xca4\x00\xd8\xa5\x08G\x97,\xd5qZ\xba\xbfC{'.
 - WebsocketHttpErrors.test_invalidMethod: I do believe this is actually right and there's a problem on the Python side. Please note that it actually fails on "r = POST(base_url + '/0/0/websocket', headers=h)" line, not during verify405(). Check WebsocketHttpErrors.test_invalidMethod.txt for more info.
+- Protocol.test_simpleSession: AssertionError: 'a[]\n' != 'c[2010,"Another connection still open"]\n', but we did close the first connection.
 
 Thin IRC:
 - Http11.test_synchronous: [Errno 54] Connection reset by peer. Thin does support Keep-Alive since 0.7.0 https://groups.google.com/group/thin-ruby/browse_thread/thread/4eb696ea517fba2b?pli=1, so what's the problem? This should really work by default, according to the documentation. Only if we'd set --max-persistent-conns to 0, then Keep-Alive would be disabled, but we didn't do that AND it defaults to 512.
@@ -13,7 +14,11 @@ Bugs:
 - WebsocketHybi10.test_close: Empty.
 - WebsocketHybi10.test_broken_json: Empty.
 
-- HandlingClose.test_close_frame: timed out
+- HandlingClose.test_close_frame: Crashes with @response must not be nil.
+- HandlingClose.test_abort_xhr_streaming: Crashes with @response must not be nil.
+- HandlingClose.test_close_request: Crashes with @response must not be nil.
+
+- HandlingClose.test_abort_xhr_polling: AssertionError: 'a[]\n' != 'c[2010,"Another connection still open"]\n'
 
 Not implemented:
 
@@ -22,30 +27,8 @@ Not implemented:
   - EventSource.test_response_limit
   - HtmlFile.test_response_limit
 
-  Keep info about connections:
-  - Protocol.test_closeSession: AssertionError: 'a[]\n' != 'c[2010,"Another connection still open"]\n'
-  - Protocol.test_simpleSession: Fail if there's more than one open connection to given session. At the moment there's no infrastructure for this in place, we don't keep the status. See transport.coffee of sockjs-node. AssertionError: '' != 'a["a"]\n'
-
-  - HandlingClose.test_abort_xhr_streaming: timed out
-  - HandlingClose.test_close_request: timed out
-  - HandlingClose.test_abort_xhr_polling: AssertionError: 'a[]\n' != 'c[2010,"Another connection still open"]\n'
-
   RawWebsocket:
   - Not supported yet (this is /websocket, NOT /*/*/websocket!)
 
   Heartbeat:
   - (curl -X POST http://localhost:8081/echo/a/b/xhr -vv should return o frame, the next curl -X POST http://localhost:8081/echo/a/b/xhr -vv should hang and return a message if there's any or heartbeat after the timeout).
-
-
-  t BaseUrlGreeting IframePage InfoTest SessionURLs
-  t Protocol
-  t Protocol WebsocketHttpErrors
-  t XhrPolling
-  t XhrPolling JsonPolling JSONEncoding
-  t XhrStreaming EventSource HtmlFile
-  t HandlingClose
-  t Http11
-  cat
-
-  Blog post
-  RubyInside
