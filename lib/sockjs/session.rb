@@ -4,7 +4,7 @@ module SockJS
   class Session
     include CallbackMixin
 
-    attr_accessor :buffer, :response
+    attr_accessor :buffer, :response, :transport
 
     def initialize(callbacks)
       @callbacks = callbacks
@@ -14,6 +14,10 @@ module SockJS
     end
 
     def send_data(frame)
+      if @transport.respond_to?(:send_data) # WebSocket
+        return @transport.send_data(frame)
+      end
+
       if @response.nil?
         raise TypeError.new("@response must not be nil!")
       end
@@ -148,7 +152,9 @@ module SockJS
 
       self.finish
 
-      @response.write("") unless @response.body.closed? # Http11.test_streaming
+      if @response # WS
+        @response.write("") unless @response.body.closed? # Http11.test_streaming
+      end
 
       self.close_response
 

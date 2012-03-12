@@ -41,10 +41,6 @@ module SockJS
         SockJS::Session
       end
 
-      def send_data(_, frame)
-        @ws.send(frame)
-      end
-
       def check_invalid_request_or_disabled_websocket(request)
         if not @options[:websocket]
           raise HttpError.new(404, "WebSockets Are Disabled")
@@ -85,6 +81,7 @@ module SockJS
         match = request.path_info.match(self.class.prefix)
         session = self.create_session(request.path_info)
         session.buffer = Buffer.new # This is a hack for the bloody API. Rethinking and refactoring required!
+        session.transport = self
 
         # Send the opening frame.
         session.open!
@@ -125,6 +122,8 @@ module SockJS
 
           # Send the closing frame.
           @ws.send(session.process_buffer)
+
+          session.transport = nil
         else
           puts "~ Session can't be retrieved, something went pretty damn wrong."
 
@@ -135,12 +134,12 @@ module SockJS
       end
 
       def format_frame(payload)
-        raise TypeError.new if payload.nil?
+        raise TypeError.new("Payload must not be nil!") if payload.nil?
 
         payload
       end
 
-      def send_data(response, frame)
+      def send_data(frame)
         @ws.send(frame)
       end
     end

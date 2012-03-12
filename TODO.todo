@@ -32,3 +32,19 @@ Not implemented:
 
   Heartbeat:
   - (curl -X POST http://localhost:8081/echo/a/b/xhr -vv should return o frame, the next curl -X POST http://localhost:8081/echo/a/b/xhr -vv should hang and return a message if there's any or heartbeat after the timeout).
+
+
+  t BaseUrlGreeting IframePage InfoTest SessionURLs
+  t Protocol
+  t Protocol WebsocketHttpErrors
+  t XhrPolling
+  t XhrPolling JsonPolling JSONEncoding
+  t XhrStreaming EventSource HtmlFile
+  t HandlingClose
+  t Http11
+  cat
+
+  Blog post
+  RubyInside
+
+  @disconnect_timer nefunguje jak by mel, protoze se nastavi i u WS a streamovani na request.open, ne na request.close!
