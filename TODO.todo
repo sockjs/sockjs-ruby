@@ -11,12 +11,12 @@ Thin IRC:
 - Http10 (supporting HTTP 1.0 is not a priority, but it should be easy enough to do so if Thin gives us the choice to respond in 1.0 which might be tricky. See https://github.com/rack/rack/blob/master/lib/rack/chunked.rb#L44-53).
 
 Bugs:
-- Protocol.test_closeSession: @response must not be nil!
-- JsonPolling.test_close: @response must not be nil!
-- HandlingClose.test_abort_xhr_streaming: @response must not be nil!
-- HandlingClose.test_close_frame: @response must not be nil!
-- HandlingClose.test_close_request: @response must not be nil!
-- Http11.test_streaming: @response must not be nil!
+- Protocol.test_closeSession: AssertionError: '' != 'c[3000,"Go away!"]\n'
+- JsonPolling.test_close: AssertionError: '' != 'x("c[3000,\\"Go away!\\"]");\r\n'
+- HandlingClose.test_abort_xhr_streaming: AssertionError: None != 'c[2010,"Another connection still open"]\n'
+- HandlingClose.test_close_frame: AssertionError: None != 'c[3000,"Go away!"]\n'
+- HandlingClose.test_close_request: AssertionError: None != 'c[2010,"Another connection still open"]\n'
+- Http11.test_streaming: AssertionError: '' != 'c[3000,"Go away!"]\n'
 
 - XhrPolling.test_invalid_json: sockjs/session.rb:64:in `rescue in receive_message': undefined method `respond' for nil:NilClass
 - JsonPolling.test_invalid_json: sockjs/session.rb:64:in `rescue in receive_message': undefined method `respond' for nil:NilClass
