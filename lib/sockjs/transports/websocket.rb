@@ -1,6 +1,6 @@
 # encoding: utf-8
 
-require "faye/websocket"
+require "sockjs/faye"
 require "forwardable"
 require "sockjs/transport"
 
