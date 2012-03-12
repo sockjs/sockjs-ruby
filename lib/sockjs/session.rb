@@ -41,7 +41,11 @@ module SockJS
     end
 
     def with_response_and_transport(response, transport, &block)
+      raise ArgumentError.new("Response must not be nil!") if response.nil?
+      raise ArgumentError.new("Transport must not be nil!") if transport.nil?
+
       puts "~ with_response: assigning response and #{transport.class} ..."
+
       @response, @transport = response, transport
       block.call
     end
