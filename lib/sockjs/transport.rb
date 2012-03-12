@@ -122,12 +122,6 @@ module SockJS
       response
     end
 
-    def respond(*args, &block)
-      response = response(*args, &block)
-      response.finish unless response.body.closed?
-      response
-    end
-
     # There's a session:
     #   a) It's closing -> Send c[3000,"Go away!"] AND END
     #   b) It's open:

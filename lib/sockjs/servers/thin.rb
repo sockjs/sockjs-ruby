@@ -110,7 +110,7 @@ module SockJS
 
       def succeed
         if $DEBUG
-          STDERR.puts("~ Closing the response #{caller.map { |item| item.sub(Dir.pwd + "/lib/", "") }.inspect}.")
+          STDERR.puts("~ Closing the response #{caller[5..-8].map { |item| item.sub(Dir.pwd + "/lib/", "") }.inspect}.")
         else
           STDERR.puts("~ Closing the response.")
         end

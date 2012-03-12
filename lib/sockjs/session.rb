@@ -19,7 +19,7 @@ module SockJS
       end
 
       if @response.nil?
-        raise TypeError.new("@response must not be nil!")
+        raise TypeError.new("Session#response must not be nil! Occurred when writing #{frame.inspect}")
       end
 
       data = @transport.format_frame(frame)
@@ -51,8 +51,10 @@ module SockJS
     end
 
     def close_response
-      @response = nil; @transport = nil
       puts "~ close_response: clearing response and transport."
+
+      @response.finish
+      @response = nil; @transport = nil
     end
 
     # All incoming data is treated as incoming messages,
@@ -65,7 +67,7 @@ module SockJS
       messages = parse_json(data)
       process_messages(*messages) unless messages.empty?
     rescue SockJS::InvalidJSON => error
-      @transport.respond(request, error.status) do |response|
+      @transport.response(request, error.status) do |response|
         response.write(error.message)
       end
     end
@@ -89,7 +91,13 @@ module SockJS
         # being we cache it infinitely.
         raise @error if @error
 
+        # Hmmm that's bollocks, what if we do session.close
+        # from within the app? We can't call it multiple times,
+        # unless we redefine session.close to raise an exception,
+        # hence it wouldn't be executed only once ...
+        # that's not a bad idea BTW.
         @received_messages.each do |message|
+          puts "~ Executing app with message #{message.inspect}"
           self.execute_callback(:buffer, self, message)
         end
 
@@ -154,13 +162,13 @@ module SockJS
         @periodic_timer = nil
       end
 
-      self.finish
+      # SessionWitchCachedMessages#after_app_run is aliased to #finish
+      # and we MUST NOT clear the buffer, because we have to cache it
+      # for the next responses. Bugger ...
 
       if @response # WS
         @response.write("") unless @response.body.closed? # Http11.test_streaming
       end
-
-      self.close_response
 
       self.reset_close_timer
 
@@ -291,14 +299,9 @@ module SockJS
     def send_data(frame)
       super(frame)
 
-      @response.finish
+      self.close_response
     end
 
     alias_method :after_app_run, :finish
-
-    def with_response_and_transport(response, transport, &block)
-      super(response, transport, &block)
-      self.close_response
-    end
   end
 end

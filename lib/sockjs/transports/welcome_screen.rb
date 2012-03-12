@@ -11,7 +11,7 @@ module SockJS
 
       # Handler.
       def handle(request)
-        respond(request, 200) do |response|
+        response(request, 200) do |response|
           response.set_content_type(:plain)
           response.write("Welcome to SockJS!\n")
         end

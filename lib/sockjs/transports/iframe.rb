@@ -22,9 +22,9 @@ module SockJS
         body = data.gsub("{{ sockjs_url }}", options[:sockjs_url])
 
         if request.fresh?(self.etag(body))
-          respond(request, 304)
+          response(request, 304)
         else
-          respond(request, 200) do |response|
+          response(request, 200) do |response|
             response.set_content_type(:html)
             response.set_header("ETag", self.etag(body))
             response.set_cache_control

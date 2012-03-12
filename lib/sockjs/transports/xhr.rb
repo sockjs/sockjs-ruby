@@ -11,7 +11,7 @@ module SockJS
 
       # Handler.
       def handle(request)
-        respond(request, 200, session: :create) do |response, session|
+        response(request, 200, session: :create) do |response, session|
           unless session.newly_created?
             response.set_content_type(:plain)
             session.process_buffer
@@ -33,7 +33,7 @@ module SockJS
 
       # Handler.
       def handle(request)
-        respond(request, 204) do |response|
+        response(request, 204) do |response|
           response.set_allow_options_post
           response.set_cache_control
           response.set_access_control(request.origin)
@@ -49,7 +49,7 @@ module SockJS
 
       # Handler.
       def handle(request)
-        respond(request, 204, data: request.data.read) do |response, session|
+        response(request, 204, data: request.data.read) do |response, session|
           if session
             # When we use HTTP 204 with Content-Type, Rack::Lint
             # will be bitching about it. That's understandable,

@@ -43,7 +43,7 @@ module SockJS
             session.wait(response)
           end
         else
-          respond(request, 500) do |response|
+          response(request, 500) do |response|
             response.set_content_type(:html)
             response.write('"callback" parameter required')
           end

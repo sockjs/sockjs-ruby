@@ -20,7 +20,7 @@ module SockJS
           self.callback_function = request.callback
 
           if session = self.connection.sessions[match[1]]
-            respond(request, 200) do |response, session|
+            response(request, 200) do |response, session|
               response.set_content_type(:plain)
 
               body = self.format_frame(session.process_buffer)
@@ -32,7 +32,7 @@ module SockJS
               end
             end
           else
-            respond(request, 200, session: :create) do |response, session|
+            response(request, 200, session: :create) do |response, session|
               response.set_content_type(:javascript)
               response.set_access_control(request.origin)
               response.set_no_cache
@@ -43,7 +43,7 @@ module SockJS
             end
           end
         else
-          respond(request, 500) do |response|
+          response(request, 500) do |response|
             response.set_content_type(:html)
             response.write('"callback" parameter required')
           end
@@ -73,7 +73,7 @@ module SockJS
           self.handle_raw_data(request)
         end
       rescue SockJS::HttpError => error
-        respond(request, 500) do |response|
+        response(request, 500) do |response|
           response.set_content_type(:html)
           response.write(error.message)
         end
@@ -108,13 +108,13 @@ module SockJS
         if session
           session.receive_message(request, data)
 
-          respond(request, 200) do |response|
+          response(request, 200) do |response|
             response.set_content_type(:plain)
             response.set_session_id(request.session_id)
             response.write("ok")
           end
         else
-          respond(request, 404) do |response|
+          response(request, 404) do |response|
             response.set_content_type(:plain)
             response.set_session_id(request.session_id)
             response.write("Session is not open!")
