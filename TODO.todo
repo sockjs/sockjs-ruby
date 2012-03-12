@@ -1,23 +1,42 @@
-Majek:
-- WebsocketHttpErrors.test_invalidMethod: I do believe this is actually right and there's a problem on the Python side. Please note that it actually fails on "r = POST(base_url + '/0/0/websocket', headers=h)" line, not during verify405(). Check WebsocketHttpErrors.test_invalidMethod.txt for more info.
-- Protocol.test_simpleSession: AssertionError: 'a[]\n' != 'c[2010,"Another connection still open"]\n', but we did close the first connection.
+# t BaseUrlGreeting IframePage InfoTest SessionURLs WebsocketHttpErrors JSONEncoding
+# t Protocol
+# t XhrPolling
+# t JsonPolling
+# t XhrStreaming EventSource HtmlFile
+# t HandlingClose
+# t Http11
 
 Thin IRC:
 - Http11.test_synchronous: [Errno 54] Connection reset by peer. Thin does support Keep-Alive since 0.7.0 https://groups.google.com/group/thin-ruby/browse_thread/thread/4eb696ea517fba2b?pli=1, so what's the problem? This should really work by default, according to the documentation. Only if we'd set --max-persistent-conns to 0, then Keep-Alive would be disabled, but we didn't do that AND it defaults to 512.
 - Http10 (supporting HTTP 1.0 is not a priority, but it should be easy enough to do so if Thin gives us the choice to respond in 1.0 which might be tricky. See https://github.com/rack/rack/blob/master/lib/rack/chunked.rb#L44-53).
 
 Bugs:
-- WebsocketHixie76.test_broken_json: WebSocketException: Invalid frame type
-- WebsocketHixie76.test_reuseSessionId: Hangs for ages, then ConnectionClosedException; this functionality is not supported yet.
+- Protocol.test_closeSession: @response must not be nil!
+- JsonPolling.test_close: @response must not be nil!
+- HandlingClose.test_abort_xhr_streaming: @response must not be nil!
+- HandlingClose.test_close_frame: @response must not be nil!
+- HandlingClose.test_close_request: @response must not be nil!
+- Http11.test_streaming: @response must not be nil!
+
+- XhrPolling.test_invalid_json: sockjs/session.rb:64:in `rescue in receive_message': undefined method `respond' for nil:NilClass
+- JsonPolling.test_invalid_json: sockjs/session.rb:64:in `rescue in receive_message': undefined method `respond' for nil:NilClass
+- JsonPolling.test_content_types: sockjs/session.rb:64:in `rescue in receive_message': undefined method `respond' for nil:NilClass
+
+- XhrPolling.test_transport: No headers
+
+- JsonPolling.test_transport: sockjs/transports/jsonp.rb:54:in `format_frame': TypeError
+
+- Protocol.test_simpleSession: AssertionError: 'a[]\n' != 'c[2010,"Another connection still open"]\n'. The problem is that we close the first connection sending 'a[""]\n' which is really, really wrong, it's supposed to hang.
+- HandlingClose.test_abort_xhr_polling: AssertionError: 'a[]\n' != 'c[2010,"Another connection still open"]\n'
 
 - WebsocketHybi10.test_close: Empty.
 - WebsocketHybi10.test_broken_json: Empty.
 
-- HandlingClose.test_close_frame: Crashes with @response must not be nil.
-- HandlingClose.test_abort_xhr_streaming: Crashes with @response must not be nil.
-- HandlingClose.test_close_request: Crashes with @response must not be nil.
+- WebsocketHixie76.test_broken_json: WebSocketException: Invalid frame type
 
-- HandlingClose.test_abort_xhr_polling: AssertionError: 'a[]\n' != 'c[2010,"Another connection still open"]\n'
+- WebsocketHixie76.test_reuseSessionId: Hangs for ages, then ConnectionClosedException; this functionality is not supported yet.
+
+- @disconnect_timer doesn't work as it's supposed to, it's set up even in WS and streaming on request.open, NOT on request.close
 
 Not implemented:
 
@@ -32,18 +51,7 @@ Not implemented:
   Heartbeat:
   - (curl -X POST http://localhost:8081/echo/a/b/xhr -vv should return o frame, the next curl -X POST http://localhost:8081/echo/a/b/xhr -vv should hang and return a message if there's any or heartbeat after the timeout).
 
-
-  t BaseUrlGreeting IframePage InfoTest SessionURLs
-  t Protocol
-  t Protocol WebsocketHttpErrors
-  t XhrPolling
-  t XhrPolling JsonPolling JSONEncoding
-  t XhrStreaming EventSource HtmlFile
-  t HandlingClose
-  t Http11
-  cat
-
-  Blog post
-  RubyInside
-
-  @disconnect_timer nefunguje jak by mel, protoze se nastavi i u WS a streamovani na request.open, ne na request.close!
+Release:
+- Publish to RubyGems.org
+- Blog post for RabbitMQ blog
+- Post for RubyInside.com
