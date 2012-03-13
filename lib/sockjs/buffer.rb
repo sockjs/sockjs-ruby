@@ -102,7 +102,7 @@ module SockJS
     end
 
     def contains_data?
-      (! @messages.empty?) || @frame
+      (! @messages.empty?) || (!! @frame)
     end
 
 

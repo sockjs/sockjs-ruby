@@ -101,6 +101,7 @@ module SockJS
 
           error.session.with_response_and_transport(response, self) do
             error.session.close(nil, nil) # Use the last closing message which is cached in the buffer.
+            error.session.finish
           end
 
 

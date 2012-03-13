@@ -8,12 +8,10 @@
 
 
 Bugs:
-- Protocol.test_closeSession: AssertionError: '' != 'c[3000,"Go away!"]\n'
-- JsonPolling.test_close: AssertionError: '' != 'x("c[3000,\\"Go away!\\"]");\r\n'
-- HandlingClose.test_abort_xhr_streaming: AssertionError: None != 'c[2010,"Another connection still open"]\n'
-- HandlingClose.test_close_frame: AssertionError: None != 'c[3000,"Go away!"]\n'
-- HandlingClose.test_close_request: AssertionError: None != 'c[2010,"Another connection still open"]\n'
-- Http11.test_streaming: AssertionError: '' != 'c[3000,"Go away!"]\n'
+- HandlingClose.test_abort_xhr_streaming: timed out
+- HandlingClose.test_close_frame: timed out
+- HandlingClose.test_close_request: timed out
+- Http11.test_streaming: timed out
 
 - XhrPolling.test_invalid_json: sockjs/session.rb:64:in `rescue in receive_message': undefined method `respond' for nil:NilClass
 - JsonPolling.test_invalid_json: sockjs/session.rb:64:in `rescue in receive_message': undefined method `respond' for nil:NilClass

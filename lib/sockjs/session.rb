@@ -166,10 +166,6 @@ module SockJS
       # and we MUST NOT clear the buffer, because we have to cache it
       # for the next responses. Bugger ...
 
-      if @response # WS
-        @response.write("") unless @response.body.closed? # Http11.test_streaming
-      end
-
       self.reset_close_timer
 
       # Hint: session.buffer = Buffer.new(:open) or so
