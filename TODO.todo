@@ -12,14 +12,9 @@ Bugs:
 - HandlingClose.test_close_frame: timed out
 - HandlingClose.test_close_request: timed out
 - Http11.test_streaming: timed out
-
-- XhrPolling.test_invalid_json: sockjs/session.rb:64:in `rescue in receive_message': undefined method `respond' for nil:NilClass
-- JsonPolling.test_invalid_json: sockjs/session.rb:64:in `rescue in receive_message': undefined method `respond' for nil:NilClass
-- JsonPolling.test_content_types: sockjs/session.rb:64:in `rescue in receive_message': undefined method `respond' for nil:NilClass
+- XhrPolling.test_invalid_json: timed out
 
 - XhrPolling.test_transport: No headers
-
-- JsonPolling.test_transport: sockjs/transports/jsonp.rb:54:in `format_frame': TypeError
 
 - Protocol.test_simpleSession: AssertionError: 'a[]\n' != 'c[2010,"Another connection still open"]\n'. The problem is that we close the first connection sending 'a[""]\n' which is really, really wrong, it's supposed to hang. None the less we MUST NOT block the whole thread. It should not be a problem as Thin is EventMachine-based, but we must make sure it's alright.
 - HandlingClose.test_abort_xhr_polling: AssertionError: 'a[]\n' != 'c[2010,"Another connection still open"]\n'

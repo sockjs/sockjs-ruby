@@ -23,13 +23,7 @@ module SockJS
             response(request, 200) do |response, session|
               response.set_content_type(:plain)
 
-              body = self.format_frame(session.process_buffer)
-
-              # This is very stupid ... session.close in app already sent the frame.
-              # TODO: the same issue is surely in the other transports as well.
-              unless session.closing?
-                response.write(body)
-              end
+              session.process_buffer
             end
           else
             response(request, 200, session: :create) do |response, session|
@@ -37,7 +31,6 @@ module SockJS
               response.set_access_control(request.origin)
               response.set_no_cache
               response.set_session_id(request.session_id)
-              # response.write(body)
 
               session.open!(request.callback)
             end
@@ -51,7 +44,7 @@ module SockJS
       end
 
       def format_frame(payload)
-        raise TypeError.new if payload.nil?
+        raise TypeError.new("Payload must not be nil!") if payload.nil?
 
         # Yes, JSONed twice, there isn't a better way, we must pass
         # a string back, and the script, will be evaled() by the browser.
@@ -72,11 +65,6 @@ module SockJS
         else
           self.handle_raw_data(request)
         end
-      rescue SockJS::HttpError => error
-        response(request, 500) do |response|
-          response.set_content_type(:html)
-          response.write(error.message)
-        end
       end
 
       def handle_form_data(request)
@@ -90,6 +78,8 @@ module SockJS
         else
           empty_payload
         end
+      rescue SockJS::HttpError => error
+        error.to_response(self, request)
       end
 
       def handle_raw_data(request)
@@ -102,28 +92,28 @@ module SockJS
       end
 
       def handle_clean_data(request, data)
-        match = request.path_info.match(self.class.prefix)
-        session_id = match[1]
-        session = self.connection.sessions[session_id]
-        if session
-          session.receive_message(request, data)
+        response(request, 200) do |response, session|
+          if session
+            session.receive_message(request, data)
 
-          response(request, 200) do |response|
             response.set_content_type(:plain)
             response.set_session_id(request.session_id)
             response.write("ok")
-          end
-        else
-          response(request, 404) do |response|
-            response.set_content_type(:plain)
-            response.set_session_id(request.session_id)
-            response.write("Session is not open!")
+          else
+            # We have to use curly brackets, because of ... well
+            # because of bulldozer really http://pastie.org/3540401
+            raise SockJS::HttpError.new(404, "Session is not open!") { |response|
+              response.set_content_type(:plain)
+              response.set_session_id(request.session_id)
+            }
           end
         end
       end
 
       def empty_payload
-        raise SockJS::HttpError.new("Payload expected.")
+        raise SockJS::HttpError.new(500, "Payload expected.") { |response|
+          response.set_content_type(:html)
+        }
       end
     end
   end
