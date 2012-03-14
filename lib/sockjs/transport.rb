@@ -85,6 +85,8 @@ module SockJS
             if options[:data]
               session.with_response_and_transport(response, self) do
                 session.receive_message(request, options[:data])
+
+                block.call(response, session)
               end
             else
               session.with_response_and_transport(response, self) do

@@ -8,11 +8,11 @@
 
 
 Bugs:
-- HandlingClose.test_abort_xhr_streaming: timed out
-- HandlingClose.test_close_frame: timed out
-- HandlingClose.test_close_request: timed out
-- Http11.test_streaming: timed out
-- XhrPolling.test_invalid_json: timed out
+- HandlingClose.test_abort_xhr_streaming: times out on self.assertEqual(r2.read(), None) with XHR streaming -> close the connection
+- HandlingClose.test_close_request: times out on self.assertEqual(r2.read(), None) with XHR streaming -> close the connection
+- Http11.test_streaming: times out on self.assertEqual(c.read_chunk(), '') with XHR streaming -> close the connection
+
+- HandlingClose.test_close_frame: It doesn't write preamble.
 
 - XhrPolling.test_transport: No headers
 

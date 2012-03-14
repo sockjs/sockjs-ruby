@@ -64,6 +64,7 @@ module SockJS
             response.set_content_type(:plain)
             response.set_access_control(request.origin)
             response.set_session_id(request.session_id)
+            response.write_head
           else
             # We have to use curly brackets, because of ... well
             # because of bulldozer really http://pastie.org/3540401
