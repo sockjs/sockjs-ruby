@@ -39,6 +39,7 @@ module SockJS
     def finish
       frame = @buffer.to_frame
       self.send_data(frame)
+      @response.finish if frame.match(/^c/)
     end
 
     def with_response_and_transport(response, transport, &block)
@@ -58,12 +59,6 @@ module SockJS
       if prev_trans && (prev_trans.is_a?(SockJS::Transports::XHRStreamingPost) || prev_trans.is_a?(SockJS::Transports::EventSource) || prev_trans.is_a?(SockJS::Transports::HTMLFile)) # TODO: #streaming? / #polling? / #waiting? ... actually no, just define this only for this class, the other transports use SessionWitchCachedMessages (but don't forget that it inherits from this one).
         puts "~ with_response: reassigning response and #{prev_trans.class} (#{prev_trans.object_id}) ..."
         @response, @transport = prev_resp, prev_trans
-
-        p [:buffer, @buffer.to_frame]
-        if @buffer.to_frame.match(/^c\[2010/)
-          self.send_data(@buffer.to_frame)
-          self.close_response
-        end
       end
     end
 
@@ -173,9 +168,6 @@ module SockJS
 
       if not self.closing?
         self.close_session(status, message)
-      elsif self.closing? && @buffer.to_frame.match(/^c\[2010/) # Ufff ...
-        @buffer.clear
-        self.close_session(1002, "Connection interrupted")
       end
 
       if @periodic_timer
@@ -192,6 +184,11 @@ module SockJS
       # Hint: session.buffer = Buffer.new(:open) or so
     rescue SockJS::StateMachineError => error
       raise error
+    end
+
+    def on_close
+      puts "~ The connection has been closed on the client side"
+      self.close_session(1002, "Connection interrupted")
     end
 
     def waiting? # TODO: What about WS?
