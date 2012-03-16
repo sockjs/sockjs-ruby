@@ -97,22 +97,22 @@ module SockJS
           raise "Chunk is supposed to respond to #bytesize, but it doesn't.\nChunk: #{chunk.inspect} (#{chunk.class})"
         end
 
-        STDERR.puts("~ body#write #{chunk.inspect}")
+        puts "~ body#write #{chunk.inspect}"
         data = [chunk.bytesize.to_s(16), TERM, chunk, TERM].join
         self.__write__(data)
       end
 
       def each(&block)
-        STDERR.puts("~ Opening the response.")
+        puts "~ Opening the response."
         @status = :open
         @body_callback = block
       end
 
       def succeed
         if $DEBUG
-          STDERR.puts("~ Closing the response #{caller[5..-8].map { |item| item.sub(Dir.pwd + "/lib/", "") }.inspect}.")
+          puts "~ Closing the response #{caller[5..-8].map { |item| item.sub(Dir.pwd + "/lib/", "") }.inspect}."
         else
-          STDERR.puts("~ Closing the response.")
+          puts "~ Closing the response."
         end
 
         self.__write__(TAIL)
