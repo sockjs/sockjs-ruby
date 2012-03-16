@@ -110,6 +110,8 @@ module SockJS
 
 
           error.session.with_response_and_transport(response, self) do
+            # We have to run the app, so we set the headers and send the prelude if there's any.
+            error.session.run_user_app(response)
             error.session.close(nil, nil) # Use the last closing message which is cached in the buffer.
             error.session.finish
           end
