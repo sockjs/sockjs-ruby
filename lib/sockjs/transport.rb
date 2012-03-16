@@ -70,6 +70,7 @@ module SockJS
 
       case block && block.arity
       when nil # no block
+        response.finish
       when 1
         block.call(response)
       when 2

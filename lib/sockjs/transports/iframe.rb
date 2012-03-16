@@ -22,6 +22,7 @@ module SockJS
         body = data.gsub("{{ sockjs_url }}", options[:sockjs_url])
 
         if request.fresh?(self.etag(body))
+          puts "~ Content hasn't been modified."
           response(request, 304)
         else
           response(request, 200) do |response|
