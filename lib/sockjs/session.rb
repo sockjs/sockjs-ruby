@@ -85,6 +85,7 @@ module SockJS
       self.reset_timer if reset_timer
 
       create_response do
+        puts "~ Processing buffer using #{@transport.class}"
         self.check_status
 
         # The error is supposed to be cached for 5s

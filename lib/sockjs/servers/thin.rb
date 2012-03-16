@@ -99,6 +99,7 @@ module SockJS
 
         puts "~ body#write #{chunk.inspect}"
         data = [chunk.bytesize.to_s(16), TERM, chunk, TERM].join
+
         self.__write__(data)
       end
 

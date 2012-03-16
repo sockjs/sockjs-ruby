@@ -11,7 +11,7 @@ Bugs:
 - Protocol.test_simpleSession: AssertionError: 'a[]\n' != 'c[2010,"Another connection still open"]\n'. The problem is that we close the first connection sending 'a[""]\n' which is really, really wrong, it's supposed to hang. None the less we MUST NOT block the whole thread. It should not be a problem as Thin is EventMachine-based, but we must make sure it's alright.
 - HandlingClose.test_abort_xhr_polling: AssertionError: 'a[]\n' != 'c[2010,"Another connection still open"]\n'
 
-- XhrStreaming.test_transport: times out. Clearly the message isn't written, according to tcpdump. Even though that the debugging statements suggest otherwise. Damn!
+- XhrStreaming.test_transport: times out. Clearly the message isn't written, according to tcpdump. Even though that the debugging statements suggest otherwise. The problem seems to be in "Processing buffer using SockJS::Transports::XHRSendPost" (instead of XHRStreaming). HOWEVER I can't get why, for fox sake, I don't get any error message like closed body or that I can't see anything on the wire ... what the hell?
 - EventSource.test_transport: times out
 - HtmlFile.test_transport: times out
 - HandlingClose.test_abort_xhr_streaming: times out
