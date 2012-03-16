@@ -39,7 +39,7 @@ module SockJS
     def finish
       frame = @buffer.to_frame
       self.send_data(frame)
-      @response.finish if frame.match(/^c/)
+      @response.finish if frame.match(/^c/) && @response
     end
 
     def with_response_and_transport(response, transport, &block)
@@ -187,7 +187,7 @@ module SockJS
     end
 
     def on_close
-      puts "~ The connection has been closed on the client side"
+      puts "~ The connection has been closed on the client side (current status: #{@status})."
       self.close_session(1002, "Connection interrupted")
     end
 

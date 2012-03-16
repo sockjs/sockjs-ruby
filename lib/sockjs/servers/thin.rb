@@ -115,14 +115,18 @@ module SockJS
         @body_callback = block
       end
 
-      def succeed
-        if $DEBUG
-          puts "~ Closing the response #{caller[5..-8].map { |item| item.sub(Dir.pwd + "/lib/", "") }.inspect}."
+      def succeed(from_server = true)
+        if from_server
+          if $DEBUG
+            puts "~ Closing the response from the server #{caller[5..-8].map { |item| item.sub(Dir.pwd + "/lib/", "") }.inspect}."
+          else
+            puts "~ Closing the response from the server."
+          end
         else
-          puts "~ Closing the response."
+          puts "~ Closing the response from the client."
+          @session.on_close if @session # When the client closes the session.
         end
 
-        @session.on_close if @session # When the client closes the session.
         @status = :closed
         super
       end
@@ -135,7 +139,7 @@ module SockJS
         self.write(data) if data
         self.__write__(TAIL)
 
-        self.succeed
+        self.succeed(true)
       end
 
       def closed?
