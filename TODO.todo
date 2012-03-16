@@ -8,25 +8,31 @@
 
 
 Bugs:
-- HandlingClose.test_abort_xhr_streaming: times out on self.assertEqual(r2.read(), None) with XHR streaming -> close the connection
-- HandlingClose.test_close_request: times out on self.assertEqual(r2.read(), None) with XHR streaming -> close the connection
-- Http11.test_streaming: times out on self.assertEqual(c.read_chunk(), '') with XHR streaming -> close the connection
 
-- HandlingClose.test_close_frame: It doesn't write preamble.
+  Non-WS:
+  - test_cacheability
+  - HandlingClose.test_abort_xhr_streaming: times out on self.assertEqual(r2.read(), None) with XHR streaming -> close the connection
+  - HandlingClose.test_close_request: times out on self.assertEqual(r2.read(), None) with XHR streaming -> close the connection
+  - Http11.test_streaming: times out on self.assertEqual(c.read_chunk(), '') with XHR streaming -> close the connection
 
-- XhrPolling.test_transport: No headers
+  - HandlingClose.test_close_frame: It doesn't write preamble.
 
-- Protocol.test_simpleSession: AssertionError: 'a[]\n' != 'c[2010,"Another connection still open"]\n'. The problem is that we close the first connection sending 'a[""]\n' which is really, really wrong, it's supposed to hang. None the less we MUST NOT block the whole thread. It should not be a problem as Thin is EventMachine-based, but we must make sure it's alright.
-- HandlingClose.test_abort_xhr_polling: AssertionError: 'a[]\n' != 'c[2010,"Another connection still open"]\n'
+  - XhrPolling.test_transport: No headers
 
-- WebsocketHybi10.test_close: Empty.
-- WebsocketHybi10.test_broken_json: Empty.
+  - Protocol.test_simpleSession: AssertionError: 'a[]\n' != 'c[2010,"Another connection still open"]\n'. The problem is that we close the first connection sending 'a[""]\n' which is really, really wrong, it's supposed to hang. None the less we MUST NOT block the whole thread. It should not be a problem as Thin is EventMachine-based, but we must make sure it's alright.
+  - HandlingClose.test_abort_xhr_polling: AssertionError: 'a[]\n' != 'c[2010,"Another connection still open"]\n'
 
-- WebsocketHixie76.test_broken_json: WebSocketException: Invalid frame type
+  - @disconnect_timer doesn't work as it's supposed to, it's set up even in WS and streaming on request.open, NOT on request.close
 
-- WebsocketHixie76.test_reuseSessionId: Hangs for ages, then ConnectionClosedException; this functionality is not supported yet.
+  WS:
+  - Update to the newest Faye.
 
-- @disconnect_timer doesn't work as it's supposed to, it's set up even in WS and streaming on request.open, NOT on request.close
+  - WebsocketHybi10.test_close: Empty.
+  - WebsocketHybi10.test_broken_json: Empty.
+
+  - WebsocketHixie76.test_broken_json: WebSocketException: Invalid frame type
+
+  - WebsocketHixie76.test_reuseSessionId: Hangs for ages, then ConnectionClosedException; this functionality is not supported yet.
 
 
 Not implemented:
@@ -49,7 +55,6 @@ Thin IRC (I've already asked Marc-Andre, waiting for the response):
 
 
 Release:
-- Update to the newest Faye.
 - Publish to RubyGems.org
 - Blog post for RabbitMQ blog
 - Post for RubyInside.com
