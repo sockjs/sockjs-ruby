@@ -51,7 +51,7 @@ module SockJS
       @response, @transport = response, transport
       block.call
 
-      if prev_trans && prev_trans.is_a?(SockJS::Transports::XHRStreamingPost) # TODO: #streaming?
+      if prev_trans && (prev_trans.is_a?(SockJS::Transports::XHRStreamingPost) || prev_trans.is_a?(SockJS::Transports::EventSource) || prev_trans.is_a?(SockJS::Transports::HTMLFile)) # TODO: #streaming? / #polling / #waiting?
         puts "~ with_response: reassigning response and #{transport.class} ..."
         @response, @transport = prev_resp, prev_trans
       end
