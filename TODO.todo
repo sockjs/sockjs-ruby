@@ -1,35 +1,26 @@
-# t BaseUrlGreeting IframePage InfoTest SessionURLs WebsocketHttpErrors JSONEncoding
+# t BaseUrlGreeting IframePage InfoTest SessionURLs WebsocketHttpErrors JSONEncoding XhrPolling JsonPolling
 # t Protocol
-# t XhrPolling
-# t JsonPolling
 # t XhrStreaming EventSource HtmlFile
 # t HandlingClose
 # t Http11
 
+# t WebsocketHybi10 WebsocketHixie76
+
 
 Bugs:
+- Protocol.test_simpleSession: AssertionError: 'a[]\n' != 'c[2010,"Another connection still open"]\n'. The problem is that we close the first connection sending 'a[""]\n' which is really, really wrong, it's supposed to hang. None the less we MUST NOT block the whole thread. It should not be a problem as Thin is EventMachine-based, but we must make sure it's alright.
+- HandlingClose.test_abort_xhr_polling: AssertionError: 'a[]\n' != 'c[2010,"Another connection still open"]\n'
 
-  Non-WS:
-  - HandlingClose.test_abort_xhr_streaming: times out on self.assertEqual(r2.read(), None) with XHR streaming -> close the connection
-  - HandlingClose.test_close_request: times out on self.assertEqual(r2.read(), None) with XHR streaming -> close the connection
-  - Http11.test_streaming: times out on self.assertEqual(c.read_chunk(), '') with XHR streaming -> close the connection
+- XhrStreaming.test_transport: times out
+- EventSource.test_transport: times out
+- HtmlFile.test_transport: times out
+- HandlingClose.test_abort_xhr_streaming: times out
+- HandlingClose.test_close_frame: times out
+- HandlingClose.test_close_request: times out
+- Http11.test_streaming: times out
+- Http11.test_synchronous: times out
 
-  - HandlingClose.test_close_frame: It doesn't write preamble.
-
-  - Protocol.test_simpleSession: AssertionError: 'a[]\n' != 'c[2010,"Another connection still open"]\n'. The problem is that we close the first connection sending 'a[""]\n' which is really, really wrong, it's supposed to hang. None the less we MUST NOT block the whole thread. It should not be a problem as Thin is EventMachine-based, but we must make sure it's alright.
-  - HandlingClose.test_abort_xhr_polling: AssertionError: 'a[]\n' != 'c[2010,"Another connection still open"]\n'
-
-  - @disconnect_timer doesn't work as it's supposed to, it's set up even in WS and streaming on request.open, NOT on request.close
-
-  WS:
-  - Update to the newest Faye.
-
-  - WebsocketHybi10.test_close: Empty.
-  - WebsocketHybi10.test_broken_json: Empty.
-
-  - WebsocketHixie76.test_broken_json: WebSocketException: Invalid frame type
-
-  - WebsocketHixie76.test_reuseSessionId: Hangs for ages, then ConnectionClosedException; this functionality is not supported yet.
+- @disconnect_timer doesn't work as it's supposed to, it's set up even in WS and streaming on request.open, NOT on request.close
 
 
 Not implemented:
