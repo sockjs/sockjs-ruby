@@ -31,6 +31,10 @@ module SockJS
         set_connection_keep_alive_if_requested
       end
 
+      def session=(session)
+        @body.session = session
+      end
+
       def async?
         true
       end
@@ -77,6 +81,8 @@ module SockJS
       TERM ||= "\r\n"
       TAIL ||= "0#{TERM}#{TERM}"
 
+      attr_accessor :session
+
       def initialize
         @status = :created
         super # TODO: Is this necessary?
@@ -116,7 +122,7 @@ module SockJS
           puts "~ Closing the response."
         end
 
-        self.__write__(TAIL)
+        @session.on_close if @session # When the client closes the session.
         @status = :closed
         super
       end
@@ -127,6 +133,8 @@ module SockJS
         end
 
         self.write(data) if data
+        self.__write__(TAIL)
+
         self.succeed
       end
 
