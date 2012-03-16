@@ -70,8 +70,10 @@ module SockJS
 
       case block && block.arity
       when nil # no block
+        puts "~ There's no block for response(request, #{status}, #{options.inspect}), closing the response."
         response.finish
       when 1
+        puts "~ Calling block in response(request, #{status}, #{options.inspect}) with response."
         block.call(response)
       when 2
         begin
@@ -87,16 +89,19 @@ module SockJS
               session.with_response_and_transport(response, self) do
                 session.receive_message(request, options[:data])
 
+                puts "~ Calling block in response(request, #{status}, #{options.inspect}) with response and session."
                 block.call(response, session)
               end
             else
               session.with_response_and_transport(response, self) do
+                puts "~ Calling block in response(request, #{status}, #{options.inspect}) with response and session."
                 block.call(response, session)
               end
             end
           else
             puts "~ Session can't be retrieved."
 
+            puts "~ Calling block in response(request, #{status}, #{options.inspect}) with response and nil instead of session."
             block.call(response, nil)
           end
         rescue SockJS::SessionUnavailableError => error
