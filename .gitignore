@@ -1,11 +1,6 @@
-~*
-#*
-*~
+.rvmrc
 
-/*.gem
-
-.bundle
 Gemfile.lock
 vendor
 
-.rvmrc
+/*.gem
