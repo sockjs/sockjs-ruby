@@ -45,15 +45,25 @@ module SockJS
       raise ArgumentError.new("Response must not be nil!") if response.nil?
       raise ArgumentError.new("Transport must not be nil!") if transport.nil?
 
-      puts "~ with_response: assigning response and #{transport.class} ..."
+      puts "~ with_response: assigning response and #{transport.class} (#{transport.object_id}) ..."
 
-      prev_resp, prev_trans = @response, @transport
+      if @transport && (@transport.is_a?(SockJS::Transports::XHRStreamingPost) || @transport.is_a?(SockJS::Transports::EventSource) || @transport.is_a?(SockJS::Transports::HTMLFile))
+        puts "~ with_response: saving response and transport #{@transport.class} (#{@transport.object_id})"
+        prev_resp, prev_trans = @response, @transport
+      end
+
       @response, @transport = response, transport
       block.call
 
       if prev_trans && (prev_trans.is_a?(SockJS::Transports::XHRStreamingPost) || prev_trans.is_a?(SockJS::Transports::EventSource) || prev_trans.is_a?(SockJS::Transports::HTMLFile)) # TODO: #streaming? / #polling? / #waiting? ... actually no, just define this only for this class, the other transports use SessionWitchCachedMessages (but don't forget that it inherits from this one).
-        puts "~ with_response: reassigning response and #{transport.class} ..."
+        puts "~ with_response: reassigning response and #{prev_trans.class} (#{prev_trans.object_id}) ..."
         @response, @transport = prev_resp, prev_trans
+
+        p [:buffer, @buffer.to_frame]
+        if @buffer.to_frame.match(/^c\[2010/)
+          self.send_data(@buffer.to_frame)
+          self.close_response
+        end
       end
     end
 
@@ -161,8 +171,11 @@ module SockJS
         raise "You can't change from #{@status} to closing!"
       end
 
-      unless self.closing?
+      if not self.closing?
         self.close_session(status, message)
+      elsif self.closing? && @buffer.to_frame.match(/^c\[2010/) # Ufff ...
+        @buffer.clear
+        self.close_session(1002, "Connection interrupted")
       end
 
       if @periodic_timer
