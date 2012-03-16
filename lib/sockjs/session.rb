@@ -37,7 +37,8 @@ module SockJS
     end
 
     def finish
-      self.send_data(@buffer.to_frame)
+      frame = @buffer.to_frame
+      self.send_data(frame)
     end
 
     def with_response_and_transport(response, transport, &block)
@@ -213,8 +214,10 @@ module SockJS
     end
 
     def run_user_app(response)
+      puts "~ Executing user's SockJS app"
       frame = self.process_buffer(false)
       self.send_data(frame) if frame
+      puts "~ User's SockJS app finished"
     end
 
     def init_periodic_timer(response, interval)
