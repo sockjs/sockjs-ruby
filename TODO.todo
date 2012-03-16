@@ -13,7 +13,6 @@ Bugs:
 
 - HandlingClose.test_abort_xhr_streaming: times out
 - HandlingClose.test_close_frame: times out
-- HandlingClose.test_close_request: times out
 - Http11.test_streaming: times out
 - Http11.test_synchronous: times out
 

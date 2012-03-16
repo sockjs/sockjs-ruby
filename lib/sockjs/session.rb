@@ -210,6 +210,9 @@ module SockJS
 
       if self.waiting?
         self.close(2010, "Another connection still open")
+        self.send_data(@buffer.to_frame)
+        self.close_response
+        return
       end
 
       # Run the app at least once.
