@@ -47,8 +47,14 @@ module SockJS
 
       puts "~ with_response: assigning response and #{transport.class} ..."
 
+      prev_resp, prev_trans = @response, @transport
       @response, @transport = response, transport
       block.call
+
+      if prev_trans && prev_trans.is_a?(SockJS::Transports::XHRStreamingPost) # TODO: #streaming?
+        puts "~ with_response: reassigning response and #{transport.class} ..."
+        @response, @transport = prev_resp, prev_trans
+      end
     end
 
     def close_response
