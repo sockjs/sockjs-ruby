@@ -38,6 +38,7 @@ module SockJS
           response.set_cache_control
           response.set_access_control(request.origin)
           response.set_session_id(request.session_id)
+          response.finish
         end
       end
     end
