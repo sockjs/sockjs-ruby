@@ -36,8 +36,32 @@ module SockJS
       self.prefix = /^websocket$/
       self.method = "GET"
 
+      def session_class
+        SockJS::Session
+      end
+
+      def check_invalid_request_or_disabled_websocket(request)
+        if not @options[:websocket]
+          raise HttpError.new(404, "WebSockets Are Disabled")
+        elsif request.env["HTTP_UPGRADE"].to_s.downcase != "websocket"
+          raise HttpError.new(400, 'Can "Upgrade" only to "WebSocket".')
+        elsif not ["Upgrade", "keep-alive, Upgrade"].include?(request.env["HTTP_CONNECTION"])
+          raise HttpError.new(400, '"Connection" must be "Upgrade".')
+        end
+      end
+
       # Handler.
       def handle(request)
+      end
+
+      def format_frame(payload)
+        raise TypeError.new("Payload must not be nil!") if payload.nil?
+
+        payload
+      end
+
+      def send_data(frame)
+        @ws.send(frame)
       end
     end
   end
