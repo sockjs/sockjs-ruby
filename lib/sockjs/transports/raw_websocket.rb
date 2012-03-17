@@ -4,6 +4,21 @@ require "forwardable"
 require "sockjs/faye"
 require "sockjs/transport"
 
+# Raw WebSocket url: /websocket
+# -------------------------------
+#
+# SockJS protocol defines a bit of higher level framing. This is okay
+# when the browser using SockJS-client establishes the connection, but
+# it's not really appropriate when the connection is being established
+# from another program. Although SockJS focuses on server-browser
+# communication, it should be straightforward to connect to SockJS
+# from command line or some any programming language.
+#
+# In order to make writing command-line clients easier, we define this
+# `/websocket` entry point. This entry point is special and doesn't
+# use any additional custom framing, no open frame, no
+# heartbeats. Only raw WebSocket protocol.
+
 module SockJS
   module Transports
     module WSDebuggingMixin
