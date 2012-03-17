@@ -49,4 +49,5 @@ Release:
 
 
 To be considered:
+- We can use https://github.com/macournoyer/thin_async/blob/master/lib/thin/async.rb instead of our own solution.
 - Rainbows and Goliath support.
