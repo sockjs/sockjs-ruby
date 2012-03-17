@@ -1,5 +1,6 @@
 # encoding: utf-8
 
+require "forwardable"
 require "sockjs/faye"
 require "sockjs/transport"
 

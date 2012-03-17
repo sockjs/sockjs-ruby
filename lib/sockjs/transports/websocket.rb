@@ -1,8 +1,6 @@
 # encoding: utf-8
 
-require "sockjs/faye"
-require "forwardable"
-require "sockjs/transport"
+require_relative "./raw_websocket"
 
 module SockJS
   module Transports
