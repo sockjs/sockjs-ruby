@@ -52,6 +52,29 @@ module SockJS
 
       # Handler.
       def handle(request)
+        check_invalid_request_or_disabled_websocket(request)
+
+        puts "~ Upgrading to WebSockets ..."
+
+        @ws = Faye::WebSocket.new(request.env)
+
+        @ws.extend(WSDebuggingMixin)
+
+        @ws.onopen do |event|
+          self.handle_open(request)
+        end
+
+        @ws.onmessage = lambda do |event|
+          debug "<~ WS data received: #{event.data.inspect}"
+          self.handle_message(request, event)
+        end
+
+        @ws.onclose = lambda do |event|
+          debug "~ Closing WebSocket connection (code: #{event.code}, reason: #{event.reason.inspect})"
+          self.handle_close(request, event)
+        end
+      rescue SockJS::HttpError => error
+        error.to_response(self, request)
       end
 
       def format_frame(payload)
