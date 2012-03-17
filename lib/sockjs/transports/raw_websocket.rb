@@ -50,7 +50,7 @@ module SockJS
         end
       end
 
-      # Handler.
+      # Handlers.
       def handle(request)
         check_invalid_request_or_disabled_websocket(request)
 
@@ -75,6 +75,15 @@ module SockJS
         end
       rescue SockJS::HttpError => error
         error.to_response(self, request)
+      end
+
+      def handle_open(request)
+      end
+
+      def handle_message(request, event)
+      end
+
+      def handle_close(request, event)
       end
 
       def format_frame(payload)
