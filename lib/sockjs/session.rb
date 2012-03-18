@@ -39,7 +39,7 @@ module SockJS
     def finish
       frame = @buffer.to_frame
       self.send_data(frame)
-      @response.finish if frame.match(/^c/) && @response
+      @response.finish if frame.match(/^c\[\d+,/) && @response
     end
 
     def with_response_and_transport(response, transport, &block)
