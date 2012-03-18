@@ -92,12 +92,18 @@ module SockJS
         error.to_response(self, request)
       end
 
+      # Here we need to open a new session, so we
+      # can run the custom app. No opening frame.
       def handle_open(request)
       end
 
+      # Run the app. Messages shall be send
+      # without frames. This might need another
+      # buffer class or another session class.
       def handle_message(request, event)
       end
 
+      # Close the connection without sending the closing frame.
       def handle_close(request, event)
       end
 
