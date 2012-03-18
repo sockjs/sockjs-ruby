@@ -95,6 +95,16 @@ module SockJS
       # Here we need to open a new session, so we
       # can run the custom app. No opening frame.
       def handle_open(request)
+        puts "~ Opening WS connection."
+        match = request.path_info.match(self.class.prefix)
+        session = self.create_session(request.path_info)
+        session.buffer = RawBuffer.new # This is a hack for the bloody API. Rethinking and refactoring required!
+        session.transport = self
+
+        # Send the opening frame.
+        session.open!
+
+        session.process_buffer # Run the app (connection.session_open hook).
       end
 
       # Run the app. Messages shall be send
@@ -113,8 +123,8 @@ module SockJS
         payload
       end
 
-      def send_data(frame)
-        @ws.send(frame)
+      def send_data(message)
+        @ws.send(message) unless message.empty?
       end
     end
   end
