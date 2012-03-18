@@ -128,4 +128,35 @@ module SockJS
       @status == :closed
     end
   end
+
+
+  class NoFramingSupportError < StandardError
+    def message
+      "RawBuffer doesn't support framing, therefore you can't send multiple messages at once!"
+    end
+  end
+
+
+  class RawBuffer < Buffer
+    EMPTY_STRING ||= String.new
+
+    def to_frame
+      if @messages.empty? && (self.opening? or self.closing?)
+        return EMPTY_STRING
+      elsif (self.opening? or self.closing?) && ! @messages.empty?
+        raise "You can't both change the state and try to send messages! Basic transports could do only one of them!"
+      else
+        @messages[0]
+      end
+    end
+
+    # Add message to the list of messages.
+    def <<(message)
+      raise BufferNotOpenError.new(@status) unless self.open?
+      raise NoFramingSupportError.new unless @messages.empty?
+      @messages << message
+    end
+
+    undef :push
+  end
 end
