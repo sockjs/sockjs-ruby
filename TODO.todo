@@ -30,9 +30,6 @@ Not implemented:
   - EventSource.test_response_limit
   - HtmlFile.test_response_limit
 
-  RawWebsocket:
-  - Not supported yet (this is /websocket, NOT /*/*/websocket!)
-
   Heartbeat:
   - (curl -X POST http://localhost:8081/echo/a/b/xhr -vv should return o frame, the next curl -X POST http://localhost:8081/echo/a/b/xhr -vv should hang and return a message if there's any or heartbeat after the timeout).
 
