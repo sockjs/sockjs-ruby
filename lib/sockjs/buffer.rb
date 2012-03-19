@@ -157,6 +157,6 @@ module SockJS
       @messages << message
     end
 
-    undef :push
+    alias_method :push, :<<
   end
 end
