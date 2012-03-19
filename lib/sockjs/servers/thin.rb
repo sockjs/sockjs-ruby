@@ -55,7 +55,9 @@ module SockJS
             raise "You can't use Content-Length with chunking!"
           end
 
-          turn_streaming_on(@status, @headers)
+          unless @request.http_1_0? || @status == 204
+            turn_chunking_on(@headers)
+          end
 
           callback = @request.env["async.callback"]
 
@@ -65,10 +67,8 @@ module SockJS
         end
       end
 
-      def turn_streaming_on(status, headers)
-        unless status == 204
-          headers["Transfer-Encoding"] = "chunked"
-        end
+      def turn_chunking_on(status, headers)
+        headers["Transfer-Encoding"] = "chunked"
       end
 
       def write(data)
