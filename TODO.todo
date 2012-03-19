@@ -22,6 +22,8 @@ Bugs:
 
 - @disconnect_timer doesn't work as it's supposed to, it's set up even in WS and streaming on request.open, NOT on request.close
 
+- Specs sockjs-ruby#1 & sockjs-ruby#2
+
 
 Not implemented:
 
