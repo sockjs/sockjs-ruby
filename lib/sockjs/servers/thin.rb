@@ -67,7 +67,7 @@ module SockJS
         end
       end
 
-      def turn_chunking_on(status, headers)
+      def turn_chunking_on(headers)
         headers["Transfer-Encoding"] = "chunked"
       end
 

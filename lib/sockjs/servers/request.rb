@@ -10,6 +10,13 @@ module SockJS
 
   # The API is heavily inspired by Node.js' standard library.
   class Request
+    HTTP_1_0     ||= "HTTP/1.0"
+    HTTP_VERSION ||= "http_version"
+
+    def http_1_0?
+      self.headers[HTTP_VERSION] == HTTP_1_0
+    end
+
     # request.http_method
     # => "GET"
     def http_method
