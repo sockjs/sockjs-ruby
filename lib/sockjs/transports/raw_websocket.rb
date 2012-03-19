@@ -111,6 +111,23 @@ module SockJS
       # without frames. This might need another
       # buffer class or another session class.
       def handle_message(request, event)
+        message = [event.data].to_json
+
+        # Unlike other transports, the WS one is supposed to ignore empty messages.
+        unless message.empty?
+          puts "<~ WS message received: #{message.inspect}"
+          @session.receive_message(request, message)
+
+          # Send encoded messages in an array frame.
+          messages = @session.process_buffer
+          if messages.start_with?("a[") # a[] frames are sent immediatelly! FIXME!
+            puts "~ Messages to be sent: #{messages.inspect}"
+            @ws.send(messages)
+          end
+        end
+      rescue SockJS::InvalidJSON => error
+        # @ws.send(error.message) # TODO: frame it ... although ... is it required? The tests do pass, but it would be inconsistent if we'd send it for other transports and not for WS, huh?
+        @ws.close # Close the connection abruptly, no closing frame.
       end
 
       # Close the connection without sending the closing frame.
