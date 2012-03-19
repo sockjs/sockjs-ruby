@@ -28,13 +28,12 @@ module SockJS
         # ["rack.input"].closed? # it's a stream
         @request, @status, @headers = request, status, headers
 
-        if request.env["HTTP_VERSION"] == "HTTP/1.0"
+        if request.http_1_0?
+          puts "~ Request is in HTTP/1.0, responding with HTTP/1.0"
           @body = DelayedResponseBody.new
         else
           @body = DelayedResponseChunkedBody.new
         end
-
-        puts "~ HTTP_VERSION is #{request.env["HTTP_VERSION"].inspect}, using body #{@body}."
 
         block.call(self) if block
 

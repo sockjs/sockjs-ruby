@@ -16,7 +16,7 @@ module Thin
     end
 
     def head
-      "HTTP/#{self.http_version} #{@status} #{HTTP_STATUS_CODES[@status.to_i]}\r\n#{headers_output}\r\n"
+      "#{self.http_version} #{@status} #{HTTP_STATUS_CODES[@status.to_i]}\r\n#{headers_output}\r\n"
     end
   end
 
