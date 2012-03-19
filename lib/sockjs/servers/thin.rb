@@ -34,6 +34,8 @@ module SockJS
           @body = DelayedResponseChunkedBody.new
         end
 
+        puts "~ HTTP_VERSION is #{request.env["HTTP_VERSION"].inspect}, using body #{@body}."
+
         block.call(self) if block
 
         set_connection_keep_alive_if_requested
