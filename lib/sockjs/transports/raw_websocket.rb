@@ -75,7 +75,7 @@ module SockJS
 
         @ws.extend(WSDebuggingMixin)
 
-        @ws.onopen do |event|
+        @ws.onopen = lambda do |event|
           self.handle_open(request)
         end
 
@@ -96,15 +96,15 @@ module SockJS
       # can run the custom app. No opening frame.
       def handle_open(request)
         puts "~ Opening WS connection."
-        match = request.path_info.match(self.class.prefix)
-        session = self.create_session(request.path_info)
-        session.buffer = RawBuffer.new # This is a hack for the bloody API. Rethinking and refactoring required!
-        session.transport = self
+        random_id = Array.new(16) { rand(256) }.pack("C*").unpack("H*").first
+        @session = self.connection.create_session(random_id, self)
+        @session.buffer = RawBuffer.new # This is a hack for the bloody API. Rethinking and refactoring required!
+        @session.transport = self
 
         # Send the opening frame.
-        session.open!
+        @session.open!
 
-        session.process_buffer # Run the app (connection.session_open hook).
+        @session.process_buffer # Run the app (connection.session_open hook).
       end
 
       # Run the app. Messages shall be send
@@ -115,6 +115,9 @@ module SockJS
 
       # Close the connection without sending the closing frame.
       def handle_close(request, event)
+        puts "~ Closing WS connection."
+        @session.close
+        @session.transport = nil
       end
 
       def format_frame(payload)
