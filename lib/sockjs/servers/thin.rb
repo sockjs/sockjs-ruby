@@ -1,9 +1,9 @@
 # encoding: utf-8
 
 require "forwardable"
+require "sockjs/thin"
 
 require_relative "./rack"
-require_relative "../thin"
 
 module SockJS
   module Thin
@@ -53,7 +53,7 @@ module SockJS
             raise "You can't use Content-Length with chunking!"
           end
 
-          turn_streaming_on(status, headers)
+          turn_streaming_on(@status, @headers)
 
           callback = @request.env["async.callback"]
 
