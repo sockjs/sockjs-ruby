@@ -35,7 +35,7 @@ Not implemented:
 
 
 Thin IRC (I've already asked Marc-Andre, waiting for the response):
-- Http11.test_synchronous: [Errno 54] Connection reset by peer. Thin does support Keep-Alive since 0.7.0 https://groups.google.com/group/thin-ruby/browse_thread/thread/4eb696ea517fba2b?pli=1, so what's the problem? This should really work by default, according to the documentation. Only if we'd set --max-persistent-conns to 0, then Keep-Alive would be disabled, but we didn't do that AND it defaults to 512.
+- Http11.test_synchronous: [Errno 54] Connection reset by peer. Thin does support Keep-Alive since 0.7.0 https://groups.google.com/group/thin-ruby/browse_thread/thread/4eb696ea517fba2b?pli=1, so what's the problem? This should really work by default, according to the documentation. Only if we'd set --max-persistent-conns to 0, then Keep-Alive would be disabled, but we didn't do that AND it defaults to 512. Related code: https://github.com/macournoyer/thin/blob/master/lib/thin/request.rb#L109-122
 - Http10 (supporting HTTP 1.0 is not a priority, but it should be easy enough to do so if Thin gives us the choice to respond in 1.0 which might be tricky. See https://github.com/rack/rack/blob/master/lib/rack/chunked.rb#L44-53).
 
 
