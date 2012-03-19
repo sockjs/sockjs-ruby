@@ -12,8 +12,7 @@ Bugs:
 - JsonPolling.test_close
 - Protocol.test_closeSession
 
-- Protocol.test_simpleSession: AssertionError: 'a[]\n' != 'c[2010,"Another connection still open"]\n'. The problem is that we close the first connection sending 'a[""]\n' which is really, really wrong, it's supposed to hang. None the less we MUST NOT block the whole thread. It should not be a problem as Thin is EventMachine-based, but we must make sure it's alright.
-- HandlingClose.test_abort_xhr_polling: AssertionError: 'a[]\n' != 'c[2010,"Another connection still open"]\n'
+- WebSockets are broken right now ... again :/
 
 - HandlingClose.test_abort_xhr_streaming: times out
 - HandlingClose.test_close_frame: times out
@@ -25,6 +24,12 @@ Bugs:
 
 
 Not implemented:
+
+  Something like on_close event:
+  - "Can I detect that client has closed the connection? I mean if client starts a long request, pulls, pulls and then close it? I'd need some def on_close, is there any way how to do so?"
+  - "There's no reliable way to know when the client closes the connection. The best way I know is to send a ping (heartbeat) at interval. Once you stop receiving those pings, you know the connection is closed."
+  - Protocol.test_simpleSession: AssertionError: 'a[]\n' != 'c[2010,"Another connection still open"]\n'. The problem is that we close the first connection sending 'a[""]\n' which is really, really wrong, it's supposed to hang. None the less we MUST NOT block the whole thread. It should not be a problem as Thin is EventMachine-based, but we must make sure it's alright.
+  - HandlingClose.test_abort_xhr_polling: AssertionError: 'a[]\n' != 'c[2010,"Another connection still open"]\n'
 
   GC by closing request:
   - XhrStreaming.test_response_limit
