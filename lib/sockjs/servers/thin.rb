@@ -160,6 +160,8 @@ module SockJS
       end
     end
 
+
+    # https://github.com/rack/rack/blob/master/lib/rack/chunked.rb
     class DelayedResponseChunkedBody < DelayedResponseBody
       TERM ||= "\r\n"
       TAIL ||= "0#{TERM}#{TERM}"
