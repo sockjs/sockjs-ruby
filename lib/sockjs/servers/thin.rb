@@ -3,6 +3,7 @@
 require "forwardable"
 
 require_relative "./rack"
+require_relative "../thin"
 
 module SockJS
   module Thin
@@ -23,8 +24,15 @@ module SockJS
 
       attr_reader :status, :headers, :body
       def initialize(request, status = nil, headers = Hash.new, &block)
-        @request, @body   = request, DelayedResponseBody.new
-        @status, @headers = status, headers
+        # request.env["async.close"]
+        # ["rack.input"].closed? # it's a stream
+        @request, @status, @headers = request, status, headers
+
+        if request.env["HTTP_VERSION"] == "HTTP/1.0"
+          @body = DelayedResponseBody.new
+        else
+          @body = DelayedResponseChunkedBody.new
+        end
 
         block.call(self) if block
 
@@ -45,15 +53,19 @@ module SockJS
             raise "You can't use Content-Length with chunking!"
           end
 
-          unless @status == 204
-            @headers["Transfer-Encoding"] = "chunked"
-          end
+          turn_streaming_on(status, headers)
 
           callback = @request.env["async.callback"]
 
           puts "~ Headers: #{@headers.inspect}"
 
           callback.call([@status, @headers, @body])
+        end
+      end
+
+      def turn_streaming_on(status, headers)
+        unless status == 204
+          headers["Transfer-Encoding"] = "chunked"
         end
       end
 
@@ -78,9 +90,6 @@ module SockJS
     class DelayedResponseBody
       include EventMachine::Deferrable
 
-      TERM ||= "\r\n"
-      TAIL ||= "0#{TERM}#{TERM}"
-
       attr_accessor :session
 
       def initialize
@@ -104,9 +113,8 @@ module SockJS
         end
 
         puts "~ body#write #{chunk.inspect}"
-        data = [chunk.bytesize.to_s(16), TERM, chunk, TERM].join
 
-        self.__write__(data)
+        self.write_chunk(chunk)
       end
 
       def each(&block)
@@ -116,15 +124,10 @@ module SockJS
       end
 
       def succeed(from_server = true)
-        if from_server
-          if $DEBUG
-            puts "~ Closing the response from the server #{caller[5..-8].map { |item| item.sub(Dir.pwd + "/lib/", "") }.inspect}."
-          else
-            puts "~ Closing the response from the server."
-          end
+        if $DEBUG
+          puts "~ Closing the response #{caller[5..-8].map { |item| item.sub(Dir.pwd + "/lib/", "") }.inspect}."
         else
-          puts "~ Closing the response from the client."
-          @session.on_close if @session # When the client closes the session.
+          puts "~ Closing the response."
         end
 
         @status = :closed
@@ -137,7 +140,6 @@ module SockJS
         end
 
         self.write(data) if data
-        self.__write__(TAIL)
 
         self.succeed(true)
       end
@@ -147,8 +149,34 @@ module SockJS
       end
 
       protected
+      def write_chunk(chunk)
+        self.__write__(chunk)
+      end
+
       def __write__(data)
         @body_callback.call(data)
+      end
+    end
+
+    class DelayedResponseChunkedBody < DelayedResponseBody
+      TERM ||= "\r\n"
+      TAIL ||= "0#{TERM}#{TERM}"
+
+      def finish(data = nil)
+        if @status == :closed
+          raise "Body is already closed!"
+        end
+
+        self.write(data) if data
+        self.__write__(TAIL)
+
+        self.succeed(true)
+      end
+
+      protected
+      def write_chunk(chunk)
+        data = [chunk.bytesize.to_s(16), TERM, chunk, TERM].join
+        self.__write__(data)
       end
     end
   end
