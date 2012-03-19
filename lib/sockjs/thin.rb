@@ -7,7 +7,7 @@ module Thin
 
   class Response
     attr_writer :http_version
-    def http_version=(http_version)
+    def http_version
       @http_version || Thin::Request::HTTP_1_1
     end
 
@@ -26,6 +26,7 @@ module Thin
       # is ready to be processed.
       def process
         @response.http_version = @request.env[Thin::Request::HTTP_VERSION]
+        puts "~ HTTP version is #{@request.env[Thin::Request::HTTP_VERSION]}"
         super
       end
     }
