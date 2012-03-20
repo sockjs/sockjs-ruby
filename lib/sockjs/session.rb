@@ -75,6 +75,7 @@ module SockJS
       messages = parse_json(data)
       process_messages(*messages) unless messages.empty?
     rescue SockJS::InvalidJSON => error
+      raise error if @response.nil? # WS
       @transport.response(request, error.status) do |response|
         response.write(error.message)
       end
