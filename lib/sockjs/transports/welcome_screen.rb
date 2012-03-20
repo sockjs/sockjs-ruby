@@ -13,7 +13,7 @@ module SockJS
       def handle(request)
         response(request, 200) do |response|
           response.set_content_type(:plain)
-          response.write("Welcome to SockJS!\n")
+          response.finish("Welcome to SockJS!\n")
         end
       end
     end
