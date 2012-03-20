@@ -220,9 +220,8 @@ module SockJS
       self.set_timer
 
       if self.waiting?
+        puts "~ Session#wait: another connection still open"
         self.close(2010, "Another connection still open")
-        self.send_data(@buffer.to_frame)
-        self.close_response
         return
       end
 

@@ -8,7 +8,6 @@
 
 
 Bugs (2 days):
-- HandlingClose.test_abort_xhr_streaming: server crashes with 'Body isn't open (status: closed, trying to write "c[2010,\"Another connection still open\"]\n")' (2.5 hours).
 - WebSockets are broken right now ... again :/ (1 – 1.5 days).
 - @disconnect_timer doesn't work as it's supposed to, it's set up even in WS and streaming on request.open, NOT on request.close (2.5 hours).
 
