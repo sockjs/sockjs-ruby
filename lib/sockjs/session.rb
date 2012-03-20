@@ -14,10 +14,6 @@ module SockJS
     end
 
     def send_data(frame)
-      if @transport.respond_to?(:send_data) # WebSocket
-        return @transport.send_data(frame)
-      end
-
       if @response.nil?
         raise TypeError.new("Session#response must not be nil! Occurred when writing #{frame.inspect}")
       end
@@ -39,7 +35,7 @@ module SockJS
     def finish
       frame = @buffer.to_frame
       self.send_data(frame)
-      @response.finish if frame.match(/^c\[\d+,/) && @response
+      @response.finish if frame.match(/^c\[\d+,/)
     end
 
     def with_response_and_transport(response, transport, &block)
@@ -306,6 +302,26 @@ module SockJS
     def mark_to_be_garbage_collected
       puts "~ Closing the session"
       @status = :closed
+    end
+  end
+
+
+  class WebSocketSession < Session
+    attr_accessor :ws
+    undef :response
+
+    def send_data(message)
+      raise TypeError.new("Message must not be nil!") if message.nil?
+
+      @ws.send(message) unless message.empty?
+    end
+
+    def finish
+    end
+
+    def close(status = 3000, message = "Go away!")
+      self.transport = nil
+      @ws.close
     end
   end
 

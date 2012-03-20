@@ -52,7 +52,7 @@ module SockJS
       self.method = "GET"
 
       def session_class
-        SockJS::Session
+        SockJS::WebSocketSession
       end
 
       def check_invalid_request_or_disabled_websocket(request)
@@ -98,6 +98,7 @@ module SockJS
         puts "~ Opening WS connection."
         random_id = Array.new(16) { rand(256) }.pack("C*").unpack("H*").first
         @session = self.connection.create_session(random_id, self)
+        @session.ws = @ws
         @session.buffer = RawBuffer.new # This is a hack for the bloody API. Rethinking and refactoring required!
         @session.transport = self
 
@@ -136,7 +137,6 @@ module SockJS
       def handle_close(request, event)
         puts "~ Closing WS connection."
         @session.close
-        @session.transport = nil
       end
 
       def format_frame(payload)
@@ -146,6 +146,8 @@ module SockJS
       end
 
       def send_data(message)
+        raise TypeError.new("Message must not be nil!") if message.nil?
+
         @ws.send(message) unless message.empty?
       end
     end
