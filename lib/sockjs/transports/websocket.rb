@@ -16,6 +16,7 @@ module SockJS
         puts "~ Opening WS connection."
         match = request.path_info.match(self.class.prefix)
         session = self.create_session(request.path_info)
+        session.ws = @ws
         session.buffer = Buffer.new # This is a hack for the bloody API. Rethinking and refactoring required!
         session.transport = self
 
