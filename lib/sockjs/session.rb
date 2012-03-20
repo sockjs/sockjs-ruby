@@ -317,6 +317,9 @@ module SockJS
     end
 
     def finish
+      frame = @buffer.to_frame
+      self.send_data(frame)
+      @ws.close if frame.match(/^c\[\d+,/)
     end
 
     def close(status = 3000, message = "Go away!")
