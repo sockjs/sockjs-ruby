@@ -127,7 +127,6 @@ module SockJS
         # and send the prelude if there's any. However we must
         # not run the user app, otherwise baaad stuff can happen.
         # error.session.run_user_app(response)
-        session.close(nil, nil) # Use the last closing message which is cached in the buffer.
         session.finish
       end
 
