@@ -178,6 +178,7 @@ module SockJS
       # SessionWitchCachedMessages#after_app_run is aliased to #finish
       # and we MUST NOT clear the buffer, because we have to cache it
       # for the next responses. Bugger ...
+      self.finish if self.class == SockJS::Session
 
       self.reset_close_timer
 
@@ -236,7 +237,7 @@ module SockJS
     def run_user_app(response)
       puts "~ Executing user's SockJS app"
       frame = self.process_buffer(false)
-      self.send_data(frame) if frame
+      self.send_data(frame) if frame and not frame.match(/^c\[\d+,/)
       puts "~ User's SockJS app finished"
     end
 

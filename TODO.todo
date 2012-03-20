@@ -8,14 +8,9 @@
 
 
 Bugs:
+- HandlingClose.test_abort_xhr_streaming: server crashes with 'Body isn't open (status: closed, trying to write "c[2010,\"Another connection still open\"]\n")'
 - WebSockets are broken right now ... again :/
-
-- HandlingClose.test_close_frame: session.close should close connection, currently it times out.
-- Http11.test_streaming: session.close should close connection, currently it times out.
-- Http10.test_streaming: session.close should close connection, currently it times out.
-
 - @disconnect_timer doesn't work as it's supposed to, it's set up even in WS and streaming on request.open, NOT on request.close
-
 - Specs sockjs-ruby#1 & sockjs-ruby#2
 
 
