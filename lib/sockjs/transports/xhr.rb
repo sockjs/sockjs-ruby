@@ -87,6 +87,8 @@ module SockJS
     end
 
     class XHRStreamingPost < Transport
+      PREAMBLE ||= "h" * 2048 + "\n"
+
       # Settings.
       self.prefix = /[^.]+\/([^.]+)\/xhr_streaming$/
       self.method = "POST"
@@ -105,8 +107,7 @@ module SockJS
 
           # IE requires 2KB prefix:
           # http://blogs.msdn.com/b/ieinternals/archive/2010/04/06/comet-streaming-in-internet-explorer-with-xmlhttprequest-and-xdomainrequest.aspx
-          preamble = "h" * 2048 + "\n"
-          response.write(preamble)
+          response.write(PREAMBLE)
 
           if session.newly_created?
             session.open!
@@ -114,6 +115,11 @@ module SockJS
 
           session.wait(response)
         end
+      end
+
+      def handle_session_unavailable(error, response)
+        response.write(PREAMBLE)
+        super(error, response)
       end
     end
 
