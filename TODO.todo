@@ -4,7 +4,7 @@
 # t HandlingClose
 # t Http11 Http10
 
-# t WebsocketHybi10 WebsocketHixie76
+# t RawWebsocket WebsocketHybi10 WebsocketHixie76
 
 
 Bugs:
