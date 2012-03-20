@@ -1,14 +1,22 @@
 # t BaseUrlGreeting IframePage InfoTest SessionURLs WebsocketHttpErrors JSONEncoding XhrPolling JsonPolling
+# t RawWebsocket WebsocketHybi10 WebsocketHixie76
 # t Protocol
 # t XhrStreaming EventSource HtmlFile
 # t HandlingClose
 # t Http11 Http10
 
-# t RawWebsocket WebsocketHybi10 WebsocketHixie76
-
 
 Bugs (2 days):
-- WebSockets are broken right now ... again :/ (1 – 1.5 days).
+- WebsocketHybi10.test_transport: raise Empty
+- WebsocketHybi10.test_broken_json: raise Empty
+
+- WebsocketHybi10.test_close: ConnectionClosedException
+- WebsocketHixie76.test_broken_json: ConnectionClosedException
+- WebsocketHixie76.test_close: ConnectionClosedException
+- WebsocketHixie76.test_empty_frame: ConnectionClosedException
+- WebsocketHixie76.test_reuseSessionId: ConnectionClosedException
+- WebsocketHixie76.test_transport: ConnectionClosedException
+
 - @disconnect_timer doesn't work as it's supposed to, it's set up even in WS and streaming on request.open, NOT on request.close (2.5 hours).
 
 
