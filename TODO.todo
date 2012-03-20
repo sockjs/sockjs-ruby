@@ -9,8 +9,8 @@
 
 
 Bugs:
-- JsonPolling.test_close
-- Protocol.test_closeSession
+- JsonPolling.test_close: sockjs/session.rb:22 - Session#response must not be nil! Occurred when writing "c[3000,\"Go away!\"]" What the hell, the data has been already sent, huh?
+- Protocol.test_closeSession: sockjs/session.rb:22 - Session#response must not be nil! Occurred when writing "c[3000,\"Go away!\"]" What the hell, the data has been already sent, huh?
 
 - WebSockets are broken right now ... again :/
 
