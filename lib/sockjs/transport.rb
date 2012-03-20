@@ -107,36 +107,38 @@ module SockJS
             block.call(response, nil)
           end
         rescue SockJS::SessionUnavailableError => error
-          # We don't need to reset the buffer, it's convenient to keep it
-          # as we're serving the last frame, but we do need a new response.
-
-
-          error.session.with_response_and_transport(response, self) do
-            # We have to run the handler, so we set the headers
-            # and send the prelude if there's any. However we must
-            # not run the user app, otherwise baaad stuff can happen.
-            # error.session.run_user_app(response)
-            error.session.close(nil, nil) # Use the last closing message which is cached in the buffer.
-            error.session.finish
-          end
-
-
-
-
-          # TODO: What shall we do about it? We need to call session.close
-          # so we can send the closing frame with a DIFFERENT message.
-
-          # Noooo, we don't need to call session.close, do we? We just need to send the bloody closing frame, huh?
-
-          # Aaaaactually we DO, because we have to reset the bloody @close_timer!
-
-          # This helps with identifying open connections.
+          self.handle_session_unavailable(error, response)
         end
       else
         raise ArgumentError.new("Block in response takes either 1 or 2 arguments!")
       end
 
       response
+    end
+
+    def handle_session_unavailable(error, response)
+      session = error.session
+
+      # We don't need to reset the buffer, it's convenient to keep it
+      # as we're serving the last frame, but we do need a new response.
+
+      session.with_response_and_transport(response, self) do
+        # We have to run the handler, so we set the headers
+        # and send the prelude if there's any. However we must
+        # not run the user app, otherwise baaad stuff can happen.
+        # error.session.run_user_app(response)
+        session.close(nil, nil) # Use the last closing message which is cached in the buffer.
+        session.finish
+      end
+
+      # TODO: What shall we do about it? We need to call session.close
+      # so we can send the closing frame with a DIFFERENT message.
+
+      # Noooo, we don't need to call session.close, do we? We just need to send the bloody closing frame, huh?
+
+      # Aaaaactually we DO, because we have to reset the bloody @close_timer!
+
+      # This helps with identifying open connections.
     end
 
     # There's a session:
