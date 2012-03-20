@@ -23,7 +23,7 @@ module SockJS
         # Send the opening frame.
         session.open!
         session.check_status
-        session.buffer = RawBuffer.new(:open)
+        session.buffer = Buffer.new(:open)
 
         session.process_buffer # Run the app (connection.session_open hook).
       end
@@ -40,7 +40,7 @@ module SockJS
 
           # Send encoded messages in an array frame.
           messages = session.process_buffer
-          if messages.start_with?("a[") # a[] frames are sent immediatelly! FIXME!
+          if messages && messages.start_with?("a[") # a[] frames are sent immediatelly! FIXME!
             puts "~ Messages to be sent: #{messages.inspect}"
             @ws.send(messages)
           end
