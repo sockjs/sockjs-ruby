@@ -22,6 +22,8 @@ module SockJS
 
         # Send the opening frame.
         session.open!
+        @session.check_status
+        @session.buffer = RawBuffer.new(:open)
 
         session.process_buffer # Run the app (connection.session_open hook).
       end
