@@ -7,15 +7,12 @@
 
 
 Bugs (2 days):
-- WebsocketHybi10.test_transport: raise Empty
-- WebsocketHybi10.test_broken_json: raise Empty
-
 - WebsocketHybi10.test_close: ConnectionClosedException
-- WebsocketHixie76.test_broken_json: ConnectionClosedException
 - WebsocketHixie76.test_close: ConnectionClosedException
-- WebsocketHixie76.test_empty_frame: ConnectionClosedException
-- WebsocketHixie76.test_reuseSessionId: ConnectionClosedException
-- WebsocketHixie76.test_transport: ConnectionClosedException
+
+- WebsocketHixie76.test_haproxy: AssertionError: '\xca4\x00\xd8\xa5\x08G\x97,\xd5qZ\xba\xbfC{\x00o\xff' != '\xca4\x00\xd8\xa5\x08G\x97,\xd5qZ\xba\xbfC{'
+
+- WebsocketHixie76.test_reuseSessionId: AssertionError: 'a["a"]' != u'a["b"]'
 
 - @disconnect_timer doesn't work as it's supposed to, it's set up even in WS and streaming on request.open, NOT on request.close (2.5 hours).
 
