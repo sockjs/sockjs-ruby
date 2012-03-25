@@ -311,10 +311,11 @@ module SockJS
     attr_accessor :ws
     undef :response
 
-    def send_data(message)
-      raise TypeError.new("Message must not be nil!") if message.nil?
+    def send_data(frame)
+      raise TypeError.new("Frame must not be nil!") if frame.nil?
 
-      @ws.send(message) unless message.empty?
+      puts "~ @ws.send(#{frame.inspect})"
+      @ws.send(frame) unless frame.empty?
     end
 
     def finish
