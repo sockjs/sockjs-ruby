@@ -336,6 +336,13 @@ module SockJS
       self.buffer.push(*messages)
     end
 
+    def run_user_app(response)
+      puts "~ Executing user's SockJS app"
+      frame = self.process_buffer(false)
+      # self.send_data(frame) if frame and not frame.match(/^c\[\d+,/)
+      puts "~ User's SockJS app finished"
+    end
+
     def send_data(frame)
       super(frame)
 
