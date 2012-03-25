@@ -38,11 +38,8 @@ module SockJS
           session = self.get_session(request.path_info)
           session.receive_message(request, message)
 
-          # Send encoded messages in an array frame.
-          frame = session.process_buffer
-          if frame && frame.start_with?("a[") # a[] frames are sent immediatelly! FIXME!
-            session.send_data(frame)
-          end
+          # Run the user app.
+          session.run_user_app(nil)
         end
       rescue SockJS::SessionUnavailableError
         puts "~ Session is already closing"
