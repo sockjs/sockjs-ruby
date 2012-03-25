@@ -39,10 +39,9 @@ module SockJS
           session.receive_message(request, message)
 
           # Send encoded messages in an array frame.
-          messages = session.process_buffer
-          if messages && messages.start_with?("a[") # a[] frames are sent immediatelly! FIXME!
-            puts "~ Messages to be sent: #{messages.inspect}"
-            @ws.send(messages)
+          frame = session.process_buffer
+          if frame && frame.start_with?("a[") # a[] frames are sent immediatelly! FIXME!
+            session.send_data(frame)
           end
         end
       rescue SockJS::SessionUnavailableError
@@ -60,13 +59,13 @@ module SockJS
           session.close
 
           # Send the closing frame.
-          @ws.send(session.process_buffer)
+          session.send_data(session.process_buffer)
 
           session.transport = nil
         else
           puts "~ Session can't be retrieved, something went pretty damn wrong."
 
-          @ws.send('c[3000,"Go away!"]') # ONLY a temporary fallback for the time being!
+          session.send_data('c[3000,"Go away!"]') # ONLY a temporary fallback for the time being!
         end
       rescue SockJS::SessionUnavailableError
         puts "~ Session is already closing"
