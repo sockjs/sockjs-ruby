@@ -13,7 +13,7 @@ Gem::Specification.new do |s|
   s.homepage = "https://github.com/sockjs/sockjs-ruby"
   s.summary  = "Ruby server for SockJS"
   s.description = <<-DESC
-    SockJS is a WebSocket emulation library. It means that you use the WebSocket API, only instead of WebSocket class you instantiate SockJS class. In absence of WebSocket, some of the fallback transports will be used.
+    SockJS is a WebSocket emulation library. It means that you use the WebSocket API, only instead of WebSocket class you instantiate SockJS class. In absence of WebSocket, some of the fallback transports will be used. This code is compatible with SockJS protocol #{SockJS::PROTOCOL_VERSION}.
   DESC
 
   # Ruby version
