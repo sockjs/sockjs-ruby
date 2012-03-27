@@ -1,5 +1,5 @@
-# t BaseUrlGreeting IframePage InfoTest SessionURLs WebsocketHttpErrors JSONEncoding XhrPolling JsonPolling
-# t RawWebsocket WebsocketHybi10 WebsocketHixie76
+# t BaseUrlGreeting IframePage InfoTest SessionURLs WebsocketHttpErrors JSONEncoding XhrPolling JsonPolling RawWebsocket
+# t WebsocketHybi10 WebsocketHixie76
 # t Protocol
 # t XhrStreaming EventSource HtmlFile
 # t HandlingClose
@@ -33,7 +33,7 @@ Not implemented (up to 5 days):
 
   Keep-Alive (up to 2 days):
   - Http11.test_synchronous: [Errno 54] Connection reset by peer. Thin does support Keep-Alive since 0.7.0 https://groups.google.com/group/thin-ruby/browse_thread/thread/4eb696ea517fba2b?pli=1, so what's the problem? This should really work by default, according to the documentation. Only if we'd set --max-persistent-conns to 0, then Keep-Alive would be disabled, but we didn't do that AND it defaults to 512. Related code: https://github.com/macournoyer/thin/blob/master/lib/thin/request.rb#L109-122
-  - Http10.test_synchronous
+  - Http10.test_synchronous: AssertionError: 'keep-alive' != 'close'
 
   Heartbeat (2.5 hours):
   - (curl -X POST http://localhost:8081/echo/a/b/xhr -vv should return o frame, the next curl -X POST http://localhost:8081/echo/a/b/xhr -vv should hang and return a message if there's any or heartbeat after the timeout).
