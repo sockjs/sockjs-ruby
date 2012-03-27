@@ -6,14 +6,14 @@ SockJS is WebSocket emulation library. It means that you use the WebSocket API, 
 
 h2. Prerequisites
 
-Even though SockJS uses Rack interfact, *Thin is required* as "it supports polling":http://macournoyer.com/blog/2009/06/04/pusher-and-async-with-thin. For Websockets, we use "faye-websocket":http://blog.jcoglan.com/2011/11/28/announcing-faye-websocket-a-standards-compliant-websocket-library gem.
+Even though this library uses Rack interface, *Thin is required* as "it supports asynchronous callback":http://macournoyer.com/blog/2009/06/04/pusher-and-async-with-thin. For Websockets, we use "faye-websocket":http://blog.jcoglan.com/2011/11/28/announcing-faye-websocket-a-standards-compliant-websocket-library gem.
 
 h2. The Client-Side Part
 
 For the client-side part you have to use JS library "sockjs-client":http://sockjs.github.com/sockjs-client which provides WebSocket-like API. Here's an example:
 
 <pre>
-<script src="http://cdn.sockjs.org/sockjs-0.1.min.js"></script>
+<script src="http://cdn.sockjs.org/sockjs-0.2.1.min.js"></script>
 
 <script>
   var sock = new SockJS("http://mydomain.com/my_prefix");
@@ -37,29 +37,52 @@ h2. The Server-Side Part
 Now in order to have someone to talk to, we need to run a server. That's exactly what is sockjs-ruby good for:
 
 <pre>
-#!/usr/bin/env rackup -s thin
+#!/usr/bin/env ruby
 # encoding: utf-8
 
+require "rack"
 require "rack/sockjs"
+require "eventmachine"
 
-use SockJS, "/echo" do |connection|
-  connection.subscribe do |session, message|
-    session.send(message)
+# Your custom app.
+class MyHelloWorld
+  def call(env)
+    body = "This is the app, not SockJS."
+    headers = {
+      "Content-Type" => "text/plain; charset=UTF-8",
+      "Content-Length" => body.bytesize.to_s
+    }
+
+    [200, headers, [body]]
   end
 end
 
-use SockJS, "/disabled_websocket_echo",
-  disabled_transports: [SockJS::WebSocket] do |connection|
-  # ...
-end
 
-use SockJS, "/close" do |connection|
-  connection.session_open do |session|
-    session.close(3000, "Go away!")
+app = Rack::Builder.new do
+  # Run one SockJS app on /echo.
+  use SockJS, "/echo" do |connection|
+    connection.subscribe do |session, message|
+      session.send(message)
+    end
   end
+
+  # ... and the other one on /close.
+  use SockJS, "/close" do |connection|
+    connection.session_open do |session|
+      session.close(3000, "Go away!")
+    end
+  end
+
+  # This app will run on other URLs than /echo and /close,
+  # as these has already been assigned to SockJS.
+  run MyHelloWorld.new
 end
 
-run MyApp
+
+EM.run do
+  thin = Rack::Handler.get("thin")
+  thin.run(app.to_app, Port: 8081)
+end
 </pre>
 
 For more complex example check "examples/app/config.ru":https://github.com/sockjs/sockjs-ruby/blob/master/examples/app/config.ru.
@@ -77,13 +100,13 @@ Get "sockjs-protocol":https://github.com/sockjs/sockjs-protocol (installation in
 
 <pre>
 # Run all the tests.
-./venv/bin/python sockjs-protocol-0.1.py
+./venv/bin/python sockjs-protocol-0.2.1.py
 
 # Run all the tests defined in XhrStreaming.
-./venv/bin/python sockjs-protocol-0.1.py XhrStreaming
+./venv/bin/python sockjs-protocol-0.2.1.py XhrStreaming
 
 # Run only XhrStreaming.test_transport test.
-./venv/bin/python sockjs-protocol-0.1.py XhrStreaming.test_transport
+./venv/bin/python sockjs-protocol-0.2.1.py XhrStreaming.test_transport
 </pre>
 
 h1. Links
