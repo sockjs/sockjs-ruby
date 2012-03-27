@@ -9,7 +9,7 @@ Gem::Specification.new do |s|
   s.name     = "sockjs"
   s.version  = SockJS::VERSION
   s.authors  = ["botanicus"]
-  s.email    = "jakub@rabbitmq.com"
+  s.email    = "james(at)101ideas.cz"
   s.homepage = "https://github.com/sockjs/sockjs-ruby"
   s.summary  = "Ruby server for SockJS"
   s.description = <<-DESC
