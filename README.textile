@@ -85,7 +85,8 @@ EM.run do
 end
 </pre>
 
-For more complex example check "examples/app/config.ru":https://github.com/sockjs/sockjs-ruby/blob/master/examples/app/config.ru.
+For more complex example check "examples/sockjs_apps_for_sockjs_protocol_tests.rb":https://github.com/sockjs/sockjs-ruby/blob/master/examples/sockjs_apps_for_sockjs_protocol_tests.rb
+
 
 h2. SockJS Family
 
@@ -96,7 +97,7 @@ h2. SockJS Family
 
 h1. Development
 
-Get "sockjs-protocol":https://github.com/sockjs/sockjs-protocol (installation information are in its README) and run @config.ru@ from @examples/app@. Now you can run the tests against it, for instance:
+Get "sockjs-protocol":https://github.com/sockjs/sockjs-protocol (installation information are in its README) and run @./examples/sockjs_apps_for_sockjs_protocol_tests.rb@. Now you can run the tests against it, for instance:
 
 <pre>
 # Run all the tests.
