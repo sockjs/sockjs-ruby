@@ -65,7 +65,7 @@ end
 
 puts "~ Available handlers: #{::SockJS::Transport.subclasses.inspect}"
 
-options = {sockjs_url: "http://cdn.sockjs.org/sockjs-0.1.min.js"}
+options = {sockjs_url: "http://cdn.sockjs.org/sockjs-#{SockJS::PROTOCOL_VERSION}.min.js"}
 
 app = Rack::Builder.new do
   use Rack::SockJS, "/echo", options do |connection|
