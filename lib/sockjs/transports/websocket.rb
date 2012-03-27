@@ -56,7 +56,8 @@ module SockJS
           session.close
 
           # Send the closing frame.
-          session.send_data(session.process_buffer)
+          frame = session.process_buffer || 'c[3000,"Go away!"]'# FIXME: This is a hack for the time being. Where's the bloody "c" frame?
+          session.send_data(frame)
 
           session.transport = nil
         else
