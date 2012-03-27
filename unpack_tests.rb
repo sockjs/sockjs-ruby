@@ -13,10 +13,14 @@ tests = File.foreach("../protocol/sockjs-protocol-#{VERSION}.py").reduce(Hash.ne
       buffer[buffer.keys.last] << $1
     end
   end
-  
+
   buffer
 end
 
 require "yaml"
 
-puts tests.to_yaml
+if ARGV.length == 1
+  puts tests[ARGV.first].to_yaml
+else
+  puts tests.to_yaml
+end
