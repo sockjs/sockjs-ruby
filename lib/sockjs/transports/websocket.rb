@@ -39,7 +39,7 @@ module SockJS
           session.receive_message(request, message)
 
           # Run the user app.
-          session.run_user_app(nil)
+          session.process_buffer(false)
         end
       rescue SockJS::SessionUnavailableError
         puts "~ Session is already closing"

@@ -123,9 +123,9 @@ module SockJS
 
           # Send encoded messages in an array frame.
           messages = @session.process_buffer
-          if messages && messages.start_with?("a[") # a[] frames are sent immediatelly! FIXME!
+          if messages && messages.start_with?("a[") # We don't have any framing, this is obviously utter bollocks
             puts "~ Messages to be sent: #{messages.inspect}"
-            @ws.send(messages)
+            @session.send_data(messages)
           end
         end
       rescue SockJS::InvalidJSON => error
@@ -143,12 +143,6 @@ module SockJS
         raise TypeError.new("Payload must not be nil!") if payload.nil?
 
         payload
-      end
-
-      def send_data(message)
-        raise TypeError.new("Message must not be nil!") if message.nil?
-
-        @ws.send(message) unless message.empty?
       end
     end
   end
