@@ -5,6 +5,8 @@
 # t HandlingClose
 # t Http11 Http10
 
+Upgrade:
+- Upgrade to SockJS 0.3.
 
 Bugs (2 days):
 - Protocol.test_simpleSession: timed out, looks like it's connected to heartbeats.
