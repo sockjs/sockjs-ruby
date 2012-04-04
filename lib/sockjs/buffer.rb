@@ -44,8 +44,8 @@ module SockJS
     def to_frame
       if @messages.empty? && (self.opening? or self.closing? or self.heartbeat?)
         @frame
-      elsif (self.opening? or self.closing?) && ! @messages.empty?
-        raise "You can't both change the state and try to send messages! Basic transports can do only one of them!"
+      elsif (self.opening? or self.closing? or self.heartbeat?) && ! @messages.empty?
+        raise "You can't both change the state and try to send messages! Basic transports can do only one of them! Messages: #{@messages.inspect}, frame: #{@frame}"
       elsif ! @messages.empty?
         Protocol.array_frame(@messages)
       elsif @messages.empty?
