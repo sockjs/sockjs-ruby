@@ -15,6 +15,14 @@ module SockJS
     end
   end
 
+  class NoContentError < StandardError
+    attr_reader :buffer
+
+    def initialize(buffer)
+      @buffer = buffer
+    end
+  end
+
   class Buffer
     attr_reader :messages
 
@@ -38,8 +46,11 @@ module SockJS
         @frame
       elsif (self.opening? or self.closing?) && ! @messages.empty?
         raise "You can't both change the state and try to send messages! Basic transports could do only one of them!"
-      else
+      elsif ! @messages.empty?
         Protocol.array_frame(@messages)
+      elsif @messages.empty?
+        @frame = Protocol::HEARTBEAT_FRAME
+        raise NoContentError.new(self)
       end
     end
 
