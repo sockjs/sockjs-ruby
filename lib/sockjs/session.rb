@@ -28,6 +28,7 @@ module SockJS
     end
 
     def send(*messages)
+      return if messages.empty?
       self.buffer.push(*messages)
       self.send_data(self.buffer.to_frame)
     end
@@ -35,7 +36,10 @@ module SockJS
     def finish
       frame = @buffer.to_frame
       self.send_data(frame)
-      @response.finish if frame.match(/^c\[\d+,/) and @response
+    rescue SockJS::NoContentError => error
+      # No need for any action.
+    ensure
+      @response.finish if frame and frame.match(/^c\[\d+,/) and @response
     end
 
     def with_response_and_transport(response, transport, &block)
@@ -126,6 +130,11 @@ module SockJS
         end
       else
         nil
+      end
+    rescue SockJS::NoContentError => error
+      # Send heartbeat frame after 25 s.
+      EM::Timer.new(25) do
+        self.send_data(error.buffer.to_frame)
       end
     rescue SockJS::CloseError => error
       Protocol.closing_frame(error.status, error.message)
@@ -321,7 +330,10 @@ module SockJS
     def finish
       frame = @buffer.to_frame
       self.send_data(frame)
-      @ws.close if frame.match(/^c\[\d+,/)
+    rescue SockJS::NoContentError => error
+      # No need for any action.
+    ensure
+      @ws.close if frame and frame.match(/^c\[\d+,/)
     end
 
     def close(status = 3000, message = "Go away!")
