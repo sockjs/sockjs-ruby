@@ -48,7 +48,7 @@ module SockJS
         raise "You can't both change the state and try to send messages! Basic transports can do only one of them! Messages: #{@messages.inspect}, frame: #{@frame}"
       elsif ! @messages.empty?
         Protocol.array_frame(@messages)
-      elsif @messages.empty?
+      elsif @messages.empty? and @frame.nil?
         @status = :heartbeat
         @frame  = Protocol::HEARTBEAT_FRAME
         raise NoContentError.new(self)
