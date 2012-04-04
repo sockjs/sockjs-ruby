@@ -13,7 +13,7 @@ h2. The Client-Side Part
 For the client-side part you have to use JS library "sockjs-client":http://sockjs.github.com/sockjs-client which provides WebSocket-like API. Here's an example:
 
 <pre>
-<script src="http://cdn.sockjs.org/sockjs-0.2.1.min.js"></script>
+<script src="http://cdn.sockjs.org/sockjs-0.3.min.js"></script>
 
 <script>
   var sock = new SockJS("http://mydomain.com/my_prefix");
@@ -101,13 +101,13 @@ Get "sockjs-protocol":https://github.com/sockjs/sockjs-protocol (installation in
 
 <pre>
 # Run all the tests.
-./venv/bin/python sockjs-protocol-0.2.1.py
+./venv/bin/python sockjs-protocol-0.3.py
 
 # Run all the tests defined in XhrStreaming.
-./venv/bin/python sockjs-protocol-0.2.1.py XhrStreaming
+./venv/bin/python sockjs-protocol-0.3.py XhrStreaming
 
 # Run only XhrStreaming.test_transport test.
-./venv/bin/python sockjs-protocol-0.2.1.py XhrStreaming.test_transport
+./venv/bin/python sockjs-protocol-0.3.py XhrStreaming.test_transport
 </pre>
 
 h1. Links
