@@ -42,14 +42,15 @@ module SockJS
 
     # To get the data encoded as a SockJS frame.
     def to_frame
-      if @messages.empty? && (self.opening? or self.closing?)
+      if @messages.empty? && (self.opening? or self.closing? or self.heartbeat?)
         @frame
       elsif (self.opening? or self.closing?) && ! @messages.empty?
-        raise "You can't both change the state and try to send messages! Basic transports could do only one of them!"
+        raise "You can't both change the state and try to send messages! Basic transports can do only one of them!"
       elsif ! @messages.empty?
         Protocol.array_frame(@messages)
       elsif @messages.empty?
-        @frame = Protocol::HEARTBEAT_FRAME
+        @status = :heartbeat
+        @frame  = Protocol::HEARTBEAT_FRAME
         raise NoContentError.new(self)
       end
     end
@@ -83,7 +84,7 @@ module SockJS
       # delivered and then the closing frame will be send.
       # However with primitive transports such as long
       # polling, only the closing frame will be send.
-      if self.opening? or self.open? or self.closing?
+      if self.opening? or self.open? or self.closing? or self.heartbeat?
         @status = :closing
         @frame  = Protocol.closing_frame(status, message)
       else
@@ -137,6 +138,10 @@ module SockJS
 
     def closed?
       @status == :closed
+    end
+
+    def heartbeat?
+      @status == :heartbeat
     end
   end
 
