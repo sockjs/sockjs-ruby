@@ -37,8 +37,7 @@ module SockJS
       frame = @buffer.to_frame
       self.send_data(frame)
     rescue SockJS::NoContentError => error
-      # No need for any action.
-      puts "~ NoContentError in #{self.class}, doing nothing."
+      self.set_heartbeat_timer(error.buffer)
     ensure
       @response.finish if frame and frame.match(/^c\[\d+,/) and @response
     end
@@ -133,15 +132,7 @@ module SockJS
         nil
       end
     rescue SockJS::NoContentError => error
-      # Cancel @disconnect_timer.
-      puts "~ Cancelling @disconnect_timer as we're about to send a heartbeat frame in 25s."
-      @disconnect_timer.cancel
-
-      # Send heartbeat frame after 25 s.
-      EM::Timer.new(25) do
-        puts "~ Sending heartbeat frame."
-        self.send_data(error.buffer.to_frame)
-      end
+      self.set_heartbeat_timer(error.buffer)
     rescue SockJS::CloseError => error
       Protocol.closing_frame(error.status, error.message)
     end
@@ -315,6 +306,19 @@ module SockJS
       end
     end
 
+    def set_heartbeat_timer(buffer)
+      # Cancel @disconnect_timer.
+      puts "~ Cancelling @disconnect_timer as we're about to send a heartbeat frame in 25s."
+      @disconnect_timer.cancel
+
+      # Send heartbeat frame after 25 s.
+      EM::Timer.new(25) do
+        frame = buffer.to_frame
+        puts "~ Sending heartbeat frame #{frame.inspect}."
+        self.send_data(frame)
+      end
+    end
+
     def mark_to_be_garbage_collected
       puts "~ Closing the session"
       @status = :closed
@@ -337,8 +341,7 @@ module SockJS
       frame = @buffer.to_frame
       self.send_data(frame)
     rescue SockJS::NoContentError => error
-      # No need for any action.
-      puts "~ NoContentError in #{self.class}, doing nothing."
+      self.set_heartbeat_timer(error.buffer)
     ensure
       @ws.close if frame and frame.match(/^c\[\d+,/)
     end
