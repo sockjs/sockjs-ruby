@@ -311,9 +311,10 @@ module SockJS
       puts "~ Cancelling @disconnect_timer as we're about to send a heartbeat frame in 25s."
       @disconnect_timer.cancel
 
-      # Send heartbeat frame after 25 s.
+      # Send heartbeat frame after 25s.
       EM::Timer.new(25) do
-        # It's better as we know for sure that clearing buffer won't change it.
+        # It's better as we know for sure that
+        # clearing the buffer won't change it.
         puts "~ Sending heartbeat frame."
         self.finish
       end
