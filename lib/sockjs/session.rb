@@ -313,7 +313,7 @@ module SockJS
 
       # Send heartbeat frame after 25 s.
       EM::Timer.new(25) do
-        frame = buffer.to_frame
+        frame = SockJS::Protocol::HEARTBEAT_FRAME # It's better as we know for sure that clearing buffer won't change it.
         puts "~ Sending heartbeat frame #{frame.inspect}."
         self.send_data(frame)
       end
