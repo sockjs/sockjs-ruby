@@ -7,6 +7,8 @@
 
 
 Bugs (2 days):
+- Protocol.test_simpleSession: timed out, looks like it's connected to heartbeats.
+
 - WebsocketHybi10.test_close: ConnectionClosedException
 - WebsocketHixie76.test_close: ConnectionClosedException
 
