@@ -38,6 +38,7 @@ module SockJS
       self.send_data(frame)
     rescue SockJS::NoContentError => error
       # No need for any action.
+      puts "~ NoContentError in #{self.class}, doing nothing."
     ensure
       @response.finish if frame and frame.match(/^c\[\d+,/) and @response
     end
@@ -132,8 +133,13 @@ module SockJS
         nil
       end
     rescue SockJS::NoContentError => error
+      # Cancel @disconnect_timer.
+      puts "~ Cancelling @disconnect_timer as we're about to send a heartbeat frame in 25s."
+      @disconnect_timer.cancel
+
       # Send heartbeat frame after 25 s.
-      EM::Timer.new(25) do
+      EM::Timer.new(0.25) do
+        puts "~ Sending heartbeat frame."
         self.send_data(error.buffer.to_frame)
       end
     rescue SockJS::CloseError => error
@@ -332,6 +338,7 @@ module SockJS
       self.send_data(frame)
     rescue SockJS::NoContentError => error
       # No need for any action.
+      puts "~ NoContentError in #{self.class}, doing nothing."
     ensure
       @ws.close if frame and frame.match(/^c\[\d+,/)
     end
