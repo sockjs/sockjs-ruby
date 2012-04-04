@@ -138,7 +138,7 @@ module SockJS
       @disconnect_timer.cancel
 
       # Send heartbeat frame after 25 s.
-      EM::Timer.new(0.25) do
+      EM::Timer.new(25) do
         puts "~ Sending heartbeat frame."
         self.send_data(error.buffer.to_frame)
       end
