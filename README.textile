@@ -94,6 +94,7 @@ h2. SockJS Family
 * "SockJS-node":https://github.com/sockjs/sockjs-node Node.js server.
 * "SockJS-ruby":https://github.com/sockjs/sockjs-ruby Ruby server.
 * "SockJS-protocol":https://github.com/sockjs/sockjs-protocol protocol tests and documentation.
+* "SockJS-protocol spec":http://sockjs.github.com/sockjs-protocol/sockjs-protocol-0.3.html
 
 h1. Development
 
