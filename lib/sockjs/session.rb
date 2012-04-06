@@ -96,6 +96,10 @@ module SockJS
     def process_buffer(reset_timer = true)
       self.reset_timer if reset_timer
 
+      if @transport.nil?
+        raise TypeError.new("Transport must not be nil!")
+      end
+
       create_response do
         puts "~ Processing buffer using #{@transport.class}"
         self.check_status
@@ -354,7 +358,10 @@ module SockJS
     end
 
     def close(status = 3000, message = "Go away!")
-      self.transport = nil
+      # Don't clear the transport, otherwise
+      # WebsocketHybi10.test_close would fail
+      # as we'd try to process_buffer without
+      # having any transport at all.
       @ws.close
     end
   end
