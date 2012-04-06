@@ -222,7 +222,7 @@ module SockJS
     def wait(response, interval = 0.1)
       self.set_timer
 
-      if self.waiting?
+      if self.waiting? # Doesn't work for XHR, only for streaming.
         puts "~ Session#wait: another connection still open"
         self.close(2010, "Another connection still open")
         return

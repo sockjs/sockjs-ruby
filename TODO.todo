@@ -9,8 +9,6 @@ Upgrade:
 - Upgrade to SockJS 0.3.
 
 Bugs (2 days):
-- Protocol.test_simpleSession: timed out, the c[2010,"Another connection still open"] frame just vanishes in the thin air.
-
 - WebsocketHybi10.test_close: ConnectionClosedException
 - WebsocketHixie76.test_close: ConnectionClosedException
 
