@@ -316,7 +316,13 @@ module SockJS
         # It's better as we know for sure that
         # clearing the buffer won't change it.
         puts "~ Sending heartbeat frame."
-        self.finish
+        begin
+          self.finish
+        rescue Exception => error
+          # Nah these exceptions are OK ... let's figure out when they occur
+          # and let's just not set the timer for such cases in the first place.
+          puts "~ Exception when sending heartbeat frame: #{error.inspect}"
+        end
       end
     end
 
