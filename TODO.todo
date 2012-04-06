@@ -9,7 +9,7 @@ Upgrade:
 - Upgrade to SockJS 0.3.
 
 Bugs (2 days):
-- WebsocketHybi10.test_close: ConnectionClosedException
+- WebsocketHybi10.test_close: ConnectionClosedException. So apparently the server thinks we send the closing frame, it's in the logs, but really we didn't, there's nothing on the wire.
 - WebsocketHixie76.test_close: ConnectionClosedException
 
 - WebsocketHixie76.test_haproxy: AssertionError: '\xca4\x00\xd8\xa5\x08G\x97,\xd5qZ\xba\xbfC{\x00o\xff' != '\xca4\x00\xd8\xa5\x08G\x97,\xd5qZ\xba\xbfC{'
