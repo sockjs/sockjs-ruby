@@ -49,6 +49,10 @@ module SockJS
       elsif ! @messages.empty?
         Protocol.array_frame(@messages)
       elsif @messages.empty? and @frame.nil?
+        # There's one particular case where we must not
+        # change the buffer content to the heartbeat frame
+        # and that's in case the session is closing as
+        # we cache the buffer for closing sessions.
         @status = :heartbeat
         @frame  = Protocol::HEARTBEAT_FRAME
         raise NoContentError.new(self)
