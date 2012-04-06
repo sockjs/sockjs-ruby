@@ -9,7 +9,7 @@ Upgrade:
 - Upgrade to SockJS 0.3.
 
 Bugs (2 days):
-- WebsocketHybi10.test_close: ConnectionClosedException. So apparently the server thinks we send the closing frame, it's in the logs, but really we didn't, there's nothing on the wire.
+- WebsocketHybi10.test_close: ConnectionClosedException. So apparently the server thinks we send the closing frame, it's in the logs, but really we didn't, there's nothing on the wire. Ha ha, got it now, the problem occurs when we execute the user app and it closes the session immediately, clearing its @transport when doing check_status (see websocket.rb#25). The user app is supposed to run at this point, but only to define events, so we should just say at this point register callback to close the app WHEN we first open the session successfully sending the "o" frame. Dammit!
 - WebsocketHixie76.test_close: ConnectionClosedException
 
 - WebsocketHixie76.test_haproxy: AssertionError: '\xca4\x00\xd8\xa5\x08G\x97,\xd5qZ\xba\xbfC{\x00o\xff' != '\xca4\x00\xd8\xa5\x08G\x97,\xd5qZ\xba\xbfC{'
