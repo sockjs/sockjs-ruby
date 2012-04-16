@@ -5,32 +5,21 @@
 # t HandlingClose
 # t Http11 Http10
 
+Something like on_close event (up to 2 days):
+- "Can I detect that client has closed the connection? I mean if client starts a long request, pulls, pulls and then close it? I'd need some def on_close, is there any way how to do so?"
+- "There's no reliable way to know when the client closes the connection. The best way I know is to send a ping (heartbeat) at interval. Once you stop receiving those pings, you know the connection is closed."
+- Protocol.test_simpleSession: AssertionError: 'a[]\n' != 'c[2010,"Another connection still open"]\n'. The problem is that we close the first connection sending 'a[""]\n' which is really, really wrong, it's supposed to hang. None the less we MUST NOT block the whole thread. It should not be a problem as Thin is EventMachine-based, but we must make sure it's alright.
+- HandlingClose.test_abort_xhr_polling: AssertionError: 'a[]\n' != 'c[2010,"Another connection still open"]\n'
+- HandlingClose.test_abort_xhr_streaming: self.assertTrue(r3.read() in ['o\n', 'c[1002,"Connection interrupted"]\n'])
 
-Not implemented (up to 5 days):
+GC by closing request (1/2 – 1 day):
+- XhrStreaming.test_response_limit
+- EventSource.test_response_limit
+- HtmlFile.test_response_limit
 
-  Something like on_close event (up to 2 days):
-  - "Can I detect that client has closed the connection? I mean if client starts a long request, pulls, pulls and then close it? I'd need some def on_close, is there any way how to do so?"
-  - "There's no reliable way to know when the client closes the connection. The best way I know is to send a ping (heartbeat) at interval. Once you stop receiving those pings, you know the connection is closed."
-  - Protocol.test_simpleSession: AssertionError: 'a[]\n' != 'c[2010,"Another connection still open"]\n'. The problem is that we close the first connection sending 'a[""]\n' which is really, really wrong, it's supposed to hang. None the less we MUST NOT block the whole thread. It should not be a problem as Thin is EventMachine-based, but we must make sure it's alright.
-  - HandlingClose.test_abort_xhr_polling: AssertionError: 'a[]\n' != 'c[2010,"Another connection still open"]\n'
-  - HandlingClose.test_abort_xhr_streaming: self.assertTrue(r3.read() in ['o\n', 'c[1002,"Connection interrupted"]\n'])
-
-  GC by closing request (1/2 – 1 day):
-  - XhrStreaming.test_response_limit
-  - EventSource.test_response_limit
-  - HtmlFile.test_response_limit
-
-  Keep-Alive (up to 2 days):
-  - Http11.test_synchronous: [Errno 54] Connection reset by peer. Thin does support Keep-Alive since 0.7.0 https://groups.google.com/group/thin-ruby/browse_thread/thread/4eb696ea517fba2b?pli=1, so what's the problem? This should really work by default, according to the documentation. Only if we'd set --max-persistent-conns to 0, then Keep-Alive would be disabled, but we didn't do that AND it defaults to 512. Related code: https://github.com/macournoyer/thin/blob/master/lib/thin/request.rb#L109-122
-  - Http10.test_synchronous: AssertionError: 'keep-alive' != 'close'
-
-
-Polishing & testing (depends):
-- We should use https://github.com/macournoyer/thin_async/blob/master/lib/thin/async.rb instead of our own solution (1 hour).
-- Specs sockjs-ruby#1 & sockjs-ruby#2.
-- API refactoring
-- Testing with some projects
-
+Keep-Alive (up to 2 days):
+- Http11.test_synchronous: [Errno 54] Connection reset by peer. Thin does support Keep-Alive since 0.7.0 https://groups.google.com/group/thin-ruby/browse_thread/thread/4eb696ea517fba2b?pli=1, so what's the problem? This should really work by default, according to the documentation. Only if we'd set --max-persistent-conns to 0, then Keep-Alive would be disabled, but we didn't do that AND it defaults to 512. Related code: https://github.com/macournoyer/thin/blob/master/lib/thin/request.rb#L109-122
+- Http10.test_synchronous: AssertionError: 'keep-alive' != 'close'
 
 Release (2.5 days):
 - Publish to RubyGems.org.
