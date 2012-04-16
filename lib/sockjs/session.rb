@@ -344,10 +344,14 @@ module SockJS
     undef :response
 
     def send_data(frame)
-      raise TypeError.new("Frame must not be nil!") if frame.nil?
+      if frame.nil?
+        raise TypeError.new("Frame must not be nil!")
+      end
 
-      puts "~ @ws.send(#{frame.inspect})"
-      @ws.send(frame) unless frame.empty?
+      unless frame.empty?
+        puts "~ @ws.send(#{frame.inspect})"
+        @ws.send(frame)
+      end
     end
 
     def finish
@@ -359,18 +363,15 @@ module SockJS
       @ws.close if frame and frame.match(/^c\[\d+,/)
     end
 
-    def close(status = 3000, message = "Go away!")
-      super(status, message)
-      @about_to_close = true
+    def after_app_run
+      return super unless self.closing?
+
+      self.after_close
     end
 
-    def after_app_run
-      if @about_to_close
-        @ws.close
-        @transport = nil
-      else
-        super
-      end
+    def after_close
+      @ws.close
+      @transport = nil
     end
   end
 
