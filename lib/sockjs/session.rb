@@ -279,7 +279,7 @@ module SockJS
           if self.opening? or self.open?
             # OK, so we're here, closing the open response ... but its body is already closed, huh?
             puts "~ @disconnect_timer: closing the connection."
-            self.close_session
+            self.close
             puts "~ @disconnect_timer: connection closed."
           else
             puts "~ @disconnect_timer: doing nothing."

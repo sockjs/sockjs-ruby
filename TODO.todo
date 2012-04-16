@@ -15,15 +15,7 @@ Bugs (2 days):
 
 - @disconnect_timer doesn't work as it's supposed to, it's set up even in WS and streaming on request.open, NOT on request.close (2.5 hours).
 
-FAIL: test_anyValue (__main__.SessionURLs)
-... only when ran multiple times
-  File "sockjs-protocol-0.2.1.py", line 338, in test_anyValue
-    self.verify('/a/a')
-  File "sockjs-protocol-0.2.1.py", line 347, in verify
-    self.assertEqual(r.body, 'o\n')
-AssertionError: 'c[3000,"Go away"]\n' != 'o\n'
-
-ERROR: test_transport (__main__.RawWebsocket)
+ERROR: RawWebsocket.test_transport
 ... only when ran as t RawWebsocket, not just test_transport
   File "sockjs-protocol-0.2.1.py", line 1135, in test_transport
 error: [Errno 61] Connection refused
