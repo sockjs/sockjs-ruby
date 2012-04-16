@@ -107,8 +107,9 @@ module SockJS
       # can run the custom app. No opening frame.
       def handle_open(request)
         puts "~ Opening WS connection."
-        random_id = Array.new(16) { rand(256) }.pack("C*").unpack("H*").first
-        @session = self.connection.create_session(random_id, self)
+        # Here, the session_id is not important at all,
+        # it's all about the actual connection object.
+        @session = self.connection.create_session(@ws.object_id.to_s, self)
         @session.ws = @ws
         @session.buffer = RawBuffer.new # This is a hack for the bloody API. Rethinking and refactoring required!
         @session.transport = self

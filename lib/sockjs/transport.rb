@@ -145,10 +145,16 @@ module SockJS
     #   b) It's open:
     #      i) There IS NOT any consumer -> OK. AND CONTINUE
     #      i) There IS a consumer -> Send c[2010,"Another con still open"] AND END
-    def get_session(path_info)
-      match = path_info.match(self.class.prefix)
+    def get_session(path_info = nil, &block)
+      # The block is supposed to return session.
+      block ||= lambda do |sessions|
+        match = path_info.match(self.class.prefix)
+        sessions[match[1]]
+      end
 
-      if session = self.connection.sessions[match[1]]
+      session = block.call(self.connection.sessions)
+
+      if session
         if session.closing?
           # response.body is closed, why?
           puts "~ get_session: session is closing"
@@ -164,7 +170,7 @@ module SockJS
           raise "We should never get here!\nsession.status: #{session.instance_variable_get(:@status)}, has session response: #{!! session.response}"
         end
       else
-        puts "~ get_session: session #{match[1].inspect} doesn't exist."
+        puts "~ get_session: session for #{path_info.inspect} doesn't exist."
         return nil
       end
     end

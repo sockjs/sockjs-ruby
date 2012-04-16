@@ -15,7 +15,9 @@ module SockJS
       def handle_open(request)
         puts "~ Opening WS connection."
         match = request.path_info.match(self.class.prefix)
-        session = self.create_session(request.path_info)
+        # Here, the session_id is not important at all,
+        # it's all about the actual connection object.
+        session = self.connection.create_session(@ws.object_id.to_s, self)
         session.ws = @ws
         session.buffer = Buffer.new # This is a hack for the bloody API. Rethinking and refactoring required!
         session.transport = self
@@ -35,7 +37,7 @@ module SockJS
         unless message.empty?
           message = "[#{message}]" unless message.start_with?("[")
           puts "<~ WS message received: #{message.inspect}"
-          session = self.get_session(request.path_info)
+          session = self.get_session { |sessions| sessions[@ws.object_id.to_s] }
           session.receive_message(request, message)
 
           # Run the user app.
