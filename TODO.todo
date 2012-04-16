@@ -5,9 +5,6 @@
 # t HandlingClose
 # t Http11 Http10
 
-Bugs:
-- WebsocketHixie76.test_reuseSessionId: Used to be AssertionError: 'a["a"]' != u'a["b"]', now it just hangs, although it looks like we sent the message.
-
 Something like on_close event (up to 2 days):
 - "Can I detect that client has closed the connection? I mean if client starts a long request, pulls, pulls and then close it? I'd need some def on_close, is there any way how to do so?"
 - "There's no reliable way to know when the client closes the connection. The best way I know is to send a ping (heartbeat) at interval. Once you stop receiving those pings, you know the connection is closed."
