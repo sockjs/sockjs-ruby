@@ -1,5 +1,5 @@
 # t BaseUrlGreeting IframePage InfoTest SessionURLs WebsocketHttpErrors JSONEncoding XhrPolling JsonPolling RawWebsocket WebsocketHybi10
-# t WebsocketHixie76
+# t WebsocketHixie76 # don't mind test_haproxy, it passes on 0.3
 # t Protocol
 # t XhrStreaming EventSource HtmlFile
 # t HandlingClose
@@ -9,8 +9,6 @@ Upgrade:
 - Upgrade to SockJS 0.3.
 
 Bugs (2 days):
-- WebsocketHixie76.test_haproxy: AssertionError: '\xca4\x00\xd8\xa5\x08G\x97,\xd5qZ\xba\xbfC{\x00o\xff' != '\xca4\x00\xd8\xa5\x08G\x97,\xd5qZ\xba\xbfC{'
-
 - WebsocketHixie76.test_reuseSessionId: AssertionError: 'a["a"]' != u'a["b"]'
 
 - @disconnect_timer doesn't work as it's supposed to, it's set up even in WS and streaming on request.open, NOT on request.close (2.5 hours).
