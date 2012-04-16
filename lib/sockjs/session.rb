@@ -360,11 +360,17 @@ module SockJS
     end
 
     def close(status = 3000, message = "Go away!")
-      # Don't clear the transport, otherwise
-      # WebsocketHybi10.test_close would fail
-      # as we'd try to process_buffer without
-      # having any transport at all.
-      @ws.close
+      super(status, message)
+      @about_to_close = true
+    end
+
+    def after_app_run
+      if @about_to_close
+        @ws.close
+        @transport = nil
+      else
+        super
+      end
     end
   end
 
