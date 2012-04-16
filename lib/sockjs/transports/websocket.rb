@@ -64,16 +64,17 @@ module SockJS
       # Furthemore current API doesn't
       # make it possible to get session
       def handle_close(request, event)
-        puts "~ Closing WS connection."
-
-        # If it's the user app who closed
-        # the response, we won't ever get
-        # to pass this point as we'll get
-        # SessionUnavailableError.
-        self.get_session(request.path_info)
-      rescue SockJS::SessionUnavailableError => error
-        # TODO: Set status is necessary(?)
-        # error.session
+        puts "~ WebSocket#handle_close"
+      #   puts "~ Closing WS connection."
+      #
+      #   # If it's the user app who closed
+      #   # the response, we won't ever get
+      #   # to pass this point as we'll get
+      #   # SessionUnavailableError.
+      #   self.get_session(request.path_info)
+      # rescue SockJS::SessionUnavailableError => error
+      #   # TODO: Set status is necessary(?)
+      #   # error.session
       end
     end
   end
