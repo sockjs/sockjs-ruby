@@ -355,16 +355,12 @@ module SockJS
     end
 
     def finish
-      p [:buffer, @buffer]
       frame = @buffer.to_frame
-      p [:frame, frame]
       self.send_data(frame)
     rescue SockJS::NoContentError => error
       # Why there's no bloody content? That's not right, there should be a closing frame.
       puts "~ finish: no content, setting the heartbeat timer."
       self.set_heartbeat_timer(error.buffer)
-    # ensure
-    #   @ws.close if frame and frame.match(/^c\[\d+,/)
     end
 
     def after_app_run
