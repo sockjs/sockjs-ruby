@@ -9,7 +9,7 @@ Upgrade:
 - Upgrade to SockJS 0.3.
 
 Bugs (2 days):
-- WebsocketHixie76.test_reuseSessionId: AssertionError: 'a["a"]' != u'a["b"]'
+- WebsocketHixie76.test_reuseSessionId: Used to be AssertionError: 'a["a"]' != u'a["b"]', now it just hangs, although it looks like we sent the message.
 
 - @disconnect_timer doesn't work as it's supposed to, it's set up even in WS and streaming on request.open, NOT on request.close (2.5 hours).
 
