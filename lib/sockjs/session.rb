@@ -100,7 +100,7 @@ module SockJS
         raise TypeError.new("Transport must not be nil!")
       end
 
-      response = create_response do
+      create_response do
         puts "~ Processing buffer using #{@transport.class}"
         self.check_status
 
@@ -118,11 +118,9 @@ module SockJS
           puts "~ Executing app with message #{message.inspect}"
           self.execute_callback(:buffer, self, message)
         end
+
+        self.after_app_run
       end
-
-      self.after_app_run
-
-      return response
     end
 
     def create_response(&block)
