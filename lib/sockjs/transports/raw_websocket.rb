@@ -29,11 +29,7 @@ module SockJS
           data = fix_buggy_input(*args)
         end
 
-        if $DEBUG
-          puts "~> WS#send #{data.inspect} #{caller[0..2].map { |item| item.sub(Dir.pwd + "/lib/", "") }.inspect}"
-        else
-          puts "~> WS#send #{data.inspect}"
-        end
+        debug "WS#send #{data.inspect}", caller
 
         super(data)
       end
@@ -42,6 +38,21 @@ module SockJS
         data = 'c[3000,"Go away!"]'
         puts "! Incorrect input: #{args.inspect}, changing to #{data} for now"
         return data
+      end
+
+      def close(*args)
+        debug "WS#close(#{args.inspect[1..-2]})", caller
+        super(*args)
+      end
+
+      private
+      def debug(title, backtrace)
+        if $DEBUG
+          backtrace = backtrace[0..2].map { |item| item.sub(Dir.pwd + "/lib/", "") }
+          puts "~> #{title} #{backtrace.inspect}"
+        else
+          puts "~> #{title}"
+        end
       end
     end
 
