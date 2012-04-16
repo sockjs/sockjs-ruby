@@ -15,11 +15,6 @@ Bugs (2 days):
 
 - @disconnect_timer doesn't work as it's supposed to, it's set up even in WS and streaming on request.open, NOT on request.close (2.5 hours).
 
-ERROR: RawWebsocket.test_transport
-... only when ran as t RawWebsocket, not just test_transport
-  File "sockjs-protocol-0.2.1.py", line 1135, in test_transport
-error: [Errno 61] Connection refused
-
 
 Not implemented (up to 5 days):
 
