@@ -48,8 +48,27 @@ module SockJS
         @ws.close # Close the connection abruptly, no closing frame.
       end
 
+      # There are two distinct situations
+      # when this handler will be called:
+      #
+      # 1) User app closes the response.
+      #    In this case we need to send
+      #    the closing frame and close
+      #    the WebSocket connection.
+      #
+      # 2) Client closes the response
+      #    If client closes the response,
+      #    there's not much we can do,
+      #    only to mark the session
+      #    as terminated and delete
+      #    it after the 5s timeout.
       def handle_close(request, event)
         puts "~ Closing WS connection."
+
+        # If it's the user app who closed
+        # the response, we won't ever get
+        # to pass this point as we'll get
+        # SessionUnavailableError.
         session = self.get_session(request.path_info)
 
         if session
@@ -58,15 +77,14 @@ module SockJS
           # Send the closing frame.
           frame = session.process_buffer || 'c[3000,"Go away!"]'# FIXME: This is a hack for the time being. Where's the bloody "c" frame?
           session.send_data(frame)
-
-          session.transport = nil
+          session.after_close
         else
           puts "~ Session can't be retrieved, something went pretty damn wrong."
 
           session.send_data('c[3000,"Go away!"]') # ONLY a temporary fallback for the time being!
         end
       rescue SockJS::SessionUnavailableError
-        puts "~ Session is already closing"
+        puts "~ Session is already closing, handle_close won't be called."
       end
     end
   end
