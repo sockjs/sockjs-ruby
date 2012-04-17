@@ -17,7 +17,7 @@ module Thin
       # signaled. (http://www.w3.org/Protocols/rfc2616/rfc2616-sec8.html)
       if @env[HTTP_VERSION] == HTTP_1_0
         condition = @env[CONNECTION] =~ KEEP_ALIVE_REGEXP
-        puts "~ Using HTTP/1.0. Keep-Alive header: #{condition}"
+        puts "~ Using HTTP/1.0. Keep-Alive header: #{!! condition}"
         return condition
 
       # HTTP/1.1 client intends to maintain a persistent connection unless
