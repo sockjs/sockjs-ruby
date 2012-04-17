@@ -7,6 +7,29 @@ require "thin/connection"
 module Thin
   class Request
     HTTP_1_1 ||= "HTTP/1.1".freeze
+
+    alias_method :_persistent?, :persistent?
+
+    def persistent?
+      puts "~ Determining request persistency:"
+
+      # Clients and servers SHOULD NOT assume that a persistent connection
+      # is maintained for HTTP versions less than 1.1 unless it is explicitly
+      # signaled. (http://www.w3.org/Protocols/rfc2616/rfc2616-sec8.html)
+      if @env[HTTP_VERSION] == HTTP_1_0
+        condition = @env[CONNECTION] =~ KEEP_ALIVE_REGEXP
+        puts "~ Using HTTP/1.0. Keep-Alive header: #{condition}"
+        return condition
+
+      # HTTP/1.1 client intends to maintain a persistent connection unless
+      # a Connection header including the connection-token "close" was sent
+      # in the request
+      else
+        condition = @env[CONNECTION].nil? || @env[CONNECTION] !~ CLOSE_REGEXP
+        puts "~ Using HTTP/1.1. Keep-Alive header: #{condition}"
+        return condition
+      end
+    end
   end
 
   class Response
