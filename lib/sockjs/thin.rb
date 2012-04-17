@@ -8,8 +8,6 @@ module Thin
   class Request
     HTTP_1_1 ||= "HTTP/1.1".freeze
 
-    alias_method :_persistent?, :persistent?
-
     # https://github.com/macournoyer/thin/blob/master/lib/thin/request.rb#L109-122
     def persistent?
       puts "~ Determining request persistency:"
