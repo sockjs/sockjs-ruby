@@ -18,7 +18,7 @@ GC by closing request (1/2 – 1 day):
 - HtmlFile.test_response_limit
 
 Keep-Alive (up to 2 days):
-- Http11.test_synchronous: [Errno 54] Connection reset by peer. Thin does support Keep-Alive since 0.7.0 https://groups.google.com/group/thin-ruby/browse_thread/thread/4eb696ea517fba2b?pli=1, so what's the problem? This should really work by default, according to the documentation. Only if we'd set --max-persistent-conns to 0, then Keep-Alive would be disabled, but we didn't do that AND it defaults to 512. Related code: https://github.com/macournoyer/thin/blob/master/lib/thin/request.rb#L109-122
+- Http11.test_synchronous: [Errno 54] Connection reset by peer.
 - Http10.test_synchronous: AssertionError: 'keep-alive' != 'close'
 
 Release (2.5 days):
