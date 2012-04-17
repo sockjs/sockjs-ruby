@@ -74,13 +74,14 @@ module SockJS
     # either single json-encoded messages or an array
     # of json-encoded messages, depending on transport.
     def receive_message(request, data)
-      @total_received_content_length += data.bytesize
+      self.reset_timer do
+        @total_received_content_length += data.bytesize
 
-      self.check_status
-      self.reset_timer
+        self.check_status
 
-      messages = parse_json(data)
-      process_messages(*messages) unless messages.empty?
+        messages = parse_json(data)
+        process_messages(*messages) unless messages.empty?
+      end
     rescue SockJS::InvalidJSON => error
       raise error if @response.nil? # WS
       @transport.response(request, error.status) do |response|
@@ -97,13 +98,11 @@ module SockJS
     end
 
     def process_buffer(reset_timer = true)
-      self.reset_timer if reset_timer
-
       if @transport.nil?
         raise TypeError.new("Transport must not be nil!")
       end
 
-      create_response do
+      create_response(reset_timer) do
         puts "~ Processing buffer using #{@transport.class}"
         self.check_status
 
@@ -126,8 +125,12 @@ module SockJS
       end
     end
 
-    def create_response(&block)
-      block.call
+    def create_response(reset_timer = true, &block)
+      if reset_timer
+        reset_timer { block.call }
+      else
+        block.call
+      end
 
       @received_messages.clear
 
@@ -157,9 +160,9 @@ module SockJS
     # TODO: what with the args?
     def open!(*args)
       @status = :opening
-      self.set_timer
-
       self.buffer.open # @buffer.status to :opening
+
+      self.set_timer
       self.finish
     end
 
@@ -227,8 +230,6 @@ module SockJS
     end
 
     def wait(response, interval = 0.1)
-      self.set_timer
-
       if self.waiting? # Doesn't work for XHR, only for streaming.
         puts "~ Session#wait: another connection still open"
         self.close(2010, "Another connection still open")
@@ -237,6 +238,8 @@ module SockJS
 
       # Run the app at least once.
       data = self.run_user_app(response)
+
+      self.set_timer
 
       unless @buffer.closing?
         init_periodic_timer(response, interval)
@@ -283,7 +286,7 @@ module SockJS
 
     def set_timer
       puts "~ Setting @disconnect_timer to #{@disconnect_delay}"
-      @disconnect_timer = begin
+      @disconnect_timer ||= begin
         EM::Timer.new(@disconnect_delay) do
           puts "~ #{@disconnect_delay} has passed, firing @disconnect_timer"
           @disconnect_timer_canceled = true
@@ -300,9 +303,14 @@ module SockJS
       end
     end
 
-    def reset_timer
+    def reset_timer(&block)
       puts "~ Cancelling @disconnect_timer"
-      @disconnect_timer.cancel if @disconnect_timer
+      if @disconnect_timer
+        @disconnect_timer.cancel
+        @disconnect_timer = nil
+      end
+
+      block.call if block
 
       self.set_timer
     end
@@ -326,6 +334,7 @@ module SockJS
       # Cancel @disconnect_timer.
       puts "~ Cancelling @disconnect_timer as we're about to send a heartbeat frame in 25s."
       @disconnect_timer.cancel
+      @disconnect_timer = nil
 
       # Send heartbeat frame after 25s.
       EM::Timer.new(25) do
