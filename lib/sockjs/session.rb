@@ -243,6 +243,10 @@ module SockJS
       end
     end
 
+    def max_permitted_content_length
+      $DEBUG ? 4096 : 128_000
+    end
+
     def run_user_app(response)
       puts "~ Executing user's SockJS app"
       frame = self.process_buffer(false)
@@ -257,6 +261,11 @@ module SockJS
 
         unless @received_messages.empty?
           run_user_app(response)
+
+          if @total_received_content_length <= max_permitted_content_length
+            # Close the response without writing any closing frame.
+            self.finish
+          end
         end
       end
     end
