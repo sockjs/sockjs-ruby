@@ -18,8 +18,7 @@ GC by closing request (1/2 – 1 day):
 - HtmlFile.test_response_limit
 
 Keep-Alive (up to 2 days):
-- Http11.test_synchronous: [Errno 54] Connection reset by peer.
-- Http10.test_synchronous: AssertionError: 'keep-alive' != 'close'
+- Http11.test_synchronous: [Errno 54] Connection reset by peer. Very very weird, it does work with HTTP/1.0.
 
 Release (2.5 days):
 - Publish to RubyGems.org.

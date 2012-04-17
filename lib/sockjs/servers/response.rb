@@ -117,7 +117,12 @@ module SockJS
 
     def set_connection_keep_alive_if_requested
       if @request.env["HTTP_CONNECTION"] && @request.env["HTTP_CONNECTION"].downcase == "keep-alive"
-        self.set_header("Connection", "Keep-Alive")
+        if @request.http_1_0?
+          self.set_header("Connection", "Close")
+        else
+          self.set_header("Connection", "Keep-Alive")
+          # ... and transfer-encoding
+        end
       end
     end
   end
