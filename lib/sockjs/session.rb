@@ -11,6 +11,7 @@ module SockJS
       @disconnect_delay = 5 # TODO: make this configurable.
       @status = :created
       @received_messages = Array.new
+      @total_received_content_length = 0
     end
 
     def send_data(frame)
@@ -73,6 +74,8 @@ module SockJS
     # either single json-encoded messages or an array
     # of json-encoded messages, depending on transport.
     def receive_message(request, data)
+      @total_received_content_length += data.bytesize
+
       self.check_status
       self.reset_timer
 
