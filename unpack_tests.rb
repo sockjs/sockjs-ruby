@@ -3,7 +3,7 @@
 
 # Get list of all the tests in format for TODO.todo.
 
-VERSION = "0.3"
+VERSION = "0.2.1"
 
 tests = File.foreach("../protocol/sockjs-protocol-#{VERSION}.py").reduce(Hash.new) do |buffer, line|
   if line.match(/class (\w+)\(Test\)/)

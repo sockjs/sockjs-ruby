@@ -1,5 +1,5 @@
 # t BaseUrlGreeting IframePage InfoTest SessionURLs WebsocketHttpErrors JSONEncoding XhrPolling JsonPolling RawWebsocket WebsocketHybi10
-# t WebsocketHixie76 # don't mind test_haproxy, it passes on 0.3
+# t WebsocketHixie76 # don't mind test_haproxy, it passes on 0.2.1
 # t Protocol
 # t XhrStreaming EventSource HtmlFile
 # t HandlingClose
