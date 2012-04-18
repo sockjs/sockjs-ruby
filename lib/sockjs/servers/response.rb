@@ -120,8 +120,14 @@ module SockJS
         if @request.http_1_0?
           self.set_header("Connection", "Close")
         else
-          self.set_header("Connection", "Keep-Alive")
-          # ... and transfer-encoding
+          # On HTTP/1.1 we should respond with Keep-Alive
+          # and Transfer-Encoding: chunked (or with given
+          # Content-Length, but due to nature of SockJS,
+          # we can't predict the length). However, funny
+          # story, Thin doesn't seem to be very happy about
+          # it, so let's just say Connection: Close for
+          # the time being (as per discussion with @majek).
+          self.set_header("Connection", "Close")
         end
       end
     end
