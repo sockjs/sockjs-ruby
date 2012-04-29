@@ -1,9 +1,7 @@
-# t BaseUrlGreeting IframePage InfoTest SessionURLs WebsocketHttpErrors JSONEncoding XhrPolling JsonPolling RawWebsocket WebsocketHybi10
+# t BaseUrlGreeting IframePage InfoTest SessionURLs WebsocketHttpErrors JSONEncoding XhrPolling JsonPolling RawWebsocket WebsocketHybi10 XhrStreaming EventSource HtmlFile Http10
 # t WebsocketHixie76 # don't mind test_haproxy, it passes on 0.2.1
-# t Protocol
-# t XhrStreaming EventSource HtmlFile
-# t HandlingClose
-# t Http11 Http10
+# t Protocol HandlingClose
+# t Http11
 
 Something like on_close event:
 - Q: "Can I detect that client has closed the connection? I mean if client starts a long request, pulls, pulls and then close it? I'd need some def on_close, is there any way how to do so?"
