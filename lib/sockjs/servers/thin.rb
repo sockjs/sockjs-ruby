@@ -29,7 +29,7 @@ module SockJS
         @request, @status, @headers = request, status, headers
 
         if request.http_1_0?
-          puts "~ Request is in HTTP/1.0, responding with HTTP/1.0"
+          SockJS.debug "Request is in HTTP/1.0, responding with HTTP/1.0"
           @body = DelayedResponseBody.new
         else
           @body = DelayedResponseChunkedBody.new
@@ -60,7 +60,7 @@ module SockJS
 
           callback = @request.env["async.callback"]
 
-          puts "~ Headers: #{@headers.inspect}"
+          SockJS.debug "Headers: #{@headers.inspect}"
 
           callback.call([@status, @headers, @body])
         end
@@ -113,22 +113,22 @@ module SockJS
           raise "Chunk is supposed to respond to #bytesize, but it doesn't.\nChunk: #{chunk.inspect} (#{chunk.class})"
         end
 
-        puts "~ body#write #{chunk.inspect}"
+        SockJS.debug "body#write #{chunk.inspect}"
 
         self.write_chunk(chunk)
       end
 
       def each(&block)
-        puts "~ Opening the response."
+        SockJS.debug "Opening the response."
         @status = :open
         @body_callback = block
       end
 
       def succeed(from_server = true)
         if $DEBUG
-          puts "~ Closing the response #{caller[5..-8].map { |item| item.sub(Dir.pwd + "/lib/", "") }.inspect}."
+          SockJS.debug "Closing the response #{caller[5..-8].map { |item| item.sub(Dir.pwd + "/lib/", "") }.inspect}."
         else
-          puts "~ Closing the response."
+          SockJS.debug "Closing the response."
         end
 
         @status = :closed

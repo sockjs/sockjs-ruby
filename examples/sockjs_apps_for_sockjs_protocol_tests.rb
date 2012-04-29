@@ -39,9 +39,7 @@ end
 require "rack/sockjs"
 require "json"
 
-def debug(message)
-  STDERR.puts(message)
-end
+SockJS.debug!
 
 class MyHelloWorld
   def call(env)
@@ -63,21 +61,21 @@ class MyHelloWorld
   end
 end
 
-puts "~ Available handlers: #{::SockJS::Transport.subclasses.inspect}"
+SockJS.debug "Available handlers: #{::SockJS::Transport.subclasses.inspect}"
 
 options = {sockjs_url: "http://cdn.sockjs.org/sockjs-#{SockJS::PROTOCOL_VERSION}.min.js"}
 
 app = Rack::Builder.new do
   use Rack::SockJS, "/echo", options do |connection|
     connection.subscribe do |session, message|
-      debug "~ \033[0;31;40m[Echo]\033[0m message: #{message.inspect}, session: #{session.object_id}"
+      SockJS.debug "\033[0;31;40m[Echo]\033[0m message: #{message.inspect}, session: #{session.object_id}"
       session.send(message)
     end
   end
 
   use Rack::SockJS, "/disabled_websocket_echo", options.merge(websocket: false) do |connection|
     connection.subscribe do |session, message|
-      debug "~ \033[0;31;40m[Echo]\033[0m message: #{message.inspect}, session: #{session.object_id}"
+      SockJS.debug "\033[0;31;40m[Echo]\033[0m message: #{message.inspect}, session: #{session.object_id}"
       session.send(message)
     end
   end
@@ -87,7 +85,7 @@ app = Rack::Builder.new do
     # client receives "o" and then "c[3000, "Go away!"]".
     # However with polling, this will occur with the next request.
     connection.session_open do |session, message|
-      debug "~ \033[0;31;40m[Close]\033[0m closing the session ..."
+      SockJS.debug "\033[0;31;40m[Close]\033[0m closing the session ..."
       session.close(3000, "Go away!")
     end
   end

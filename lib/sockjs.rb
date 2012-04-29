@@ -9,6 +9,24 @@ def Time.timer(&block)
 end
 
 module SockJS
+  def self.debug!
+    @debug = true
+  end
+
+  def self.debug?
+    @debug
+  end
+
+  def self.puts(message)
+    if self.debug?
+      STDERR.puts(message)
+    end
+  end
+
+  def self.debug(message)
+    self.puts("~ #{message}")
+  end
+
   module CallbackMixin
     attr_accessor :status
 
@@ -67,12 +85,12 @@ module SockJS
     end
 
     def sessions
-      puts "~ Refreshing sessions"
+      SockJS.debug "Refreshing sessions"
 
       if @sessions
         @sessions.delete_if do |_, session|
           if session.closed?
-            puts "~ Removing closed session #{_}"
+            SockJS.debug "Removing closed session #{_}"
           end
 
           session.closed?

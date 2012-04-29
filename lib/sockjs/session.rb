@@ -42,7 +42,7 @@ module SockJS
       self.send_data(frame)
     rescue SockJS::NoContentError => error
       if no_content
-        puts "~ No content, it's fine though."
+        SockJS.debug "No content, it's fine though."
       else
         self.set_heartbeat_timer(error.buffer)
       end
@@ -54,10 +54,10 @@ module SockJS
       raise ArgumentError.new("Response must not be nil!") if response.nil?
       raise ArgumentError.new("Transport must not be nil!") if transport.nil?
 
-      puts "~ with_response: assigning response and #{transport.class} (#{transport.object_id}) ..."
+      SockJS.debug "with_response: assigning response and #{transport.class} (#{transport.object_id}) ..."
 
       if @transport && (@transport.is_a?(SockJS::Transports::XHRStreamingPost) || @transport.is_a?(SockJS::Transports::EventSource) || @transport.is_a?(SockJS::Transports::HTMLFile))
-        puts "~ with_response: saving response and transport #{@transport.class} (#{@transport.object_id})"
+        SockJS.debug "with_response: saving response and transport #{@transport.class} (#{@transport.object_id})"
         prev_resp, prev_trans = @response, @transport
       end
 
@@ -65,13 +65,13 @@ module SockJS
       block.call
 
       if prev_trans && (prev_trans.is_a?(SockJS::Transports::XHRStreamingPost) || prev_trans.is_a?(SockJS::Transports::EventSource) || prev_trans.is_a?(SockJS::Transports::HTMLFile)) # TODO: #streaming? / #polling? / #waiting? ... actually no, just define this only for this class, the other transports use SessionWitchCachedMessages (but don't forget that it inherits from this one).
-        puts "~ with_response: reassigning response and #{prev_trans.class} (#{prev_trans.object_id}) ..."
+        SockJS.debug "with_response: reassigning response and #{prev_trans.class} (#{prev_trans.object_id}) ..."
         @response, @transport = prev_resp, prev_trans
       end
     end
 
     def close_response
-      puts "~ close_response: clearing response and transport."
+      SockJS.debug "close_response: clearing response and transport."
 
       @response.finish
       @response = nil; @transport = nil
@@ -108,7 +108,7 @@ module SockJS
       end
 
       create_response(reset_timer) do
-        puts "~ Processing buffer using #{@transport.class}"
+        SockJS.debug "Processing buffer using #{@transport.class}"
         self.check_status
 
         # The error is supposed to be cached for 5s
@@ -122,7 +122,7 @@ module SockJS
         # hence it wouldn't be executed only once ...
         # that's not a bad idea BTW.
         @received_messages.each do |message|
-          puts "~ Executing app with message #{message.inspect}"
+          SockJS.debug "Executing app with message #{message.inspect}"
           self.execute_callback(:buffer, self, message)
         end
 
@@ -206,7 +206,7 @@ module SockJS
     end
 
     def on_close
-      puts "~ The connection has been closed on the client side (current status: #{@status})."
+      SockJS.debug "The connection has been closed on the client side (current status: #{@status})."
       self.close_session(1002, "Connection interrupted")
     end
 
@@ -236,7 +236,7 @@ module SockJS
 
     def wait(response, interval = 0.1)
       if self.waiting? # Doesn't work for XHR, only for streaming.
-        puts "~ Session#wait: another connection still open"
+        SockJS.debug "Session#wait: another connection still open"
         self.close(2010, "Another connection still open")
         return
       end
@@ -252,26 +252,26 @@ module SockJS
     end
 
     def max_permitted_content_length
-      $DEBUG ? 4096 : 128_000
+      @max_permitted_content_length ||= ($DEBUG ? 4096 : 128_000)
     end
 
     def run_user_app(response)
-      puts "~ Executing user's SockJS app"
+      SockJS.debug "Executing user's SockJS app"
       frame = self.process_buffer(false)
       self.send_data(frame) if frame and not frame.match(/^c\[\d+,/)
-      puts "~ User's SockJS app finished"
+      SockJS.debug "User's SockJS app finished"
     end
 
     def init_periodic_timer(response, interval)
       @periodic_timer = EM::PeriodicTimer.new(interval) do
         @periodic_timer.cancel if @disconnect_timer_canceled
-        puts "~ Tick: #{@status}, #{@buffer.inspect}"
+        SockJS.debug "Tick: #{@status}, #{@buffer.inspect}"
 
         unless @received_messages.empty?
           run_user_app(response)
 
           if @total_sent_content_length >= max_permitted_content_length
-            puts "~ Maximal permitted content length exceeded, closing the connection."
+            SockJS.debug "Maximal permitted content length exceeded, closing the connection."
 
             # Close the response without writing any closing frame.
             self.finish(true)
@@ -280,7 +280,7 @@ module SockJS
 
             @status = :closed
           else
-            puts "~ Permitted content length: #{@total_sent_content_length} of #{max_permitted_content_length}"
+            SockJS.debug "Permitted content length: #{@total_sent_content_length} of #{max_permitted_content_length}"
           end
         end
       end
@@ -298,26 +298,26 @@ module SockJS
     end
 
     def set_timer
-      puts "~ Setting @disconnect_timer to #{@disconnect_delay}"
+      SockJS.debug "Setting @disconnect_timer to #{@disconnect_delay}"
       @disconnect_timer ||= begin
         EM::Timer.new(@disconnect_delay) do
-          puts "~ #{@disconnect_delay} has passed, firing @disconnect_timer"
+          SockJS.debug "#{@disconnect_delay} has passed, firing @disconnect_timer"
           @disconnect_timer_canceled = true
 
           if self.opening? or self.open?
             # OK, so we're here, closing the open response ... but its body is already closed, huh?
-            puts "~ @disconnect_timer: closing the connection."
+            SockJS.debug "@disconnect_timer: closing the connection."
             self.close
-            puts "~ @disconnect_timer: connection closed."
+            SockJS.debug "@disconnect_timer: connection closed."
           else
-            puts "~ @disconnect_timer: doing nothing."
+            SockJS.debug "@disconnect_timer: doing nothing."
           end
         end
       end
     end
 
     def reset_timer(&block)
-      puts "~ Cancelling @disconnect_timer"
+      SockJS.debug "Cancelling @disconnect_timer"
       if @disconnect_timer
         @disconnect_timer.cancel
         @disconnect_timer = nil
@@ -330,14 +330,14 @@ module SockJS
 
     def reset_close_timer
       if @close_timer
-        puts "~ Cancelling @close_timer"
+        SockJS.debug "Cancelling @close_timer"
         @close_timer.cancel
       end
 
-      puts "~ Setting @close_timer to #{@disconnect_delay}"
+      SockJS.debug "Setting @close_timer to #{@disconnect_delay}"
 
       @close_timer = EM::Timer.new(@disconnect_delay) do
-        puts "~ @close_timer fired"
+        SockJS.debug "@close_timer fired"
         @periodic_timer.cancel if @periodic_timer
         self.mark_to_be_garbage_collected
       end
@@ -345,7 +345,7 @@ module SockJS
 
     def set_heartbeat_timer(buffer)
       # Cancel @disconnect_timer.
-      puts "~ Cancelling @disconnect_timer as we're about to send a heartbeat frame in 25s."
+      SockJS.debug "Cancelling @disconnect_timer as we're about to send a heartbeat frame in 25s."
       @disconnect_timer.cancel if @disconnect_timer
       @disconnect_timer = nil
 
@@ -353,19 +353,19 @@ module SockJS
       @heartbeat_timer ||= EM::Timer.new(25) do
         # It's better as we know for sure that
         # clearing the buffer won't change it.
-        puts "~ Sending heartbeat frame."
+        SockJS.debug "Sending heartbeat frame."
         begin
           self.finish
         rescue Exception => error
           # Nah these exceptions are OK ... let's figure out when they occur
           # and let's just not set the timer for such cases in the first place.
-          puts "~ Exception when sending heartbeat frame: #{error.inspect}"
+          SockJS.debug "Exception when sending heartbeat frame: #{error.inspect}"
         end
       end
     end
 
     def mark_to_be_garbage_collected
-      puts "~ Closing the session"
+      SockJS.debug "Closing the session"
       @status = :closed
     end
   end
@@ -381,7 +381,7 @@ module SockJS
       end
 
       unless frame.empty?
-        puts "~ @ws.send(#{frame.inspect})"
+        SockJS.debug "@ws.send(#{frame.inspect})"
         @ws.send(frame)
       end
     end
@@ -391,7 +391,7 @@ module SockJS
       self.send_data(frame)
     rescue SockJS::NoContentError => error
       # Why there's no bloody content? That's not right, there should be a closing frame.
-      puts "~ finish: no content, setting the heartbeat timer."
+      SockJS.debug "finish: no content, setting the heartbeat timer."
       self.set_heartbeat_timer(error.buffer)
     end
 
@@ -402,10 +402,10 @@ module SockJS
     end
 
     def after_close
-      puts "~ after_close: calling #finish"
+      SockJS.debug "after_close: calling #finish"
       self.finish
 
-      puts "~ after_close: closing @ws and clearing @transport."
+      SockJS.debug "after_close: closing @ws and clearing @transport."
       @ws.close
       @transport = nil
     end
@@ -418,10 +418,10 @@ module SockJS
     end
 
     def run_user_app(response)
-      puts "~ Executing user's SockJS app"
+      SockJS.debug "Executing user's SockJS app"
       frame = self.process_buffer(false)
       # self.send_data(frame) if frame and not frame.match(/^c\[\d+,/)
-      puts "~ User's SockJS app finished"
+      SockJS.debug "User's SockJS app finished"
     end
 
     def send_data(frame)

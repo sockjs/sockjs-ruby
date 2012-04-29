@@ -70,10 +70,10 @@ module SockJS
 
       case block && block.arity
       when nil # no block
-        puts "~ There's no block for response(request, #{status}, #{options.inspect}), closing the response."
+        SockJS.debug "There's no block for response(request, #{status}, #{options.inspect}), closing the response."
         response.finish
       when 1
-        puts "~ Calling block in response(request, #{status}, #{options.inspect}) with response."
+        SockJS.debug "Calling block in response(request, #{status}, #{options.inspect}) with response."
         block.call(response)
       when 2
         begin
@@ -91,19 +91,19 @@ module SockJS
               session.with_response_and_transport(response, self) do
                 session.receive_message(request, options[:data])
 
-                puts "~ Calling block in response(request, #{status}, #{options.inspect}) with response and session."
+                SockJS.debug "Calling block in response(request, #{status}, #{options.inspect}) with response and session."
                 block.call(response, session)
               end
             else
               session.with_response_and_transport(response, self) do
-                puts "~ Calling block in response(request, #{status}, #{options.inspect}) with response and session."
+                SockJS.debug "Calling block in response(request, #{status}, #{options.inspect}) with response and session."
                 block.call(response, session)
               end
             end
           else
-            puts "~ Session can't be retrieved."
+            SockJS.debug "Session can't be retrieved."
 
-            puts "~ Calling block in response(request, #{status}, #{options.inspect}) with response and nil instead of session."
+            SockJS.debug "Calling block in response(request, #{status}, #{options.inspect}) with response and nil instead of session."
             block.call(response, nil)
           end
         rescue SockJS::SessionUnavailableError => error
@@ -157,20 +157,20 @@ module SockJS
       if session
         if session.closing?
           # response.body is closed, why?
-          puts "~ get_session: session is closing"
+          SockJS.debug "get_session: session is closing"
           raise SessionUnavailableError.new(session)
         elsif session.open? || session.newly_created? || session.opening?
-          puts "~ get_session: session retrieved successfully"
+          SockJS.debug "get_session: session retrieved successfully"
           return session
         # TODO: Should be alright now, check 6aeeaf1fd69c
         # elsif session.response # THIS is an utter piece of sssshhh ... of course there's a response once we open it!
-        #   puts "~ get_session: another connection still open"
+        #   SockJS.debug "get_session: another connection still open"
         #   raise SessionUnavailableError.new(session, 2010, "Another connection still open")
         else
           raise "We should never get here!\nsession.status: #{session.instance_variable_get(:@status)}, has session response: #{!! session.response}"
         end
       else
-        puts "~ get_session: session for #{path_info.inspect} doesn't exist."
+        SockJS.debug "get_session: session for #{path_info.inspect} doesn't exist."
         return nil
       end
     end

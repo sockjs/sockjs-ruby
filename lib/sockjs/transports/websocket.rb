@@ -13,7 +13,7 @@ module SockJS
 
       # Handlers.
       def handle_open(request)
-        puts "~ Opening WS connection."
+        SockJS.debug "Opening WS connection."
         match = request.path_info.match(self.class.prefix)
         # Here, the session_id is not important at all,
         # it's all about the actual connection object.
@@ -36,7 +36,7 @@ module SockJS
         # Unlike other transports, the WS one is supposed to ignore empty messages.
         unless message.empty?
           message = "[#{message}]" unless message.start_with?("[")
-          puts "<~ WS message received: #{message.inspect}"
+          SockJS.debug "WS message received: #{message.inspect}"
           session = self.get_session { |sessions| sessions[@ws.object_id.to_s] }
           session.receive_message(request, message)
 
@@ -44,7 +44,7 @@ module SockJS
           session.process_buffer(false)
         end
       rescue SockJS::SessionUnavailableError
-        puts "~ Session is already closing"
+        SockJS.debug "Session is already closing"
       rescue SockJS::InvalidJSON => error
         # @ws.send(error.message) # TODO: frame it ... although ... is it required? The tests do pass, but it would be inconsistent if we'd send it for other transports and not for WS, huh?
         @ws.close # Close the connection abruptly, no closing frame.
@@ -66,8 +66,8 @@ module SockJS
       # Furthemore current API doesn't
       # make it possible to get session
       def handle_close(request, event)
-        puts "~ WebSocket#handle_close"
-      #   puts "~ Closing WS connection."
+        SockJS.debug "WebSocket#handle_close"
+      #   SockJS.debug "Closing WS connection."
       #
       #   # If it's the user app who closed
       #   # the response, we won't ever get

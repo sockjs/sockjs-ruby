@@ -67,12 +67,12 @@ module Rack
 
     def debug_process_request(request)
       headers = request.headers.select { |key, value| not %w{version host accept-encoding}.include?(key.to_s) }
-      debug "\n~ \e[31m#{request.http_method} \e[32m#{request.path_info.inspect}#{" " + headers.inspect unless headers.empty?} \e[0m(\e[34m#{@prefix} app\e[0m)"
+      ::SockJS.puts "\n~ \e[31m#{request.http_method} \e[32m#{request.path_info.inspect}#{" " + headers.inspect unless headers.empty?} \e[0m(\e[34m#{@prefix} app\e[0m)"
       headers = headers.map { |key, value| "-H '#{key}: #{value}'" }.join(" ")
-      puts "\e[90mcurl -X #{request.http_method} http://localhost:8081#{request.path_info} #{headers}\e[0m"
+      ::SockJS.puts "\e[90mcurl -X #{request.http_method} http://localhost:8081#{request.path_info} #{headers}\e[0m"
 
       self.process_request(request).tap do |response|
-        debug "~ #{response.inspect}"
+        ::SockJS.debug response.inspect
       end
     end
 
@@ -82,7 +82,7 @@ module Rack
       transports = ::SockJS::Transport.handlers(prefix)
       transport  = transports.find { |handler| handler.method == method }
       if transport
-        debug "~ Transport: #{transport.inspect}"
+        ::SockJS.debug "Transport: #{transport.inspect}"
         EM.next_tick do
           handler = transport.new(@connection, @options)
           handler.handle(request)
@@ -90,7 +90,7 @@ module Rack
         ::SockJS::Thin::DUMMY_RESPONSE
       elsif transport.nil? && ! transports.empty?
         # Unsupported method.
-        debug "~ Method not supported!"
+        ::SockJS.debug "Method not supported!"
         methods = transports.map { |transport| transport.method }
         [405, {"Allow" => methods.join(", ") }, []]
       else
@@ -107,14 +107,9 @@ module Rack
             </body>
           </html>
         HTML
-        debug "~ Handler not found!"
+        ::SockJS.debug "Handler not found!"
         [404, {"Content-Type" => "text/html; charset=UTF-8", "Content-Length" => body.bytesize.to_s}, [body]]
       end
-    end
-
-    private
-    def debug(message)
-      STDERR.puts(message)
     end
   end
 end

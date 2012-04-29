@@ -29,30 +29,20 @@ module SockJS
           data = fix_buggy_input(*args)
         end
 
-        debug "WS#send #{data.inspect}", caller
+        SockJS.debug "WS#send #{data.inspect}"
 
         super(data)
       end
 
       def fix_buggy_input(*args)
         data = 'c[3000,"Go away!"]'
-        puts "! Incorrect input: #{args.inspect}, changing to #{data} for now"
+        SockJS.debug "[ERROR] Incorrect input: #{args.inspect}, changing to #{data} for now"
         return data
       end
 
       def close(*args)
-        debug "WS#close(#{args.inspect[1..-2]})", caller
+        SockJS.debug "WS#close(#{args.inspect[1..-2]})"
         super(*args)
-      end
-
-      private
-      def debug(title, backtrace)
-        if $DEBUG
-          backtrace = backtrace[0..2].map { |item| item.sub(Dir.pwd + "/lib/", "") }
-          puts "~> #{title} #{backtrace.inspect}"
-        else
-          puts "~> #{title}"
-        end
       end
     end
 
@@ -80,7 +70,7 @@ module SockJS
       def handle(request)
         check_invalid_request_or_disabled_websocket(request)
 
-        puts "~ Upgrading to WebSockets ..."
+        SockJS.debug "Upgrading to WebSockets ..."
 
         @ws = Faye::WebSocket.new(request.env)
 
@@ -91,12 +81,12 @@ module SockJS
         end
 
         @ws.onmessage = lambda do |event|
-          debug "<~ WS data received: #{event.data.inspect}"
+          SockJS.debug "WS data received: #{event.data.inspect}"
           self.handle_message(request, event)
         end
 
         @ws.onclose = lambda do |event|
-          debug "~ Closing WebSocket connection (code: #{event.code}, reason: #{event.reason.inspect})"
+          SockJS.debug "Closing WebSocket connection (code: #{event.code}, reason: #{event.reason.inspect})"
           self.handle_close(request, event)
         end
       rescue SockJS::HttpError => error
@@ -106,7 +96,7 @@ module SockJS
       # Here we need to open a new session, so we
       # can run the custom app. No opening frame.
       def handle_open(request)
-        puts "~ Opening WS connection."
+        SockJS.debug "Opening WS connection."
         # Here, the session_id is not important at all,
         # it's all about the actual connection object.
         @session = self.connection.create_session(@ws.object_id.to_s, self)
@@ -130,13 +120,13 @@ module SockJS
 
         # Unlike other transports, the WS one is supposed to ignore empty messages.
         unless message.empty?
-          puts "<~ WS message received: #{message.inspect}"
+          SockJS.debug "WS message received: #{message.inspect}"
           @session.receive_message(request, message)
 
           # Send encoded messages in an array frame.
           messages = @session.process_buffer
           if messages && messages.start_with?("a[") # We don't have any framing, this is obviously utter bollocks
-            puts "~ Messages to be sent: #{messages.inspect}"
+            SockJS.debug "Messages to be sent: #{messages.inspect}"
             @session.send_data(messages)
           end
         end
@@ -147,7 +137,7 @@ module SockJS
 
       # Close the connection without sending the closing frame.
       def handle_close(request, event)
-        puts "~ Closing WS connection."
+        SockJS.debug "Closing WS connection."
         @session.close
       end
 
