@@ -34,13 +34,17 @@ module SockJS
       self.send_data(self.buffer.to_frame)
     end
 
-    def finish
+    def finish(no_content = false)
       frame = @buffer.to_frame
       self.send_data(frame)
     rescue SockJS::NoContentError => error
-      self.set_heartbeat_timer(error.buffer)
+      if no_content
+        puts "~ No content, it's fine though."
+      else
+        self.set_heartbeat_timer(error.buffer)
+      end
     ensure
-      @response.finish if frame and frame.match(/^c\[\d+,/) and @response
+      @response.finish if @response && ((frame and frame.match(/^c\[\d+,/)) || no_content)
     end
 
     def with_response_and_transport(response, transport, &block)
@@ -247,7 +251,7 @@ module SockJS
     end
 
     def max_permitted_content_length
-      $DEBUG ? 4096 : 128_000
+      $DEBUG ? 4092 : 128_000
     end
 
     def run_user_app(response)
@@ -260,14 +264,22 @@ module SockJS
     def init_periodic_timer(response, interval)
       @periodic_timer = EM::PeriodicTimer.new(interval) do
         @periodic_timer.cancel if @disconnect_timer_canceled
-        puts "~ Tick"
+        puts "~ Tick: #{@status}, #{@buffer.inspect}"
 
         unless @received_messages.empty?
           run_user_app(response)
 
-          if @total_received_content_length <= max_permitted_content_length
+          if @total_received_content_length >= max_permitted_content_length
+            puts "~ Maximal permitted content length exceeded, closing the connection."
+
             # Close the response without writing any closing frame.
-            self.finish
+            self.finish(true)
+
+            @periodic_timer.cancel
+
+            @status = :closed
+          else
+            puts "~ Permitted content length: #{@total_received_content_length} of #{max_permitted_content_length}"
           end
         end
       end
@@ -337,7 +349,7 @@ module SockJS
       @disconnect_timer = nil
 
       # Send heartbeat frame after 25s.
-      EM::Timer.new(25) do
+      @heartbeat_timer ||= EM::Timer.new(25) do
         # It's better as we know for sure that
         # clearing the buffer won't change it.
         puts "~ Sending heartbeat frame."
