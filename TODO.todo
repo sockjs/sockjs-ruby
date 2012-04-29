@@ -5,8 +5,8 @@
 
 Something like on_close event:
 - Q: "Can I detect that client has closed the connection? I mean if client starts a long request, pulls, pulls and then close it? I'd need some def on_close, is there any way how to do so?"
-- Andre's response: "There's no reliable way to know when the client closes the connection. The best way I know is to send a ping (heartbeat) at interval. Once you stop receiving those pings, you know the connection is closed."
-- My research: "Sadly this really is impossible with Thin. Thin uses EventMachine to handle low-level socket stuff. EventMachine, however doesn't use socket.js from the standard library, but its own C++ code to handle sockets. It doesn't give an access to them and by nature of extension code, we can't simply access instance variables as we could from Ruby."
+- Marc-Andre's response: "There's no reliable way to know when the client closes the connection. The best way I know is to send a ping (heartbeat) at interval. Once you stop receiving those pings, you know the connection is closed."
+- My research: "Sadly this really is impossible with Thin. Thin uses EventMachine to handle low-level socket stuff. EventMachine, however doesn't use socket.rb from the standard library, but its own C++ code to handle sockets. It doesn't give an access to them and by nature of extension code, we can't simply access instance variables as we could from Ruby."
 
   Failing tests due to this issue:
   - Protocol.test_simpleSession: AssertionError: 'a[]\n' != 'c[2010,"Another connection still open"]\n'. The problem is that we close the first connection sending 'a[""]\n' which is really, really wrong, it's supposed to hang.
