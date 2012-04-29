@@ -15,9 +15,3 @@ Something like on_close event:
 
 Keep-Alive:
 - Http11.test_synchronous: It does work, but it isn't correct HTTP 1.1. Thin's fault though.
-
-Release (2.5 days):
-- Publish to RubyGems.org.
-- Short announcement for the RabbitMQ blog (1/2 day).
-- Post for RubyInside.com (1 day).
-- Real-world example (1 day).
