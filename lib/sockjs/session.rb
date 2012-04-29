@@ -11,7 +11,7 @@ module SockJS
       @disconnect_delay = 5 # TODO: make this configurable.
       @status = :created
       @received_messages = Array.new
-      @total_received_content_length = 0
+      @total_sent_content_length = 0
     end
 
     def send_data(frame)
@@ -20,6 +20,9 @@ module SockJS
       end
 
       data = @transport.format_frame(frame)
+
+      @total_sent_content_length += data.bytesize
+
       @response.write(data)
 
       # So we can resend closing frame.
@@ -79,8 +82,6 @@ module SockJS
     # of json-encoded messages, depending on transport.
     def receive_message(request, data)
       self.reset_timer do
-        @total_received_content_length += data.bytesize
-
         self.check_status
 
         messages = parse_json(data)
@@ -251,7 +252,7 @@ module SockJS
     end
 
     def max_permitted_content_length
-      $DEBUG ? 4092 : 128_000
+      $DEBUG ? 4096 : 128_000
     end
 
     def run_user_app(response)
@@ -269,7 +270,7 @@ module SockJS
         unless @received_messages.empty?
           run_user_app(response)
 
-          if @total_received_content_length >= max_permitted_content_length
+          if @total_sent_content_length >= max_permitted_content_length
             puts "~ Maximal permitted content length exceeded, closing the connection."
 
             # Close the response without writing any closing frame.
@@ -279,7 +280,7 @@ module SockJS
 
             @status = :closed
           else
-            puts "~ Permitted content length: #{@total_received_content_length} of #{max_permitted_content_length}"
+            puts "~ Permitted content length: #{@total_sent_content_length} of #{max_permitted_content_length}"
           end
         end
       end
