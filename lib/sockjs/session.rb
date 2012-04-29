@@ -346,7 +346,7 @@ module SockJS
     def set_heartbeat_timer(buffer)
       # Cancel @disconnect_timer.
       puts "~ Cancelling @disconnect_timer as we're about to send a heartbeat frame in 25s."
-      @disconnect_timer.cancel
+      @disconnect_timer.cancel if @disconnect_timer
       @disconnect_timer = nil
 
       # Send heartbeat frame after 25s.

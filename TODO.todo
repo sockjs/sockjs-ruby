@@ -16,7 +16,7 @@ Something like on_close event:
   - HandlingClose.test_abort_xhr_streaming: self.assertTrue(r3.read() in ['o\n', 'c[1002,"Connection interrupted"]\n'])
 
 Keep-Alive:
-- Http11.test_synchronous: [Errno 54] Connection reset by peer. Very very weird, it does work with HTTP/1.0.
+- Http11.test_synchronous: It does work, but it isn't correct HTTP 1.1. Thin's fault though.
 
 Release (2.5 days):
 - Publish to RubyGems.org.
