@@ -326,6 +326,7 @@ module SockJS
       end
     end
 
+    # Alive checker checks
     def set_alive_checker
       SockJS.debug "Setting alive_checker."
       @alive_checker ||= begin
@@ -437,6 +438,9 @@ module SockJS
       @ws.close
       @transport = nil
     end
+
+    def set_alive_checker
+    end
   end
 
 
@@ -456,6 +460,9 @@ module SockJS
       super(frame)
 
       self.close_response
+    end
+
+    def set_alive_checker
     end
 
     alias_method :after_app_run, :finish
