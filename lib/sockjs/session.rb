@@ -268,6 +268,9 @@ module SockJS
       SockJS.debug "User's SockJS app finished"
     end
 
+    # Periodic timer runs the user app if it receives some
+    # messages in the meantime. Also, it closes the response
+    # if maximal content length is exceeded.
     def init_periodic_timer(response, interval)
       @periodic_timer = EM::PeriodicTimer.new(interval) do
         @periodic_timer.cancel if @disconnect_timer_canceled
@@ -303,6 +306,7 @@ module SockJS
       raise SockJS::InvalidJSON.new("Broken JSON encoding.")
     end
 
+    # Disconnect timer to close the response after longer innactivity.
     def set_timer
       SockJS.debug "Setting @disconnect_timer to #{@disconnect_delay}"
       @disconnect_timer ||= begin
@@ -357,6 +361,8 @@ module SockJS
 
       SockJS.debug "Setting @close_timer to #{@disconnect_delay}"
 
+      # Close timer is to mark the session as garbage and
+      # effectively destroy it. At the time it's already closed.
       @close_timer = EM::Timer.new(@disconnect_delay) do
         SockJS.debug "@close_timer fired"
         @periodic_timer.cancel if @periodic_timer
@@ -364,6 +370,7 @@ module SockJS
       end
     end
 
+    # Heartbeats to make sure nothing times out.
     def set_heartbeat_timer(buffer)
       # Cancel @disconnect_timer.
       SockJS.debug "Cancelling @disconnect_timer as we're about to send a heartbeat frame in 25s."
