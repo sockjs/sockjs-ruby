@@ -59,6 +59,11 @@ module SockJS
       SockJS::Thin::Response
     end
 
+    # Used for pings.
+    def empty_string
+      "\n"
+    end
+
     def format_frame(payload)
       raise TypeError.new("Payload must not be nil!") if payload.nil?
 

@@ -168,6 +168,7 @@ module SockJS
       self.buffer.open # @buffer.status to :opening
 
       self.set_timer
+      self.set_alive_checker
       self.finish
     end
 
@@ -311,6 +312,21 @@ module SockJS
             SockJS.debug "@disconnect_timer: connection closed."
           else
             SockJS.debug "@disconnect_timer: doing nothing."
+          end
+        end
+      end
+    end
+
+    def set_alive_checker
+      SockJS.debug "Setting alive_checker."
+      @alive_checker ||= begin
+        EM::PeriodicTimer.new(0.1) do
+          begin
+            SockJS.debug "~ Checking if still alive"
+            @response.write(@transport.empty_string)
+          rescue
+            puts "!!!! HERE WE GO !!!"
+            @alive_checker.cancel
           end
         end
       end
