@@ -194,6 +194,11 @@ module SockJS
         @periodic_timer = nil
       end
 
+      if @alive_checker
+        @alive_checker.cancel
+        @alive_checker = nil
+      end
+
       # SessionWitchCachedMessages#after_app_run is aliased to #finish
       # and we MUST NOT clear the buffer, because we have to cache it
       # for the next responses. Bugger ...
