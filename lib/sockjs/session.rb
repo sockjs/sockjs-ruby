@@ -314,6 +314,8 @@ module SockJS
           SockJS.debug "#{@disconnect_delay} has passed, firing @disconnect_timer"
           @disconnect_timer_canceled = true
 
+          @alive_checker.cancel if @alive_checker
+
           if self.opening? or self.open?
             # OK, so we're here, closing the open response ... but its body is already closed, huh?
             SockJS.debug "@disconnect_timer: closing the connection."
