@@ -55,6 +55,8 @@ module SockJS
     def write(&block)
       self.write_head unless self.head_written?
 
+      @last_written_at = Time.now.to_i
+
       (block || NOT_IMPLEMENTED_PROC).call
     end
 
@@ -70,6 +72,11 @@ module SockJS
 
     def async?
       NOT_IMPLEMENTED_PROC.call
+    end
+
+    # Time.now.to_i shows time in seconds.
+    def due_for_alive_check
+      Time.now.to_i != @last_written_at
     end
 
     # === Helpers === #

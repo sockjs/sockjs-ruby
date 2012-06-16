@@ -331,12 +331,19 @@ module SockJS
       SockJS.debug "Setting alive_checker."
       @alive_checker ||= begin
         EM::PeriodicTimer.new(0.1) do
-          begin
-            SockJS.debug "~ Checking if still alive"
-            @response.write(@transport.empty_string)
-          rescue
-            puts "!!!! HERE WE GO !!!"
-            @alive_checker.cancel
+          if @transport && @response && ! @response.body.closed?
+            begin
+              if @response.due_for_alive_check
+                SockJS.debug "Checking if still alive"
+                @response.write(@transport.empty_string)
+              end
+            rescue Exception => error
+              raise error
+              puts "!!!! HERE WE GO !!!"
+              @alive_checker.cancel
+            end
+          else
+            puts "~ [TODO] Not checking if still alive, why? Status: #{@status}, #{@self.class},\n#{@transport.class}\n\n#{@response.to_s}\n\n"
           end
         end
       end
