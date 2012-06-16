@@ -385,6 +385,8 @@ module SockJS
       @disconnect_timer.cancel if @disconnect_timer
       @disconnect_timer = nil
 
+      @alive_checker.cancel if @alive_checker
+
       # Send heartbeat frame after 25s.
       @heartbeat_timer ||= EM::Timer.new(25) do
         # It's better as we know for sure that
