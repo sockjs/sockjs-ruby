@@ -332,7 +332,7 @@ module SockJS
     def set_alive_checker
       SockJS.debug "Setting alive_checker."
       @alive_checker ||= begin
-        EM::PeriodicTimer.new(0.1) do
+        EM::PeriodicTimer.new(1) do
           if @transport && @response && ! @response.body.closed?
             begin
               if @response.due_for_alive_check
