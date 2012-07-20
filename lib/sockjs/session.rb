@@ -337,6 +337,8 @@ module SockJS
             begin
               if @response.due_for_alive_check
                 SockJS.debug "Checking if still alive"
+                # If the following statement fails, we know
+                # that the connection has been interrupted.
                 @response.write(@transport.empty_string)
               end
             rescue Exception => error
