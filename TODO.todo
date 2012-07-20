@@ -12,3 +12,5 @@ Something like on_close event:
 
 Keep-Alive:
 - Http11.test_synchronous: It does work, but it isn't correct HTTP 1.1. Thin's fault though.
+
+Another problem is that we can't properly detect if there's a session already unless it's something what waits. But if we have r1 = POST_async(uri); r2 = POST(uri), r2 should get another connection still open. This can't be solved easily, at least nothing I could think of. Oh BTW sessions[session] are NOT connections, so that certainly won't work. This issue, however, is not that serious as the issue with missing on_close.
