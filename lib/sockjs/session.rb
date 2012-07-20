@@ -342,12 +342,15 @@ module SockJS
                 @response.write(@transport.empty_string)
               end
             rescue Exception => error
-              raise error
+              puts "==> "
+              p error
+              puts "==> "
               self.on_close
               @alive_checker.cancel
             end
           else
-            puts "~ [TODO] Not checking if still alive, why? Status: #{@status}, #{self.class},\n#{@transport.class}\n\n#{@response.to_s}\n\n"
+            puts "~ [TODO] Not checking if still alive, why?"
+            puts "Status: #{@status} (response.body.closed: #{@response.body.closed?})\nSession class: #{self.class}\nTransport class: #{@transport.class}\nResponse: #{@response.to_s}\n\n"
           end
         end
       end
