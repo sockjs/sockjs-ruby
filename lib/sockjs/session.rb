@@ -347,7 +347,7 @@ module SockJS
               @alive_checker.cancel
             end
           else
-            puts "~ [TODO] Not checking if still alive, why? Status: #{@status}, #{@self.class},\n#{@transport.class}\n\n#{@response.to_s}\n\n"
+            puts "~ [TODO] Not checking if still alive, why? Status: #{@status}, #{self.class},\n#{@transport.class}\n\n#{@response.to_s}\n\n"
           end
         end
       end
