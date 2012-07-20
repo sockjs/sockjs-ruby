@@ -343,7 +343,7 @@ module SockJS
               end
             rescue Exception => error
               raise error
-              puts "!!!! HERE WE GO !!!"
+              self.on_close
               @alive_checker.cancel
             end
           else
